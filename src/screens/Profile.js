@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import Loading from '../components/Loading';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import deviceStorage from '../services/deviceStorage';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
+import { addLoading } from '../actions/DataActions';
 import { deleteToken } from '../actions/JwtActions';
 import { Card, ListItem, } from 'react-native-elements'
 import Person from '../../image/person.svg'
 import ProfileEdit from '../../image/profile-edit.svg'
 import axios from 'axios';
+import moment from 'moment';
 
 class Profile extends Component {
   constructor(props){
@@ -18,33 +21,7 @@ class Profile extends Component {
         username: '',
         name:'',
         refreshing : false,
-        history:[
-          {
-            id: 1,
-            date:'27 / 02 / 2020',
-            time:'09.10 AM-06.30 PM'
-          },
-          {
-            id: 2,
-            date:'27 / 02 / 2020',
-            time:'09.10 AM-06.30 PM'
-          },
-          {
-            id: 3,
-            date:'27 / 02 / 2020',
-            time:'09.10 AM-06.30 PM'
-          },
-          {
-            id: 1,
-            date:'27 / 02 / 2020',
-            time:'09.10 AM-06.30 PM'
-          },
-          {
-            id: 2,
-            date:'27 / 02 / 2020',
-            time:'09.10 AM-06.30 PM'
-          },
-        ]
+        history:[]
       }
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
@@ -52,13 +29,14 @@ class Profile extends Component {
   }
 
   async componentDidMount(){
+    this.props.addLoad(true)
     this.loadData();
   }
 
   async loadData(){
     const username = await AsyncStorage.getItem('username');
     const name = await AsyncStorage.getItem('name');
-    const month = new Date().getMonth() + 1;
+    const month = moment().format('MM');
     const year = new Date().getFullYear();
 
     this.setState({
@@ -77,15 +55,15 @@ class Profile extends Component {
        }).then((response) => { 
          console.log(response)    
          this.setState({
-
+            history: response.data
          });
+         this.props.addLoad(false)
        }).catch((errorr) => {
          console.log(errorr)       
-           this.setState({
-
-           });
+         this.props.addLoad(false)
       });
   }
+
  async LogOut(){
   const value = await AsyncStorage.getItem('state');
   if(value === '1'){
@@ -126,7 +104,7 @@ class Profile extends Component {
                         <Text style={styles.text2}>{this.state.name}</Text>
                         <Text style={styles.text3}>Developer</Text>
                       </View>
-                      <View style={{}}>
+                      <View>
                         <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}}>
                           <ProfileEdit width={25} height={25}/>
                         </TouchableOpacity> 
@@ -160,25 +138,25 @@ class Profile extends Component {
                   <View style={{ width:'100%', alignSelf:'center'}}>
                     <Text style={styles.textHistory}>History</Text>
                     <Text style={styles.textMonth}>February 2020</Text>
-                    <Card containerStyle={styles.cardHistory} >
-                    {
-                      this.state.history.map((u, i) => {
+                    <Card containerStyle={[styles.cardHistory]} >
+                    {this.state.history.map((u, i) => {
                         return (
                           <ListItem
                             key={i}
-                            title={'    '+u.date +'                   '+ u.time}
+                            title={'    '+u.checkIn}
                             bottomDivider              
                           />
                         );
-                      }) 
-                    }
-                    <Text style={styles.textVD}>View Details</Text>
+                      })
+                    } 
                   </Card>
-                  
+                 
                   </View>
                   <TouchableOpacity style={styles.Button} onPress={this.LogOut}>
                       <Text style={styles.textLogOut}>Log Out</Text>
                   </TouchableOpacity>
+
+                  <Loading visible={this.props.loading === true ? true : false}/>  
               </ScrollView>
             </SafeAreaView>           
       );
@@ -259,10 +237,17 @@ const styles = StyleSheet.create({
   },
 })
 
-const mapDispatchToPropsJWT = (dispatch) => {
+const mapStateToPropsData = (state) => {
+  console.log(state);
   return {
+    loading : state.DataReducer.loading
+  }
+}
+const mapDispatchToPropsData = (dispatch) => {
+  return {
+    addLoad : (Loading) => dispatch(addLoading(Loading)),
     delete: () => dispatch(deleteToken())
   }
 }
   
-export default connect(null,mapDispatchToPropsJWT) (Profile)
+export default connect(mapStateToPropsData, mapDispatchToPropsData) (Profile)

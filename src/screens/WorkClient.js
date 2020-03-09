@@ -11,6 +11,7 @@ import axios from 'axios';
 import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
+import ImageResizer from 'react-native-image-resizer';
 
 class WorkClient extends Component {
   constructor(props){
@@ -76,38 +77,46 @@ class WorkClient extends Component {
     ImagePicker.showImagePicker(options, response => {
       if (response.uri) {
         console.log(response)
+        const name = response.fileName;
+        const type = response.type;
         this.setState({ 
           loadingPhoto: true 
         })
-        var url = 'https://absensiapiendpoint.azurewebsites.net/api/BlobStorage/InsertFile';
-        const Header = {
-          // 'Content-Type': 'multipart/form-data',
-          // 'accept' : 'text/plain'
-        }       
-        var formData = new FormData();
-        formData.append('stream', {
-          uri: response.uri,
-          name: response.fileName,
-          type: response.type
+        ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 100).then((response) => {
+          console.log(response.size)
+          var url = 'https://absensiapiendpoint.azurewebsites.net/api/BlobStorage/InsertFile';
+          const Header = {
+            // 'Content-Type': 'multipart/form-data',
+            // 'accept' : 'text/plain'
+          }       
+          var formData = new FormData();
+          formData.append('stream', {
+            uri: response.uri,
+            name: name,
+            type: type
+          })
+          axios.post(url, formData ,Header)
+            .then(data => {
+              this.setState({
+                urlphoto : data.data,
+                photo: response,
+              })
+              console.log("ulrnya : " + this.state.urlphoto)
+              }).catch(err => {
+                  console.log(err)
+                  ToastAndroid.showWithGravity(
+                    'Upload Photo Failed',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                  );
+                }
+              )
         })
-        axios.post(url, formData ,Header)
-          .then(data => {
-            this.setState({
-              urlphoto : data.data,
-              photo: response,
-            })
-            console.log("ulrnya : " + this.state.urlphoto)
-            }).catch(err => {
-                console.log(err)
-                ToastAndroid.showWithGravity(
-                  'Upload Photo Failed',
-                  ToastAndroid.SHORT,
-                  ToastAndroid.BOTTOM,
-                );
-              }
-            )
-          }
-        })
+          .catch((err) => {
+              alert('Compress photo fail!')
+          });
+      }
+    })
   }
 
   findCoordinates = () => {

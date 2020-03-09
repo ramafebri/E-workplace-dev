@@ -122,13 +122,14 @@ export default class sick extends Component {
                 </Text> 
                 
                 <View style={styles.viewDate2}>
-                <View style={styles.viewDate3}>
-                  <View style={{flex:4, justifyContent:'center',}}>
-                    <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
+                  <View style={styles.viewDate3}>
+                    <View style={{flex:4, justifyContent:'center',}}>
+                      <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
+                    </View>
+                    <View style={{flex:1, justifyContent:'center'}}>
+                      <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
+                    </View>              
                   </View>
-                  <View style={{flex:1, justifyContent:'center'}}>
-                  <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
-                  </View>              
                 </View>
                 {show1 && (
                 <DateTimePicker
@@ -146,22 +147,21 @@ export default class sick extends Component {
                     }}    
                 />
                 )}
-                </View>
-                </View>
-                <View style={styles.viewDate1}>
+            </View>
+            <View style={styles.viewDate1}>
                 <Text
                   style={styles.TextDate}>
                     End Date *
                 </Text>
                 <View style={styles.viewDate22}>
-                <View style={styles.viewDate3}>
-                  <View style={{flex:4, justifyContent:'center',}}>
-                    <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
+                  <View style={styles.viewDate3}>
+                    <View style={{flex:4, justifyContent:'center',}}>
+                      <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
+                    </View>
+                    <View style={{flex:1, justifyContent:'center'}}>
+                      <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
+                    </View>
                   </View>
-                  <View style={{flex:1, justifyContent:'center'}}>
-                    <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
-                  </View>
-                </View>
                 </View>
                 
                 {show2 && (
@@ -179,10 +179,9 @@ export default class sick extends Component {
                         })
                     }}    
                 />
-                )}
-                
-             </View> 
-            </View>
+                )}              
+            </View> 
+          </View>
                 <Text
                   style={styles.textSM}>
                     Substitute *
@@ -247,7 +246,7 @@ const styles = StyleSheet.create({
     height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
   },
    Split:{
-     flex: 0.25,
+     flex: 0.35,
      flexDirection: 'row',
      marginTop: 16,
    },

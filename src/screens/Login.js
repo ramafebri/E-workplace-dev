@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet,TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, StyleSheet,TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import deviceStorage from '../services/deviceStorage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
-import { addJWT,addLoading } from '../actions/JwtActions';
+import { addJWT } from '../actions/JwtActions';
+import { addLoading } from '../actions/DataActions';
 import Logo from '../../image/eworkplace2.svg'
 
 class Login extends Component {
@@ -19,7 +20,7 @@ class Login extends Component {
       messageErrPassword:'',
       loading: false,
       icon:'eye-slash',
-      secureText: true
+      secureText: true,
     };
     this.loginUser = this.loginUser.bind(this);
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
@@ -31,16 +32,21 @@ static navigationOptions = { headerShown: false }
 
 loginUser() {
   const { username, password} = this.state;
+  this.setState({
+    loading: true
+  })
 
   if(username == null || username == ""){
     this.setState({
-     messageErrUsername : 'username is required!'
+     messageErrUsername : 'username is required!',
+     loading: false
     })
- }
+  }
 
  if(password == null || password == ""){
    this.setState({
-    messageErrPassword : 'Password is required!'
+    messageErrPassword : 'Password is required!',
+    loading: false
    })
 }
 
@@ -57,11 +63,12 @@ if((username != null && username != "" ) && ( password != null && password != ""
           Password: password,
         }
       }).then(response => {
+        this.props.addLoad(true);
         deviceStorage.saveItem("id_token", response.data.data);
         deviceStorage.saveItem("state", '0');
         this.setState({
           jwtt: response.data.data,
-          loading: true
+          loading: false
         })
         this.props.add(this.state.jwtt)
         this.props.navigation.push('Home');
@@ -70,6 +77,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
         console.log(errorr)
         this.setState({
           error: 'Username / password does not exist!',
+          loading: false
         });
         alert(this.state.error)
       });
@@ -150,9 +158,12 @@ if((username != null && username != "" ) && ( password != null && password != ""
             <TouchableOpacity style={{alignSelf:'flex-end', width:'40%'}}>
               <Text style={styles.text1}>forgot password ?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonSubmit} onPress={this.loginUser}>
+            <TouchableOpacity style={[styles.buttonSubmit, {display: this.state.loading === false ? 'flex' : 'none'}]} onPress={this.loginUser}>
               <Text style={styles.textbtnSubmit}>Log In</Text>
             </TouchableOpacity>
+            <View style={[styles.viewLoading,{display: this.state.loading === true ? 'flex' : 'none'}]}>
+              <ActivityIndicator color='#1A446D' size={40}/>
+            </View>
           </View>
         </View>
       </View>
@@ -230,6 +241,9 @@ const styles = StyleSheet.create({
     },
   buttonSubmit:{
     marginTop:40, backgroundColor:'#1A446D', height:'15%', width:'100%', borderRadius:5, alignSelf:'center', justifyContent:'center'
+  },
+  viewLoading:{
+    marginTop:40, height:'15%', width:'100%', borderRadius:5, alignSelf:'center', justifyContent:'center'
   },
   textbtnSubmit:{
     color:'white', fontSize: 20, textAlign:'center',textAlignVertical: "center",

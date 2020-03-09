@@ -144,7 +144,6 @@ class LoggedIn extends Component {
             latitude : position.coords.latitude,
             longitude : position.coords.longitude
           })
-          alert(this.state.latitude + "    " + this.state.longitude)
           Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
