@@ -147,7 +147,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
               </View>
               <Text style={styles.textError}>{this.state.messageErrPassword}</Text>
             </View>    
-            <TouchableOpacity style={{alignSelf:'flex-end', width:'35%',}}>
+            <TouchableOpacity style={{alignSelf:'flex-end', width:'40%'}}>
               <Text style={styles.text1}>forgot password ?</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonSubmit} onPress={this.loginUser}>
@@ -188,21 +188,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FFFFFF',
     paddingTop: '5%',
-    fontFamily:'Nunito',
+    fontFamily:'Nunito-SemiBold',
     fontWeight:'600',
-    lineHeight:33
   },
   logintitle2: {
     fontSize: 18,
     color: '#FFFFFF',
-    fontFamily:'Nunito',
-    fontWeight:'100',
-    lineHeight:25
+    fontFamily:'Nunito-Light',
+    fontWeight:'300',
   },
   text:{
     fontSize: 16,
     color: '#505050',
-    fontFamily:'Nunito',
+    fontFamily:'Nunito-Light',
     fontWeight:'300',
     lineHeight:19,
     marginBottom:7
@@ -210,9 +208,9 @@ const styles = StyleSheet.create({
   text1:{
     fontSize: 16,
     color: '#1A446D',
-    fontFamily:'Nunito',
+    fontFamily:'Nunito-SemiBold',
     fontWeight:'600',
-    lineHeight:19,
+    textAlign:'right'
   },
   textError:{
     fontSize: 16,
@@ -235,9 +233,9 @@ const styles = StyleSheet.create({
   },
   textbtnSubmit:{
     color:'white', fontSize: 20, textAlign:'center',textAlignVertical: "center",
-    fontFamily:'Nunito',
+    fontFamily:'Nunito-SemiBold',
     fontWeight:'600',
-    lineHeight:25,
+    marginBottom:6
   },   
 });
 

@@ -35,7 +35,7 @@ function HeaderRight () {
 
 function HeaderLeft () {
   return(
-    <View style={{marginTop: 30, height:'100%', marginLeft:15}}>
+    <View style={{marginLeft:15}}>
       <Eworkplace3 width={120} height={45}/> 
     </View>
   )
@@ -45,8 +45,11 @@ function MyStack() {
   return (
     <Stack.Navigator 
       screenOptions={{
-        headerTintColor:'#FFFFFF',headerStyle:{backgroundColor: '#1A446D', height: 80,},
+        headerTintColor:'#FFFFFF',
+        headerStyle:{backgroundColor: '#1A446D'},
+        safeAreaInsets: { top: 5 },
       }}
+      
       initialRouteName='SplashScreen'
     >
       <Stack.Screen name="SplashScreen" component={JwtCheck} options={{headerShown: false}}/>

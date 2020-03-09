@@ -307,6 +307,9 @@ const styles = StyleSheet.create({
   textPhoto:{
     textAlign:'center', color:'#1A446D', fontSize:18, fontFamily:'Nunito-SemiBold', fontWeight:'600', marginBottom:7
   },
+  image:{
+    width: 150, height: 150, borderRadius:150/2
+  },
   textSM:{
     marginTop: 16,
     marginBottom:10,

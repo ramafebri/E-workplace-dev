@@ -113,7 +113,7 @@ class WorkClient extends Component {
   findCoordinates = () => {
     Geolocation.getCurrentPosition(
       position => {
-        Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
+        Geocoder.init(ApiMaps);
         Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(json => {
             console.log(json);

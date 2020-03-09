@@ -9,6 +9,7 @@ import { deleteToken } from '../actions/JwtActions';
 import { Card, ListItem, } from 'react-native-elements'
 import Person from '../../image/person.svg'
 import ProfileEdit from '../../image/profile-edit.svg'
+import axios from 'axios';
 
 class Profile extends Component {
   constructor(props){
@@ -57,10 +58,33 @@ class Profile extends Component {
   async loadData(){
     const username = await AsyncStorage.getItem('username');
     const name = await AsyncStorage.getItem('name');
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+
     this.setState({
       username : username,
       name : name
     })
+
+    const headers = {
+      accept: '*/*',
+     };
+
+     axios({
+         method: 'GET',
+         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?CheckIn='+year+'-'+month,
+         headers: headers,
+       }).then((response) => { 
+         console.log(response)    
+         this.setState({
+
+         });
+       }).catch((errorr) => {
+         console.log(errorr)       
+           this.setState({
+
+           });
+      });
   }
  async LogOut(){
   const value = await AsyncStorage.getItem('state');
@@ -116,8 +140,7 @@ class Profile extends Component {
                      <View style={{flexDirection:'row'}}>
                        <Text style={styles.text5}>5</Text>
                        <Text style={styles.text6}>Days {'\n'}Remaining</Text>
-                     </View>
-                  
+                     </View>                 
                     </Card>
                     <Card containerStyle={styles.dcard}> 
                      <Text style={styles.text4}>Overwork</Text>
@@ -185,7 +208,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', borderRadius:100/2, justifyContent:'center', alignItems:'center', marginTop:5 
   },
   dcard: {
-    flex:1, borderWidth:1, borderColor:'#C1C1C1', borderRadius:7
+    flex:1, borderWidth:1, borderColor:'#C1C1C1', borderRadius:7, flexWrap:'nowrap'
   },
   cardHistory: {
     padding: 0,borderRadius:7, shadowColor: "#000",

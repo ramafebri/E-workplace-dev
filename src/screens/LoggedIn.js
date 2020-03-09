@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { addNama, addLocation, addStatusClockin, addLoading } from '../actions/DataActions';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {ApiMaps} from '../config/apiKey'
+import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
 import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
@@ -31,6 +32,8 @@ class LoggedIn extends Component {
         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
         refreshing : false,
         textButton:'',
+        latitude : null,
+        longitude : null,
       }
       this.checkIn = this.checkIn.bind(this);
       this.checkOut = this.checkOut.bind(this);
@@ -48,7 +51,6 @@ class LoggedIn extends Component {
     }
 
     async componentDidMount() {
-      this.props.addLoad(true)
       this.intervalID = setInterval( () => {
         this.setState({
           hour : moment().format('hh:mm a'),
@@ -61,7 +63,6 @@ class LoggedIn extends Component {
       this.checkClockInStatus();
       this.findCoordinates();
       this.loadData();
-      this.props.addLoad(false)
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
@@ -139,6 +140,11 @@ class LoggedIn extends Component {
     findCoordinates = async () => {
       Geolocation.getCurrentPosition(
         position => {
+          this.setState({
+            latitude : position.coords.latitude,
+            longitude : position.coords.longitude
+          })
+          alert(this.state.latitude + "    " + this.state.longitude)
           Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
@@ -175,7 +181,18 @@ class LoggedIn extends Component {
  }  
 
  async checkIn(){
-  this.props.addLoad(true) 
+  this.props.addLoad(true)
+
+  //Check Location Radius
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((this.state.latitude - MoonlayLat) * p)/2 +
+          c(this.state.latitude * p) * c(this.state.latitude * p) *
+          (1 - c((this.state.longitude - MoonlayLong) * p))/2;
+ 
+  const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
+  console.log(location_radius)
+
   const value = await AsyncStorage.getItem('clockin_state2');
   if(value === 'clockin'){
     Alert.alert(
@@ -187,8 +204,12 @@ class LoggedIn extends Component {
     );
     this.props.addLoad(false)
     return true;   
-  } 
-  else{
+  }
+  else if(location_radius > 80){
+    alert('You are far from the office right now, go closer!')
+    this.props.addLoad(false)
+  }
+  else if(location_radius <= 80 && value !== 'clockin'){
     axios({
       method: 'POST',
       url: this.state.url,
@@ -315,9 +336,9 @@ class LoggedIn extends Component {
                 <Text style={styles.textUsername}>Hi, {this.state.username}!</Text>
                 <View style={styles.view1}>
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
-                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:2}}/>
+                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:5}}/>
                 </View>
-                <View style={{width:150, height:'100%',}}>
+                <View style={{width:450, height:'100%'}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
                 </View> 
                 </View>
@@ -448,7 +469,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, color:'#505050'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:5, color:'#505050'
   },
   textHour:{
     color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44

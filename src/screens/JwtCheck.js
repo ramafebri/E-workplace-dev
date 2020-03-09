@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import {
   ActivityIndicator,
-  StatusBar, Image, Text, StyleSheet,
+  StyleSheet,
   View
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
+import { addLoading } from '../actions/DataActions';
 import Logo from '../../image/eworkplace.svg'
 
 class JwtCheck extends Component {    
@@ -17,8 +18,9 @@ class JwtCheck extends Component {
       loadJWT = async () => {
         const userToken = await AsyncStorage.getItem('id_token');
         this.props.add(userToken)
+        this.props.addLoad(true)
 
-        this.props.navigation.replace(userToken ? 'Home' : 'Login');
+        this.props.navigation.push(userToken ? 'Home' : 'Login');
         // this.props.navigation.push(userToken ? 'HomeHD' : 'Login');
       };
     
@@ -54,10 +56,11 @@ const mapStateToPropsData = (state) => {
   }
 }
 
-const mapDispatchToPropsJWT = (dispatch) => {
+const mapDispatchToPropsData = (dispatch) => {
   return {
+    addLoad : (Loading) => dispatch(addLoading(Loading)),
     add: (userToken) => dispatch(addJWT(userToken))
   }
 }
 
-export default connect(mapStateToPropsData, mapDispatchToPropsJWT)(JwtCheck)
+export default connect(mapStateToPropsData, mapDispatchToPropsData)(JwtCheck)

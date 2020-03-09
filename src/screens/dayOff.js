@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { View, Text, Button, Image, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Textarea from 'react-native-textarea';
 
 export default class sick extends Component {
     constructor(props){
@@ -128,7 +127,7 @@ export default class sick extends Component {
                     <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
                   </View>
                   <View style={{flex:1, justifyContent:'center'}}>
-                  <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
+                  <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
                   </View>              
                 </View>
                 {show1 && (
@@ -160,7 +159,7 @@ export default class sick extends Component {
                     <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
                   </View>
                   <View style={{flex:1, justifyContent:'center'}}>
-                    <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
+                    <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
                   </View>
                 </View>
                 </View>
@@ -242,10 +241,10 @@ const styles = StyleSheet.create({
     fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light',marginLeft:22, marginBottom:3
   },
   viewPicker:{
-    width:'90%', height:'8%', borderRadius:5, borderColor:'grey', borderWidth:1, backgroundColor:'white', alignSelf:'center'
+    width:'90%', height:'8%', borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white', alignSelf:'center'
   },
   picker:{
-    height: '100%', width: '100%', borderWidth:20, borderColor:'black'
+    height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
   },
    Split:{
      flex: 0.25,
@@ -253,10 +252,10 @@ const styles = StyleSheet.create({
      marginTop: 16,
    },
    inputText:{
-    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'8%',backgroundColor:'white', fontSize:18, borderColor:'grey', alignSelf:'center', paddingLeft:10, paddingRight:10
+    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'8%',backgroundColor:'white', fontSize:18, borderColor:'#505050', alignSelf:'center', paddingLeft:10, paddingRight:10
   },
   buttonSubmit:{
-    marginTop:40, backgroundColor:'#1A446D', height:'6%', width:'90%', borderRadius:5, alignSelf:'center'
+    marginTop:40, backgroundColor:'#1A446D', height:'8%', width:'90%', borderRadius:5, alignSelf:'center'
   },
   textbtnSubmit:{
     color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold', marginBottom:7 
@@ -271,10 +270,12 @@ const styles = StyleSheet.create({
     flexDirection:'row',flex:1, marginLeft:18, width:'80%',
   },
   viewDate3:{
-    height:'90%', width:'100%', borderColor:'grey', borderWidth:1, borderRadius:5, flexDirection:'row'
+    height:'100%', width:'100%', borderColor:'#505050', borderWidth:1, borderRadius:5, flexDirection:'row', backgroundColor:'#FFFFFF'
   },
   textinputDate:{
     height:'100%', borderWidth: 1, backgroundColor:'white',borderRadius:5, fontSize:18
   },
-
+  iconDate:{
+    alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8
+  }
 });
