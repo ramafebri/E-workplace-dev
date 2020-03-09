@@ -1,20 +1,39 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, ToastAndroid} from 'react-native'
+import { View, StyleSheet, ToastAndroid, TouchableOpacity} from 'react-native'
 import axios from 'axios';
-import { Card, Button, Icon, Text } from 'react-native-elements'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { Text } from 'react-native-elements'
 import CustomAlert from './CustomAlertComponent';
+import Coffee from '../../image/coffee.svg'
+import Buildings from '../../image/buildings.svg'
+import WFH from '../../image/wfh.svg'
+import Sick from '../../image/first-aid.svg'
+import moment from 'moment';
 
 export default class CardApproval extends Component {
     constructor(props) {
         super(props);
         this.state = {
           detail: [],
-          visible: false
+          date :'',
+          visible: false,
+          url:'https://absensiapiendpoint.azurewebsites.net/api/absensi/'
         }
+        
         this.onDetails = this.onDetails.bind(this);
         this.buttonApprove = this.buttonApprove.bind(this)
         this.buttonDecline = this.buttonDecline.bind(this)
+    }
+
+    componentDidMount(){    
+      this.checkWorkStatus
+
+      const dateApi = this.props.person.checkIn.substr(0, 10)
+      var convertToMMDD = dateApi.split("-");
+      var finalDate = moment(convertToMMDD, "YYYY/MM/DD").toString().substr(3, 7)
+
+      this.setState({
+        date : finalDate
+      })
     }
      
     onDetails = async () =>{
@@ -23,7 +42,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'GET',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkFromHome/' + this.props.person.idWFH,
+          url: this.state.url + this.props.person.absenceId,
           headers: headers,
         }).then((response) => { 
           console.log(response)    
@@ -43,7 +62,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'PUT',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkFromHome/' + this.props.person.idWFH,
+          url: this.state.url + this.props.person.absenceId,
           headers: headers,
           data : {
             approval : 'decline'
@@ -78,7 +97,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'PUT',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkFromHome/' + this.props.person.idWFH,
+          url: this.state.url + this.props.person.absenceId,
           headers: headers,
           data : {
             approval : 'accept'
@@ -105,65 +124,52 @@ export default class CardApproval extends Component {
           );       
         });
     }
-
     render() {
-        return (
-            // <View style={styles.mainContainer}>
-            
-                <View style={styles.viewContainer} >
-                  <View style={{flex:1.3,borderBottomRightRadius: 70, borderTopRightRadius:70, borderTopLeftRadius:30, borderBottomLeftRadius:30, backgroundColor:'red', justifyContent:'center', alignItems:'center', height:110}}>
-                    <FontAwesome5 name='map-marker' size={40} color='#FFFFFF'/>
-                  </View>
-                  <View style={styles.viewText}>
-                    <Text style={styles.text}>
-                        {this.props.person.name}
-                    </Text>
-                    <Text style={styles.text1}>
-                        {this.props.person.state}
-                        {this.props.person.idWFH}
-                    </Text>
-                  </View>
-                
-                  
-                  <View style={{flex:1.4,justifyContent:'space-between'}}>
-                  <Text style={styles.text2}>{this.props.date}</Text>
-                      <Text style={styles.text3} onPress={this.onDetails}>View Details</Text>
-                  </View>
+        return (           
+          <View style={styles.viewContainer} >
+            <TouchableOpacity style={{height:'100%', width:'100%', flexDirection : 'row',}} onPress={this.onDetails}>
+                    <View style={[styles.view1,{display: this.props.person.state === 'Work at client office' ? 'flex':'none'}]}>
+                      <Buildings width={64} heigth={64}/>
+                    </View>
+                    <View style={[styles.view1,{display: this.props.person.state === 'Taking day off' ? 'flex':'none'}]}>
+                      <Coffee width={64} heigth={64}/>
+                    </View>
+                    <View style={[styles.view1,{display: this.props.person.state === 'Work from home' ? 'flex':'none'}]}>
+                      <WFH width={64} heigth={64}/>
+                    </View>
+                    <View style={[styles.view1,{display: this.props.person.state === 'Sick Leave' ? 'flex':'none'}]}>
+                      <Sick width={64} heigth={64}/>
+                    </View>
+                    <View style={styles.viewText}>
+                      <Text style={styles.text}>
+                          {this.props.person.name}
+                      </Text>
+                      <Text style={styles.text1}>
+                          {this.props.person.state}
+                          {this.props.person.idWFH}
+                      </Text>
+                    </View>
+                          
+                    <View style={styles.view3}>
+                        <Text style={styles.text2}>{this.state.date}</Text>
+                        <Text style={styles.textViewDetails}>View Details</Text>
+                    </View>
+                  </TouchableOpacity>  
                   <CustomAlert details={this.state.detail} visible={this.state.visible} decline={this.buttonDecline} approve={this.buttonApprove}/>
-                </View>
-            
-        //     {/* 
-        // </View>     */}
+          </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    container:{
-        height:'100%',
-       
-        borderRadius: 25,
-        padding:0,
-        shadowColor: "#000",
-        backgroundColor:'aqua',
-
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 3,
-            
-    },
-    viewContainer:{
-       flexDirection : 'row',
+    viewContainer:{    
         backgroundColor:'white',
-        borderRadius: 25, 
-        paddingRight:'5%',
+        alignSelf:'center',
+        borderRadius: 5, 
         marginVertical:8,
         marginHorizontal:12,
-        flex:2,
+        height: 120,
+        width:'90%',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -174,21 +180,24 @@ const styles = StyleSheet.create({
         
     },
     viewText:{
-        flex:3, justifyContent:'center', 
+        flex:3, justifyContent:'center',
     },
     text:{
-        fontWeight: 'bold', fontSize:20, paddingLeft:'6%'
+      fontFamily:'Nunito-Bold', fontSize:20, color:'#505050', fontWeight:'600', paddingLeft:'6%', textAlignVertical:'center'
     },
     text1:{
-        marginBottom: 10, fontWeight: 'bold', fontSize:16, marginLeft:'6%'
+        marginBottom: 10, fontFamily:'Nunito-Light', fontSize:18, color:'#505050', fontWeight:'300', marginLeft:'6%'
     },
     text2:{
-      fontSize: 16, fontWeight:'bold', color: 'grey', textAlignVertical:'top', textAlign:'left',paddingTop:10
+      fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', textAlignVertical:'top', textAlign:'right',paddingTop:10, marginRight:20
     },
-    text3:{
-      fontSize: 14, color: 'grey', textAlignVertical:'bottom', textAlign:'left', paddingBottom:10
+    textViewDetails:{
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'300', lineHeight:16, paddingBottom:20
+     },
+    view1: {
+      justifyContent:'center', flex:1.8, alignItems:'center'
     },
-    mainContainer: {
-       justifyContent:'center'
-      },
+    view3: {
+      flex:2,justifyContent:'space-between'
+    },
   })

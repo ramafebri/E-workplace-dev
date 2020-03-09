@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, ActivityIndicator,RefreshControl, ToastAndroid, Text, TouchableOpacity, Image } from 'react-native';
-import { Loading } from '../components/Loading';
+import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, RefreshControl, ToastAndroid, Text, TouchableOpacity, Image } from 'react-native';
+import Loading from '../components/Loading';
 import deviceStorage from '../services/deviceStorage';
 import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
@@ -12,6 +12,8 @@ import { addNama, addLocation, addStatusClockin, addLoading } from '../actions/D
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {ApiMaps} from '../config/apiKey'
 import { Card } from 'react-native-elements'
+import WFH from '../../image/wfh.svg'
+import Buildings from '../../image/buildings.svg'
 
 class LoggedIn extends Component {
   _isMounted = false;
@@ -20,10 +22,10 @@ class LoggedIn extends Component {
     this.state = {
         loadingCheckin: false,
         idUser:'',
-        username: '',
+        username: 'User',
         fullname:'',
         status:'Work at Office',
-        Location:'',
+        Location:'Location',
         statusCheckInn:'You have not clocked in yet!',
         clockInstatus: true,
         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
@@ -59,18 +61,19 @@ class LoggedIn extends Component {
       this.checkClockInStatus();
       this.findCoordinates();
       this.loadData();
+      this.props.addLoad(false)
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
     async checkClockInStatus(){
       const value = await AsyncStorage.getItem('clockin_state');
         if(value === 'clockin'){
-          this.props.addClockin(true, ' ', this.state.idUser, this.state.status)
+          this.props.addClockin(false, ' ', this.state.idUser, this.state.status)
           this.setState({
             textButton:'Clock Out'
           })
         }else{
-          this.props.addClockin(false, this.state.statusCheckInn, this.state.idUser, this.state.status)
+          this.props.addClockin(true, this.state.statusCheckInn, this.state.idUser, this.state.status)
           this.setState({
             textButton:'Clock In'
           })
@@ -114,15 +117,18 @@ class LoggedIn extends Component {
           url: 'https://userabensiendpoint.azurewebsites.net/v1/me',
           headers: headers,
         }).then((response) => { 
-          //alert(response)    
+          console.log(response)    
           this.setState({
             username: response.data.data.username,
             fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
           });
+          deviceStorage.saveItem("username", this.state.username);
+          deviceStorage.saveItem("name", this.state.fullname);
+
           this.props.addName(this.state.username, this.state.fullname)
           this.props.addLoad(false)
         }).catch((errorr) => {
-          //alert(errorr)       
+          console.log(errorr)       
             this.setState({
               error: 'Error retrieving data',
             });
@@ -133,20 +139,19 @@ class LoggedIn extends Component {
     findCoordinates = async () => {
       Geolocation.getCurrentPosition(
         position => {
-          Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
+          Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
-              // if(this._isMounted){
                 console.log(json);
                 var addressComponent = json.results[1].address_components[0].long_name;
                 this.setState({
                   Location: addressComponent
                 })
+                deviceStorage.saveItem("location", this.state.Location);
                 console.log(addressComponent);
-              //}          
+                this.props.addLoc(this.state.Location)         
             })
-          .catch(error => console.warn(error));
-          this.props.addLoc(this.state.Location)
+          .catch(error => console.warn(error));        
         },
         error => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
@@ -203,7 +208,7 @@ class LoggedIn extends Component {
       this.setState({
         statusCheckInn: ' ',
         idUser: response.data.absenceId,
-        clockInstatus: true,
+        clockInstatus: false,
         textButton: 'Clock Out'
       });
       this.props.addLoad(false)
@@ -244,7 +249,7 @@ class LoggedIn extends Component {
     }).then(data => {
       this.setState({
         statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false,
+        clockInstatus: true,
         textButton: 'Clock In'
       });
       this.props.addLoad(false)
@@ -309,11 +314,14 @@ class LoggedIn extends Component {
               <View style={{marginLeft:'5%'}}>
                 <Text style={styles.textUsername}>Hi, {this.state.username}!</Text>
                 <View style={styles.view1}>
-                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C'/> 
+                <View style={{width:20, height:'100%', alignItems:'center'}}>
+                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:2}}/>
+                </View>
+                <View style={{width:150, height:'100%',}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
+                </View> 
                 </View>
               </View>
-
               <View style={{ flex:1,}}>
                 <Card containerStyle={styles.card4}>
                   <Text style={styles.textHour}>
@@ -323,7 +331,7 @@ class LoggedIn extends Component {
                     {this.state.day}, {this.state.monthYear}
                   </Text>
                   <View>
-                    <TouchableOpacity style={[this.props.clockin_status === false ? styles.buttonClockIn : styles.buttonClockOut]} onPress={this.ButtonCheck}>
+                    <TouchableOpacity style={[this.props.clockin_status === true ? styles.buttonClockIn : styles.buttonClockOut]} onPress={this.ButtonCheck}>
                       <Text style={styles.textClockin}>{this.state.textButton}</Text>
                     </TouchableOpacity>
                     <Text style={[styles.textStatus]}>{this.props.status_Checkin}</Text>
@@ -335,7 +343,7 @@ class LoggedIn extends Component {
                 <View style={{width:'50%', flex:1}}>
                   <Card containerStyle={styles.card4}>
                     <TouchableOpacity style={{flexDirection:'row', padding:0}} onPress={this.movetoWFH}>
-                    <Image source={require('../../image/homeicon.png')}/> 
+                    <WFH width={35} height={35}/> 
                     <Text style={styles.text1}>Work From {'\n'}Home</Text>
                     </TouchableOpacity>
                   </Card>
@@ -343,7 +351,7 @@ class LoggedIn extends Component {
                 <View style={{width:'50%', flex:1}}>
                   <Card containerStyle={styles.card4}>
                     <TouchableOpacity style={{flexDirection:'row', paddingBottom:3}} onPress={this.movetoWAC}>
-                    <Image source={require('../../image/buildings1.png')}/> 
+                    <Buildings width={35} height={35}/> 
                     <Text style={styles.text1}>Work At {'\n'}Client Office</Text>
                     </TouchableOpacity>
                   </Card>
@@ -357,13 +365,13 @@ class LoggedIn extends Component {
                     <Text style={styles.text2}>Meeting</Text>
                     <Text style={styles.text3}>Scrum Meetings</Text>
                     <View style={styles.viewInCard1}>
-                      <FontAwesome5 name='map-marker-alt' size={16} color='#505050'/>
-                      <Text style={styles.text4}>Meeting Room A, Moonlay Office</Text>
+                        <FontAwesome5 name='map-marker-alt' size={16} color='#505050'/>
+                        <Text style={styles.text4}>Meeting Room A, Moonlay Office</Text>                  
                     </View>
                     <Image style={{width: '100%'}} source={require('../../image/line.png')}/>
                     <View style={styles.view2InCard1}>
                       <View style={{flex:3, flexDirection:'row'}}>
-                        <FontAwesome5 name='clock' size={16} color='#505050'/>
+                        <FontAwesome5 name='clock' size={16} color='#505050' style={{marginTop:1}}/>
                         <Text style={styles.text5}>02.00 PM</Text>
                       </View>
                       <View style={{flex:3}}>
@@ -432,40 +440,39 @@ class LoggedIn extends Component {
         );
       }
   }
-
 const styles = StyleSheet.create({
   textUsername:{
-    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:18
+    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, lineHeight:25, color:'#505050', marginTop:5
   },
   view1:{
-    flexDirection:'row', alignItems:'center', alignContent:'center'
+    flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito', fontWeight:'300', fontSize:16, textAlignVertical:'top'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, color:'#505050'
   },
   textHour:{
-    color:'#265685', fontFamily:'Nunito', fontSize:38, fontWeight:'600', textAlign:'center'
+    color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44
   },
   textDay:{
-    textAlign:'center', fontFamily:'Nunito', fontSize:18, fontWeight:'600'
+    textAlign:'center', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:19, color:'#505050'
   },
   buttonClockIn:{
-    backgroundColor:'#26BF64', width:'90%', alignSelf:'center', height:'45%',justifyContent:'center', marginTop:10, borderRadius:10
+    backgroundColor:'#26BF64', width:'90%', alignSelf:'center', height:'45%',justifyContent:'center', marginTop:10, borderRadius:10, alignItems:'center'
   },
   buttonClockOut:{
-    backgroundColor:'#EA5656', width:'90%', alignSelf:'center', height:'45%',justifyContent:'center', marginTop:10, borderRadius:10
+    backgroundColor:'#EA5656', width:'90%', alignSelf:'center', height:'45%', marginTop:10,justifyContent:'center', borderRadius:10, alignItems:'center', alignContent:'center'
   },
   textClockin:{
-    textAlign:'center', textAlignVertical:'center', color:'#FFFFFF', fontFamily:'Nunito', fontSize:22
+    color:'#FFFFFF', fontFamily:'Nunito-Light', fontSize:22, lineHeight:25, marginBottom:5
   },
   textStatus:{
-    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito', fontSize:12, marginTop:10,
+    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:13, marginTop:10, color:'#505050', lineHeight:16, fontWeight:'300'
   },
   text1:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:15, fontWeight:'600', marginLeft:5
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Bold', fontSize:16, fontWeight:'600', marginLeft:5, lineHeight:16, color:'#505050'
   },
   textDashboard:{
-    marginLeft:'4%', marginTop:'4%', fontFamily:'Nunito', fontSize:18, fontWeight:'600',
+    marginLeft:'4%', marginTop:'4%', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:25, color:'#505050'
   },
   card1:{
     flex:1, borderRadius:7,borderWidth:5, borderStartColor:'#DB984A', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",
@@ -481,10 +488,10 @@ const styles = StyleSheet.create({
     flexWrap:'wrap', padding:0, height:'100%', width:'100%',
    },
    text2:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:14, color:'#505050', fontWeight:'300', marginLeft:5
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:5, lineHeight:19
    },
    text3:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:16, color:'#505050', fontWeight:'600', marginLeft:5
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Bold', fontSize:18, color:'#505050', fontWeight:'600', marginLeft:5, lineHeight:22
    },
    viewInCard1:{
     flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
@@ -493,13 +500,13 @@ const styles = StyleSheet.create({
     flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
    },
    text4:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:14, color:'#505050', fontWeight:'300',
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
    },
    text5:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:14, color:'#505050', fontWeight:'300',
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
    },
    textViewDetails:{
-    marginLeft:10, textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito', fontSize:14, color:'#4A90E2', fontWeight:'300',
+    marginLeft:10, textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'300', lineHeight:16
    },
    card2:{
     flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#4A90E2', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF',shadowColor: "#000",
@@ -515,7 +522,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', marginTop:10, marginLeft:5, alignContent:'center', alignItems:'center'
    },
    text6:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito', fontSize:16, color:'#505050', fontWeight:'600',
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Bold', fontSize:16, color:'#505050', fontWeight:'600', lineHeight:22
    },
    card3:{
     backgroundColor:'#EFFFF6', flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#26BF64', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",

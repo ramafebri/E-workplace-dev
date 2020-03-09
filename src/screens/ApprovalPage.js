@@ -1,21 +1,38 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, SafeAreaView, FlatList, ScrollView} from 'react-native'
+import { StyleSheet, SafeAreaView, FlatList, BackHandler, RefreshControl } from 'react-native'
 import axios from 'axios';
 import moment from 'moment';
+import Loading from '../components/Loading';
 import PeopleCard from '../components/CardApproval'
 
 export default class ApprovalPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          people: [],
           monthYear : moment().format('Do MMM YYYY'),
+          loadings : true,
+          refreshing: false,
         }
         this.loadData = this.loadData.bind(this);
+        this.onBack = this.onBack.bind(this);
     }
-    componentDidMount(){
-      this.loadData();
+    async componentDidMount(){
+      BackHandler.addEventListener('hardwareBackPress', this.onBack);
+      this.setState({
+        people : this.props.route.params.item.data,
+        loadings : false,
+      })  
     }
+
+    componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.onBack);
+    }
+
+    onBack = () => {
+      this.props.navigation.goBack();
+      return true;
+   };
+
     loadData = async () => {     
       const headers = {
        accept: '*/*',
@@ -23,44 +40,37 @@ export default class ApprovalPage extends Component {
 
       axios({
           method: 'GET',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkFromHome?Approval=aa',
+          url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
           headers: headers,
         }).then((response) => { 
-          console.log(response)    
+          //console.log(response)    
           this.setState({
-            people: response.data
+            people: response.data,
+            loadings: false
           });
-          //alert(this.state.people)
         }).catch((errorr) => {
-          //alert(errorr)       
+          console.log(errorr)       
             this.setState({
               error: 'Error retrieving data',
+              loadings: false
             });
         });
     };
 
     render() {
-        let peopleCards = this.state.people.map(person => {
-            return (
-                <PeopleCard key={person.idWFH} person={person} date={this.state.monthYear}/>
-            )
-        })
         return (
-            // <View style={{height:'100%', backgroundColor:'#e5e5e5'}}>
-            //     {peopleCards}
-            // </View>
-            <SafeAreaView style={styles.container}>
-            
+            <SafeAreaView style={styles.container}>           
               <FlatList
-                keyExtractor={(item) => item.idWFH}
+                keyExtractor={(item) => item.absenceId}
                 data={this.state.people}
-                renderItem={({ item }) => <PeopleCard person={item} date={this.state.monthYear}/>}
+                renderItem={({ item }) =>
+                    <PeopleCard person={item} date={this.state.monthYear}/>         
+                }
+                refreshControl={
+                <RefreshControl refreshing={this.state.refreshing} 
+                onRefresh={this.loadData}/>}
               />
-               
-              
-              {/* <ScrollView>
-                {peopleCards}
-              </ScrollView> */}
+              <Loading visible={this.state.loadings === true ? true : false}/>
             </SafeAreaView>
         )
     }
@@ -68,25 +78,6 @@ export default class ApprovalPage extends Component {
 
 const styles = StyleSheet.create({
   container:{
-       flex:1,
-       
-  },
-  viewContainer:{
-      flexDirection : 'row', height:'100%',
-  },
-  viewText:{
-      flex:3, justifyContent:'center', 
-  },
-  text:{
-      fontWeight: 'bold', fontSize:20, marginLeft:'6%'
-  },
-  text1:{
-      marginBottom: 10, fontWeight: 'bold', fontSize:16, marginLeft:'6%'
-  },
-  text2:{
-    fontSize: 16, fontWeight:'bold', color: 'grey', textAlignVertical:'top', textAlign:'right', marginTop:'10%',marginRight:'8%'
-  },
-  text3:{
-    fontSize: 16, color: 'grey', textAlignVertical:'bottom', textAlign:'right', justifyContent:'flex-end', marginTop:'45%',marginRight:'8%'
+       flex:1,      
   },
 })

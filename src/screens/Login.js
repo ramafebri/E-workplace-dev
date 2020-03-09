@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, StyleSheet,TouchableOpacity, TextInput } from 'react-native';
 import axios from 'axios';
 import deviceStorage from '../services/deviceStorage';
-import { StackActions, NavigationActions } from 'react-navigation';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { connect } from 'react-redux';
 import { addJWT,addLoading } from '../actions/JwtActions';
@@ -65,7 +64,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
           loading: true
         })
         this.props.add(this.state.jwtt)
-        this.props.navigation.replace('Home');
+        this.props.navigation.push('Home');
        })
       .catch((errorr) => {
         console.log(errorr)

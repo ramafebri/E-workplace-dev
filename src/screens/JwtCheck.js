@@ -19,6 +19,7 @@ class JwtCheck extends Component {
         this.props.add(userToken)
 
         this.props.navigation.replace(userToken ? 'Home' : 'Login');
+        // this.props.navigation.push(userToken ? 'HomeHD' : 'Login');
       };
     
     render() {

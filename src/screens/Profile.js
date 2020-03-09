@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { Loading } from '../components/Loading';
 import deviceStorage from '../services/deviceStorage';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
@@ -15,9 +14,9 @@ class Profile extends Component {
   constructor(props){
     super(props);
     this.state = {
-        loading: false,
         username: '',
-        error: '',
+        name:'',
+        refreshing : false,
         history:[
           {
             id: 1,
@@ -48,8 +47,21 @@ class Profile extends Component {
       }
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
+      this.loadData = this.loadData.bind(this)
   }
 
+  async componentDidMount(){
+    this.loadData();
+  }
+
+  async loadData(){
+    const username = await AsyncStorage.getItem('username');
+    const name = await AsyncStorage.getItem('name');
+    this.setState({
+      username : username,
+      name : name
+    })
+  }
  async LogOut(){
   const value = await AsyncStorage.getItem('state');
   if(value === '1'){
@@ -69,19 +81,14 @@ class Profile extends Component {
  }
 
   render() {
-    const { container } = styles;
-    const { loading } = this.state;
-
-    if (loading){
-        return(
-            <View style={container}>
-              <Loading size={'large'} />
-            </View>
-        )
-      } else {
           return(
             <SafeAreaView style={styles.container}>
-              <ScrollView>
+              <ScrollView
+                alwaysBounceVertical={true} 
+                refreshControl={
+                  <RefreshControl refreshing={this.state.refreshing} 
+                onRefresh={this.loadData} />
+              }>
                   <View style={styles.view1}>
                     <Card containerStyle={styles.card}>
                       <View style={{flexDirection:'row'}}>
@@ -92,7 +99,7 @@ class Profile extends Component {
                           </View>
                         </View>
                         <Text style={styles.text1}>Since 2018</Text>
-                        <Text style={styles.text2}>Rama Febriansyah</Text>
+                        <Text style={styles.text2}>{this.state.name}</Text>
                         <Text style={styles.text3}>Developer</Text>
                       </View>
                       <View style={{}}>
@@ -154,7 +161,6 @@ class Profile extends Component {
       );
     }
   }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -193,43 +199,40 @@ const styles = StyleSheet.create({
                       elevation: 3,     
   },
   textLogOut: {
-    color:'white', textAlign:'center', fontSize:20, fontFamily:'Nunito', fontWeight:'600', lineHeight:25
+    color:'white', textAlign:'center', fontSize:20, fontFamily:'Nunito-SemiBold', fontWeight:'600', lineHeight:25
   },
   Button: {
     backgroundColor:'#1A446D', marginTop:20, height:50, justifyContent:'center'
   },
-  textHistory:{
-    fontSize: 18, color: 'black',
-  },
   text1:{
-    textAlign:'center', fontSize:14, fontFamily:'Nunito', fontWeight:'300', lineHeight:16, color:'#505050', marginTop:20
+    textAlign:'center', fontSize:15, fontFamily:'Nunito-Light', fontWeight:'300', lineHeight:16, color:'#505050', marginTop:20
   },
   text2:{
-    textAlign:'center', fontSize:20, fontFamily:'Nunito', fontWeight:'600', lineHeight:27, color:'#505050', marginTop:5
+    textAlign:'center', fontSize:20, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:27, color:'#505050', marginTop:5
   },
   text3:{
-    textAlign:'center', fontSize:14, fontFamily:'Nunito', fontWeight:'300', lineHeight:16, color:'#505050', marginTop:5
+    textAlign:'center', fontSize:15, fontFamily:'Nunito-Light', fontWeight:'300',  color:'#505050',
   },
   text4:{
-    fontSize: 16, fontFamily:'Nunito', fontWeight:'600', lineHeight:16, color:'#505050',
+    fontSize: 16, fontFamily:'Nunito-Bold', fontWeight:'600',  color:'#505050',
   },
   text5:{
-    fontSize: 40, fontFamily:'Nunito', fontWeight:'600', lineHeight:46, color:'#505050', marginTop:'5%'
+    fontSize: 38, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:46, color:'#505050', marginTop:'5%'
   },
   text6:{
-    fontSize:12, color: '#505050', justifyContent:'center', paddingLeft:'5%', paddingTop:'15%', fontFamily:'Nunito', fontWeight:'300', lineHeight:16,
+    fontSize:12, color: '#505050', justifyContent:'center', paddingLeft:'5%', paddingTop:'15%', fontFamily:'Nunito-Light', fontWeight:'300', lineHeight:16,
   },
   text7:{
     paddingLeft:'5%', paddingTop:'35%', fontSize:12, color: '#505050',fontFamily:'Nunito', fontWeight:'300', lineHeight:16,
   },
   textHistory:{
-    marginLeft:15, marginTop:20, fontSize:20, fontFamily:'Nunito', fontWeight:'600', lineHeight:25
+    marginLeft:15, marginTop:20, fontSize:20, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:25, color: '#505050'
   },
   textMonth:{
-    marginLeft:15, marginTop:16, fontSize:18, fontFamily:'Nunito', fontWeight:'600', lineHeight:19, color:'#265685'
+    marginLeft:15, marginTop:16, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:19, color:'#265685'
   },
   textVD:{
-    textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito', fontSize:14, color:'#4A90E2', fontWeight:'600', margin:15
+    textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:14, color:'#4A90E2', fontWeight:'600', margin:15
   },
 })
 

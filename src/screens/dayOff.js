@@ -12,30 +12,30 @@ export default class sick extends Component {
         this.state = {
             username: '',
             fullname: '',
-            dateAttendece: '',
             startDate: new Date(),
+            dateStart: '',
             endDate: new Date(),
+            dateEnd: '',
             CheckInTime: '',
             CheckOutTime: '',
             photo: null,
-            location:'',
+            Location:'',
             message:'',
-            status: 'Day Off',
+            status: 'Taking day off',
             scrumMaster: '',
             reson:'',
             substitute:'',
-            show: false          
+            show1: false,
+            show2: false          
         }
-        this.showDatepicker = this.showDatepicker.bind(this)
-        // this.findCoordinates = this.findCoordinates.bind(this);
-        // this.handleChoosePhoto = this.handleChoosePhoto.bind(this)
+        this.showDatepicker1 = this.showDatepicker1.bind(this)
+        this.showDatepicker2 = this.showDatepicker2.bind(this)
+        this.findCoordinates = this.findCoordinates.bind(this);
         this.onBack = this.onBack.bind(this);
       }
   
       componentDidMount(){
-        // alert(this.props.clockin_status)
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
-        //this.findCoordinates()
       }
       componentWillUnmount() {
           this.watchID != null && Geolocation.clearWatch(this.watchID);
@@ -47,17 +47,51 @@ export default class sick extends Component {
       return true;
    };
 
-    showDatepicker = () => {
+   loadData = async () => {     
+    const username = await AsyncStorage.getItem('username');  
+      const name = await AsyncStorage.getItem('name');
+      const location = await AsyncStorage.getItem('location');
+      this.setState({
+        username : username,
+        name : name,
+        Location : location
+      })
+    };
+
+    findCoordinates = () => {
+      Geolocation.getCurrentPosition(
+        position => {
+          Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
+          Geocoder.from(position.coords.latitude, position.coords.longitude)
+            .then(json => {
+              console.log(json);
+              var addressComponent = json.results[1].address_components[0].long_name;
+                this.setState({
+                  Location: addressComponent
+                })
+                deviceStorage.saveItem("location", this.state.Location);
+                console.log(addressComponent);
+                this.props.addLoc(this.state.Location)     
+            })
+          .catch(error => console.warn(error));
+        },
+        error => Alert.alert(error.message),
+        { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
+      );
+    };
+
+    showDatepicker1 = () => {
         this.setState({
-            show: true
+            show1: true
         })
     };
+    showDatepicker2 = () => {
+      this.setState({
+          show2: true
+      })
+    };
     render() {
-        var date = JSON.stringify(this.state.startDate);
-        //
-        //var dateaja = date2.substr(1,10);
-       // alert(dateaja);
-        const { show } = this.state
+        const { show1, show2 } = this.state
         return (
             <View style={styles.container2}>
                 <Text style={styles.textareaContainer}>
@@ -90,23 +124,25 @@ export default class sick extends Component {
                 
                 <View style={styles.viewDate2}>
                 <View style={styles.viewDate3}>
-                  <View style={{flex:2.8, justifyContent:'center'}}>
-                    <Text style={{marginLeft:10,}}>{JSON.stringify(this.state.startDate)}</Text>
+                  <View style={{flex:4, justifyContent:'center',}}>
+                    <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
                   </View>
                   <View style={{flex:1, justifyContent:'center'}}>
-                  <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker}/>  
+                  <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
                   </View>              
                 </View>
-                {show && (
+                {show1 && (
                 <DateTimePicker
                     testID="dateTimePicker"
                     value={this.state.startDate}
                     mode={'date'}
                     display="calendar"
                     onChange={(event, selectedDate) => {
+                        const date = selectedDate.toString()
                         this.setState({
                             startDate: selectedDate,
-                            show: false
+                            dateStart: date.substr(0, 15),
+                            show1: false
                         })
                     }}    
                 />
@@ -120,25 +156,27 @@ export default class sick extends Component {
                 </Text>
                 <View style={styles.viewDate22}>
                 <View style={styles.viewDate3}>
-                  <View style={{flex:2.8, justifyContent:'center'}}>
-                    <Text style={{marginLeft:10,}}>{JSON.stringify(this.state.endDate)}</Text>
+                  <View style={{flex:4, justifyContent:'center',}}>
+                    <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
                   </View>
                   <View style={{flex:1, justifyContent:'center'}}>
-                    <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker}/>  
+                    <FontAwesome5 style={{alignSelf:'flex-end', marginRight:7, marginBottom:10, marginTop:8}} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
                   </View>
                 </View>
                 </View>
                 
-                {show && (
+                {show2 && (
                 <DateTimePicker
                     testID="dateTimePicker"
                     value={this.state.endDate}
                     mode={'date'}
                     display="calendar"
                     onChange={(event, selectedDate) => {
+                        const date = selectedDate.toString()
                         this.setState({
                             endDate: selectedDate,
-                            show: false
+                            dateEnd: date.substr(0, 15),
+                            show2: false
                         })
                     }}    
                 />
@@ -147,7 +185,7 @@ export default class sick extends Component {
              </View> 
             </View>
                 <Text
-                  style={styles.text1}>
+                  style={styles.textSM}>
                     Substitute *
                 </Text>
                 <TextInput
@@ -159,7 +197,7 @@ export default class sick extends Component {
                 </TextInput>            
 
                 <Text
-                  style={styles.text1}>
+                  style={styles.textSM}>
                     Reason *
                 </Text>            
                 <View style={styles.viewPicker}>            
@@ -175,7 +213,7 @@ export default class sick extends Component {
                   </Picker>
                 </View>               
                 <TouchableOpacity onPress={this.handleUpload} style={styles.buttonSubmit}>
-                    <Text style={styles.textbtnSubmit} >SUBMIT</Text>
+                    <Text style={styles.textbtnSubmit} >Submit</Text>
                 </TouchableOpacity>
                 
                 
@@ -189,16 +227,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:'#F9FCFF',
   },
-  textareaContainer: {fontSize:20, fontWeight:'600', lineHeight:22, 
-  fontFamily:'Nunito', paddingVertical:20, marginLeft:22},
+  textareaContainer: {fontSize:20, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050', paddingTop:10},
    textSM:{
-    fontSize:16, fontWeight:'300', lineHeight:19, fontFamily:'Nunito', marginLeft:22
+    marginTop: 16,
+    marginBottom:10,
+    paddingLeft:20,
+    fontSize:16,
+    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
   },
   text1:{
     fontSize:16, fontWeight:'300', lineHeight:19, fontFamily:'Nunito', marginLeft:22, marginTop:10
   },
   TextDate:{
-    fontSize:16, fontWeight:'300', lineHeight:19, fontFamily:'Nunito',marginLeft:22
+    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light',marginLeft:22, marginBottom:3
   },
   viewPicker:{
     width:'90%', height:'8%', borderRadius:5, borderColor:'grey', borderWidth:1, backgroundColor:'white', alignSelf:'center'
@@ -218,7 +259,7 @@ const styles = StyleSheet.create({
     marginTop:40, backgroundColor:'#1A446D', height:'6%', width:'90%', borderRadius:5, alignSelf:'center'
   },
   textbtnSubmit:{
-    color:'white', fontSize: 20, fontWeight:'bold', textAlign:'center',textAlignVertical: "center", flex:1
+    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold', marginBottom:7 
   },
   viewDate1:{
     flex:1,

@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { View, Text, Image, Picker, StyleSheet, Alert, BackHandler,TouchableOpacity, TextInput, ActivityIndicator, ToastAndroid, SafeAreaView, ScrollView } from 'react-native'
+import { View, Text, Image, Picker, StyleSheet, Alert, BackHandler,TouchableOpacity, TextInput, ToastAndroid, SafeAreaView, ScrollView, RefreshControl } from 'react-native'
 import ImagePicker from 'react-native-image-picker'
 import deviceStorage from '../services/deviceStorage';
 import AsyncStorage from '@react-native-community/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { CommonActions } from '@react-navigation/native';
+import {ApiMaps} from '../config/apiKey'
 import axios from 'axios';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
@@ -17,28 +17,31 @@ class WorkClient extends Component {
     super(props);
     this.state = {
         idUser : '',
-        loadingPhoto: false,
         photo: null,
+        username:'',
+        fullname:'',
         Location: '',
         urlphoto:'',
         message:'',
-        status: 'Work At Client',
-        statusCheckInn: 'You have clocked in!',
+        status: 'Work at client office',
         client : '',
         clientCompany : '',
         projectName : '',
-        scrumMaster : ''
+        scrumMaster : '',
+        loadingPhoto: false,
+        refreshing:false
       }
     this.findCoordinates = this.findCoordinates.bind(this);
     this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
     this.handleChangeMessage = this.handleChangeMessage.bind(this);
     this.submitAll = this.submitAll.bind(this)
     this.onBack = this.onBack.bind(this);
+    this.loadData = this.loadData.bind(this)
   }
 
   componentDidMount(){
-    // alert(this.props.clockin_status)
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
+    this.loadData()
     this.findCoordinates()
   }
   componentWillUnmount() {
@@ -50,6 +53,17 @@ class WorkClient extends Component {
     this.props.navigation.goBack();
     return true;
  };
+
+ loadData = async () => {     
+  const username = await AsyncStorage.getItem('username');  
+    const name = await AsyncStorage.getItem('name');
+    const location = await AsyncStorage.getItem('location');
+    this.setState({
+      username : username,
+      name : name,
+      Location : location
+    })
+  };
 
   handleChoosePhoto = () => {
     var options = {
@@ -81,16 +95,15 @@ class WorkClient extends Component {
             this.setState({
               urlphoto : data.data,
               photo: response,
-              loadingPhoto: true
             })
-            //alert(this.state.urlphoto)
             console.log("ulrnya : " + this.state.urlphoto)
             }).catch(err => {
-              //alert(err)
                 console.log(err)
-                this.setState({
-                  loadingPhoto: false
-                })
+                ToastAndroid.showWithGravity(
+                  'Upload Photo Failed',
+                  ToastAndroid.SHORT,
+                  ToastAndroid.BOTTOM,
+                );
               }
             )
           }
@@ -108,7 +121,8 @@ class WorkClient extends Component {
               this.setState({
                 Location: addressComponent
               })
-              console.log(addressComponent);
+              deviceStorage.saveItem("location", this.state.Location);
+              console.log(addressComponent);    
           })
         .catch(error => console.warn(error));
       },
@@ -120,10 +134,18 @@ class WorkClient extends Component {
   async submitAll(){
     const value = await AsyncStorage.getItem('clockin_state2');
     if(this.props.clockin_status === false || value === 'clockin'){
-      alert('kamu sudah clock in hari ini')
+      Alert.alert(
+        'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+        [
+          { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+        ],
+        { cancelable: false },
+      );
+      this.props.addLoad(false)
+      return true;
     }
     else if(this.state.scrumMaster === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.client === '' || this.state.clientCompany === ''){
-      alert('Semua form dan foto harus terisi!');
+      alert('All form must be filled!');
     }
     else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
     && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === true){
@@ -135,11 +157,11 @@ class WorkClient extends Component {
           'Content-Type': 'application/json',
         },
         data: {
-          username: this.props.nameUser,
-          name: this.props.namee,
+          username: this.state.username,
+          name: this.state.fullname,
           checkIn: new Date(),
           state: this.state.status,
-          location : this.props.userLocation,
+          location : this.state.Location,
           message : this.state.message,
           approval: "pending",
           photo: this.state.urlphoto,
@@ -153,9 +175,10 @@ class WorkClient extends Component {
         this.setState({
           statusCheckIn: ' ',
           clockInstatus: false,
-          idUser: response.data.idWAC,
+          idUser: response.data.absenceId,
         });
         deviceStorage.saveItem("clockin_state", "clockin");
+        deviceStorage.saveItem("state", '1');
         deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
         this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
         this.props.addLoad(true)
@@ -187,10 +210,15 @@ class WorkClient extends Component {
     const { photo } = this.state
     return (
       <SafeAreaView style={{flex:1, backgroundColor:'#F9FCFF'}}>
-            <ScrollView>
-              <View style={{backgroundColor:'white', flex:1, alignSelf:'center', marginTop:'5%', width:'90%', paddingBottom:10}}>
-                <Text style={{textAlign:'center', paddingTop:'5%', fontFamily:'Nunito', fontWeight:'600', fontSize:20}}>Take Picture as Evidence</Text>
-                <View style={{backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', marginTop:'10%', borderRadius:100/2, justifyContent:'center', alignItems:'center', paddingBottom:'2%', }}>
+            <ScrollView
+                alwaysBounceVertical={true} 
+                refreshControl={
+                  <RefreshControl refreshing={this.state.refreshing} 
+                onRefresh={this.loadLocation} />
+              }>
+              <View style={styles.card}>
+                <Text style={styles.textTake}>Take Picture as Evidence</Text>
+                <View style={styles.viewImage}>
                   <View style={{display: this.state.loadingPhoto === false ? 'flex' : 'none'}}>
                     <Camera width={50} height={50}/>
                   </View>
@@ -203,13 +231,13 @@ class WorkClient extends Component {
                         </React.Fragment>
                   )}       
                 </View>
-                <Text style={{textAlign:'center', paddingTop:'10%', marginLeft:'5%', marginRight:'5%', fontFamily:'Nunito', fontWeight:'300', lineHeight:15, color:'#676767' }}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
-                <TouchableOpacity onPress={this.handleChoosePhoto} style={{borderWidth:1, borderRadius:5, borderColor:'#1A446D', backgroundColor:'#FFFFFF', width:'90%', height:50, alignSelf:'center',justifyContent:'center', marginTop:'5%'}}>
-                    <Text style={{textAlign:'center', color:'#1A446D', fontSize:18}}>Take Picture</Text>
+                <Text style={styles.textbelowPIC}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
+                <TouchableOpacity onPress={this.handleChoosePhoto} style={styles.buttonPhoto}>
+                    <Text style={styles.textPhoto}>Take Picture</Text>
                 </TouchableOpacity>
               </View>
               <View style={{flex:1, marginTop:15, paddingBottom:30}}>
-                <Text style={{fontSize:18, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito'}}>Please Fill This Form</Text>
+                <Text style={styles.titleText}>Please Fill This Form</Text>
                 <Text style={styles.textSM}>
                     Select Your Scrum Master *
                 </Text>
@@ -267,72 +295,35 @@ class WorkClient extends Component {
 }
 
 const styles = StyleSheet.create({
-Split:{
- flex: 1,
- flexDirection: 'row',
-},
-titleText: {
-fontSize: 16,
-fontWeight: 'bold',
-},
-baseText: {
-fontSize: 13,
-},
-locText:{
-fontSize: 20,
-textAlign:'center'
-},
-card: {
-  height: '26%', backgroundColor:'#FFFFFF', width:'100%'
-},
-container2:{
-  flex: 1,
-  backgroundColor:'#e5e5e5',
-},
-split1: {
-  flex:3, paddingTop:15, paddingLeft:10
-},
-viewIcon: {
-  alignItems:'flex-start', alignSelf:'flex-start', paddingTop:15,
-},
-viewLocation: {
-  paddingTop:15, paddingLeft:15
-},
-boldText: {
-  fontSize: 30,
-  color: 'red',
-},
- Split:{
-   flex: 1,
-   flexDirection: 'row',
- },
- titleText: {
-  fontSize: 16,
-  fontWeight: 'bold',
-},
-baseText: {
-  fontSize: 13,
-},
-locText:{
-  fontSize: 15,
-  textAlign:'left'
-},
-split2:{
-  alignItems:'center', flex:2, backgroundColor:'#7C7C7C', justifyContent: 'flex-end'
-},
+  card: {
+		backgroundColor:'white', flex:1, alignSelf:'center', marginTop:'5%', width:'90%', paddingBottom:10
+  },
+  textTake:{
+    textAlign:'center', paddingTop:'5%', fontFamily:'Nunito-SemiBold', fontWeight:'600', fontSize:20, color:'#505050'
+  },
+  viewImage: {
+    backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', marginTop:'10%', borderRadius:100/2, justifyContent:'center', alignItems:'center', paddingBottom:'2%', 
+  },
+  textbelowPIC: {
+    textAlign:'center', paddingTop:'7%', marginLeft:'5%', marginRight:'5%', fontFamily:'Nunito-Light', fontWeight:'300', color:'#676767' 
+  },
+   titleText: {
+    fontSize:18, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050'
+  },
+  buttonPhoto:{
+    borderWidth:1, borderRadius:5, borderColor:'#1A446D', width:'90%', height:50, alignSelf:'center',justifyContent:'center', marginTop:'5%'
+  },
+  textPhoto:{
+    textAlign:'center', color:'#1A446D', fontSize:18, fontFamily:'Nunito-SemiBold', fontWeight:'600', marginBottom:7
+  },
 image:{
   width: 150, height: 150, borderRadius:150/2
-},
-buttonPhoto:{
-  backgroundColor:'#E74C3C',alignItems:'center', width:'100%', height:'20%'
-},
-textPhoto:{
-  color:'white', fontSize: 17, fontWeight:'bold', textAlign:'center',textAlignVertical: "center"
 },
 textSM:{
   marginTop: 16,
   paddingLeft:20,
-  fontSize:16
+  fontSize:16,
+  fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
 },
 viewPicker:{
   width:'90%', height:'10%', marginLeft:20, borderRadius:5, borderColor:'grey', borderWidth:1, backgroundColor:'white'
@@ -347,7 +338,7 @@ buttonSubmit:{
   backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
 },
 textbtnSubmit:{
-  color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1 
+  color:'white', fontSize: 18, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
 }
 });
 

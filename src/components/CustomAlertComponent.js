@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, Modal,View, Text, TouchableOpacity, Image } from 'react-native';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Person from '../../image/person.svg'
 
 export default class CustomAlertComponent extends React.Component {
   render() {
@@ -9,26 +11,35 @@ export default class CustomAlertComponent extends React.Component {
             transparent={true}
             animationType={"fade"}>
             <View style={styles.mainOuterComponent}>
-             <View style={{height:'60%', width:'80%', borderRadius:20, backgroundColor:'white'}}>
-              <View style={{height:'85%'}}>
-                <Text style={{textAlign:'center'}}>{this.props.details.state}</Text>
-                <View>
-                <Image source={require('../../image/E-WP_Logo.png')}
-                    style={{alignSelf:'center', marginTop:'5%', borderRadius:30, height:'30%', width:'30%'}}
-                />
+             <View style={styles.viewalert}>
+              <View style={styles.view1}>
+                <Text style={styles.text}>{this.props.details.state}</Text>
+                <View style={styles.viewPhoto}>
+                  <View style={{display: this.props.details.photo === null ? 'flex' : 'none',marginTop:100}}>
+                    <Person width={70} height={70}/>
+                    </View>
+                  <Image style={{width: 100, height: 100, borderRadius:100/2}} source={{uri:this.props.details.photo}}/>                  
                 </View>
-                <Text>{this.props.details.name} needs you approval. {'\n'}</Text>
-                <Text>Working on : {this.props.details.projectName}</Text>
-                {/* <Text>Client : {this.props.details.clientName}</Text>
-                <Text>Company : {this.props.details.companyName}{'\n'}</Text> */}
-                <Text>Location : {this.props.details.location}</Text>
-               </View> 
-                <View style={{flexDirection:'row', justifyContent:'center', height:'15%', alignSelf:'baseline', borderRadius:20}}>
-                    <TouchableOpacity style={{flex:1, backgroundColor:'red', alignItems:'center', borderRadius:20}} onPress={this.props.decline}>
-                        <Text style={{textAlign:'center',textAlignVertical: "center", flex:1 }}>Decline</Text>
+                <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.name} <Text style={styles.text2}>needs you approval</Text></Text>
+                <Text style={styles.text1}>Working on : <Text style={styles.text2}>{this.props.details.projectName}</Text></Text>
+                <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.clientName}</Text></Text>
+                <Text style={styles.text1}>Company : <Text style={styles.text2}>{this.props.details.companyName}{'\n'}</Text></Text>
+
+                <View style={{height:20, flexDirection:'row', marginTop:10}}>
+                  <View style={{width:20, height:'100%', alignItems:'center'}}>
+                    <FontAwesome5 name='map-marker-alt' size={16} color='#1A446D' style={{marginTop:2}}/>
+                  </View>
+                  <View style={{width:150, height:'100%', justifyContent:'center'}}>
+                    <Text style={styles.textLocation}>Location : {this.props.details.location}</Text>
+                  </View>              
+                </View>
+              </View> 
+                <View style={{flexDirection:'row', justifyContent:'center', borderRadius:20, alignSelf:'center', width:'100%', marginTop:10}}>
+                    <TouchableOpacity style={styles.button} onPress={this.props.decline}>
+                        <Text style={styles.textDecline}>Decline</Text>
                     </TouchableOpacity>  
-                    <TouchableOpacity style={{flex:1, backgroundColor:'green', alignItems:'center', borderRadius:20}} onPress={this.props.approve}>
-                        <Text style={{textAlign:'center',textAlignVertical: "center", flex:1 }}>Approve</Text>
+                    <TouchableOpacity style={styles.button1} onPress={this.props.approve}>
+                        <Text style={styles.textApprove}>Approve</Text>
                     </TouchableOpacity>
                 </View>
              </View>
@@ -45,4 +56,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#00000088'
   },
+  viewalert:{
+    height:'55%', width:'80%', borderRadius:10, backgroundColor:'white'
+  },
+  view1:{
+    height:'80%', alignItems:'center',
+  },
+  text:{
+    fontFamily:'Nunito-Bold', fontSize:20, color:'#505050', fontWeight:'600',textAlignVertical:'center', paddingTop:10
+  },
+  text1:{
+    fontFamily:'Nunito-Bold', fontSize:16, color:'#505050', fontWeight:'600', textAlignVertical:'center'
+  },
+  textLocation:{
+    fontFamily:'Nunito-Light', fontSize:16, color:'#1A446D', fontWeight:'300', textAlignVertical:'center', paddingBottom:3
+  },
+  viewPhoto:{
+    backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', borderRadius:100/2, justifyContent:'center', alignItems:'center', marginTop:15 
+  },
+  button:{
+    backgroundColor:'#DB4A4A', alignItems:'center', borderRadius:5, width:125, height:50, marginRight:20, justifyContent:'center'
+  },
+  textDecline:{
+    color:'#FFFFFF', fontFamily:'Nunito-Bold', fontSize:18, lineHeight:25, marginBottom:5
+  },
+  button1:{
+    backgroundColor:'#26BF64', alignItems:'center', borderRadius:5, width:125, height:50, justifyContent:'center'
+  },
+  textApprove:{
+    color:'#FFFFFF', fontFamily:'Nunito-Bold', fontSize:18, lineHeight:25, marginBottom:5
+  },
+  text2:{
+    marginBottom: 10, fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:'6%'
+},
 });

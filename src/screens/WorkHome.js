@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput, ActivityIndicator, ToastAndroid, SafeAreaView, ScrollView } from 'react-native'
+import { View, Text, Image, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput,ToastAndroid, SafeAreaView, ScrollView, RefreshControl} from 'react-native'
 import ImagePicker from 'react-native-image-picker'
 import deviceStorage from '../services/deviceStorage';
 import AsyncStorage from '@react-native-community/async-storage';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { CommonActions } from '@react-navigation/native';
+import {ApiMaps} from '../config/apiKey'
 import axios from 'axios';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
@@ -17,29 +17,32 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
         super(props);
         this.state = {
             idUser : '',
-            loadingPhoto: false,
+            fullname :'',
+            username:'',
             Location: '',
             photo: null,
             urlphoto:'',
             clockInstatus: false,
             statusCheckInn: 'You have clocked in!',
             message:'',
-            status: 'Work at Home',
+            status: 'Work from home',
             scrumMaster: '',
             projectName: '',
+            loadingPhoto: false,
+            refreshing: false,
             url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi'
           }
-        this.findCoordinates = this.findCoordinates.bind(this);
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
         this.submitAll = this.submitAll.bind(this);
         this.onBack = this.onBack.bind(this);
+        this.loadData = this.loadData.bind(this);
+        this.loadLocation = this.loadLocation.bind(this)
     }
 
     componentDidMount(){
-      // alert(this.props.clockin_status)
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
-      this.findCoordinates()
+      this.loadData()
     }
     componentWillUnmount() {
         this.watchID != null && Geolocation.clearWatch(this.watchID);
@@ -50,6 +53,38 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
       this.props.navigation.goBack();
       return true;
    };
+
+   loadData = async () => {   
+    const username = await AsyncStorage.getItem('username');  
+    const name = await AsyncStorage.getItem('name');
+    const location = await AsyncStorage.getItem('location');
+    this.setState({
+      username : username,
+      name : name,
+      Location : location
+    })
+    };
+
+    async loadLocation(){
+      Geolocation.getCurrentPosition(
+        position => {
+          Geocoder.init(ApiMaps);
+          Geocoder.from(position.coords.latitude, position.coords.longitude)
+            .then(json => {
+                console.log(json);
+                var addressComponent = json.results[1].address_components[0].long_name;
+                this.setState({
+                  Location: addressComponent
+                })
+                deviceStorage.saveItem("location", this.state.Location);
+                console.log(addressComponent);         
+            })
+          .catch(error => console.warn(error));        
+        },
+        error => Alert.alert(error.message),
+        { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
+      );
+    }
     
       handleChoosePhoto = () => {
         var options = {
@@ -63,7 +98,7 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
           if (response.uri) {
             console.log(response)
             this.setState({ 
-              loadingPhoto: true 
+              loadingPhoto: true
             })
             var url = 'https://absensiapiendpoint.azurewebsites.net/api/BlobStorage/InsertFile';
             const Header = {
@@ -81,24 +116,15 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
                 this.setState({
                   urlphoto : data.data,
                   photo: response,
-                  loadingPhoto: true
                 })
-                ToastAndroid.showWithGravity(
-                  'Upload success!',
-                  ToastAndroid.SHORT,
-                  ToastAndroid.BOTTOM,
-                );
                 console.log("ulrnya : " + this.state.urlphoto)
                 }).catch(err => {
-                  ToastAndroid.showWithGravity(
-                    'Upload fail!',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                  );
                     console.log(err)
-                    this.setState({
-                      loadingPhoto: false
-                    })
+                    ToastAndroid.showWithGravity(
+                      'Upload Photo Failed',
+                      ToastAndroid.SHORT,
+                      ToastAndroid.BOTTOM,
+                    );
                   }
                 )
               }
@@ -108,10 +134,18 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
       async submitAll(){
         const value = await AsyncStorage.getItem('clockin_state2');
         if(this.props.clockin_status === false || value === 'clockin'){
-          alert('kamu sudah clock in hari ini');
+          Alert.alert(
+            'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true;
         }
         else if(this.state.scrumMaster === '' || this.state.urlphoto === '' || this.state.projectName === ''){
-          alert('Semua form dan foto harus terisi!');
+          alert('All form must be filled!');
         }
         else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === true){
           axios({
@@ -122,12 +156,12 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
               'Content-Type': 'application/json',
             },
             data: {
-              username: this.props.nameUser,
-              name: this.props.namee,
+              username: this.state.username,
+              name: this.state.fullname,
               checkIn: new Date(),
               state: this.state.status,
               photo : this.state.urlphoto,
-              location : this.props.userLocation,
+              location : this.state.Location,
               note : this.state.message,
               projectName : this.state.projectName,
               approval : 'pending',
@@ -137,9 +171,11 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
             console.log(response)
             this.setState({
               statusCheckIn: ' ',
-              idUser: response.data.idWFH,
+              idUser: response.data.absenceId,
+              clockInstatus: false,
             });
             deviceStorage.saveItem("clockin_state", "clockin");
+            deviceStorage.saveItem("state", '1');
             deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
             this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
             this.props.addLoad(true)
@@ -162,26 +198,6 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
         });     
       }
     }
-
-      findCoordinates = () => {
-        Geolocation.getCurrentPosition(
-          position => {
-            Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
-            Geocoder.from(position.coords.latitude, position.coords.longitude)
-              .then(json => {
-                console.log(json);
-                var addressComponent = json.results[1].address_components[0].long_name;
-                  this.setState({
-                    Location: addressComponent
-                  })
-                  console.log(addressComponent);
-              })
-            .catch(error => console.warn(error));
-          },
-          error => Alert.alert(error.message),
-          { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
-        );
-	  };
     
     handleChangeMessage = event => {
       this.setState({ message: event });
@@ -191,10 +207,15 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
         const { photo } = this.state
         return (
           <SafeAreaView style={{flex:1, backgroundColor:'#F9FCFF'}}>
-            <ScrollView>
-              <View style={{backgroundColor:'white', flex:1, alignSelf:'center', marginTop:'5%', width:'90%', paddingBottom:10}}>
-                <Text style={{textAlign:'center', paddingTop:'5%', fontFamily:'Nunito', fontWeight:'600', fontSize:20}}>Take Picture as Evidence</Text>
-                <View style={{backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', marginTop:'10%', borderRadius:100/2, justifyContent:'center', alignItems:'center', paddingBottom:'2%', }}>
+            <ScrollView
+                alwaysBounceVertical={true} 
+                refreshControl={
+                  <RefreshControl refreshing={this.state.refreshing} 
+                onRefresh={this.loadLocation} />
+              }>
+              <View style={styles.card}>
+                <Text style={styles.textTake}>Take Picture as Evidence</Text>
+                <View style={styles.viewImage}>
                   <View style={{display: this.state.loadingPhoto === false ? 'flex' : 'none'}}>
                     <Camera width={50} height={50}/>
                   </View>
@@ -207,13 +228,13 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
                         </React.Fragment>
                   )}       
                 </View>
-                <Text style={{textAlign:'center', paddingTop:'10%', marginLeft:'5%', marginRight:'5%', fontFamily:'Nunito', fontWeight:'300', lineHeight:15, color:'#676767' }}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
-                <TouchableOpacity onPress={this.handleChoosePhoto} style={{borderWidth:1, borderRadius:5, borderColor:'#1A446D', backgroundColor:'#FFFFFF', width:'90%', height:50, alignSelf:'center',justifyContent:'center', marginTop:'5%'}}>
-                    <Text style={{textAlign:'center', color:'#1A446D', fontSize:18}}>Take Picture</Text>
+                <Text style={styles.textbelowPIC}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
+                <TouchableOpacity onPress={this.handleChoosePhoto} style={styles.buttonPhoto}>
+                    <Text style={styles.textPhoto}>Take Picture</Text>
                 </TouchableOpacity>
               </View>
               <View style={{flex:1, marginTop:15, paddingBottom:50}}>
-                <Text style={{fontSize:18, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito'}}>Please Fill This Form</Text>
+                <Text style={styles.titleText}>Please Fill This Form</Text>
                 <Text style={styles.textSM}>
                     Select Your Scrum Master *
                 </Text>
@@ -266,58 +287,32 @@ import { addStatusClockin, addLoading } from '../actions/DataActions';
 
 const styles = StyleSheet.create({
 	card: {
-		height: '26%', backgroundColor:'#FFFFFF', width:'100%'
+		backgroundColor:'white', flex:1, alignSelf:'center', marginTop:'5%', width:'90%', paddingBottom:10
   },
-  container2:{
-    flex: 1,
-    backgroundColor:'#F9FCFF',
+  textTake:{
+    textAlign:'center', paddingTop:'5%', fontFamily:'Nunito-SemiBold', fontWeight:'600', fontSize:20, color:'#505050'
   },
-  split1: {
-    flex:3, paddingTop:15, paddingLeft:10
+  viewImage: {
+    backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', marginTop:'10%', borderRadius:100/2, justifyContent:'center', alignItems:'center', paddingBottom:'2%', 
   },
-	viewIcon: {
-		alignItems:'flex-start', alignSelf:'flex-start', paddingTop:15,
-	},
-	viewLocation: {
-		paddingTop:15, paddingLeft:15
+  textbelowPIC: {
+    textAlign:'center', paddingTop:'7%', marginLeft:'5%', marginRight:'5%', fontFamily:'Nunito-Light', fontWeight:'300', color:'#676767' 
   },
-  boldText: {
-    fontSize: 30,
-    color: 'red',
-  },
-   Split:{
-     flex: 1,
-     flexDirection: 'row',
-   },
    titleText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  baseText: {
-    fontSize: 13,
-  },
-  locText:{
-    fontSize: 20,
-    textAlign:'left'
-  },
-  split2:{
-    alignItems:'center', flex:2, backgroundColor:'#7C7C7C', justifyContent: 'flex-end'
-  },
-  image:{
-    width: 150, height: 150, borderRadius:150/2
+    fontSize:18, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050'
   },
   buttonPhoto:{
-    backgroundColor:'#E74C3C', alignItems:'center', width:'100%', height:'20%'
+    borderWidth:1, borderRadius:5, borderColor:'#1A446D', backgroundColor:'#FFFFFF', width:'90%', height:50, alignSelf:'center',justifyContent:'center', marginTop:'5%'
   },
   textPhoto:{
-    color:'white', fontSize: 17, fontWeight:'bold', textAlign:'center',textAlignVertical: "center"
+    textAlign:'center', color:'#1A446D', fontSize:18, fontFamily:'Nunito-SemiBold', fontWeight:'600', marginBottom:7
   },
   textSM:{
     marginTop: 16,
     marginBottom:10,
     paddingLeft:20,
-    fontSize:14,
-    fontWeight:'300', lineHeight:19, fontFamily:'Nunito'
+    fontSize:16,
+    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
   },
   viewPicker:{
     width:'90%', height:'10%', marginLeft:20, borderRadius:5, borderColor:'black', borderWidth:1, backgroundColor:'white'
@@ -332,7 +327,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
   },
   textbtnSubmit:{
-    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1 
+    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
   },
   inputText:{
     paddingLeft:10, paddingRight:10,textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18 

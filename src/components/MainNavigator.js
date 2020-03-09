@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet} from 'react-native';
 import { Button } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import TopNavigation from './AppNavigator';
 import Login from '../screens/Login';
 import JwtCheck from "../screens/JwtCheck";
 import WorkHome from "../screens/WorkHome";
@@ -11,7 +10,8 @@ import Dayoff from "../screens/dayOff"
 import Sick from "../screens/sick"
 import Approval from '../screens/ApprovalPage'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import BottomNavBar from './BotoomNavBar'
+import BottomNavBar from './BottomNavBar'
+import BottomNavBarHD from './BottomNavBarHD'
 import Eworkplace3 from '../../image/eworkplace3.svg'
 
 const Stack = createStackNavigator();
@@ -45,7 +45,7 @@ function MyStack() {
   return (
     <Stack.Navigator 
       screenOptions={{
-        headerTintColor:'#FFFFFF',headerStyle:{backgroundColor: '#1A446D'}, headerTitleAlign:'center',
+        headerTintColor:'#FFFFFF',headerStyle:{backgroundColor: '#1A446D', height: 80,},
       }}
       initialRouteName='SplashScreen'
     >
@@ -63,14 +63,10 @@ function MyStack() {
             <HeaderLeft />
           )
         },
-        headerTitle:null,
-        headerStyle: {
-          backgroundColor:'#1A446D',
-          height: 80,
-        },  
+        headerTitle:null,  
         }}
       />
-      <Stack.Screen name="HomeHD" component={TopNavigation} 
+      <Stack.Screen name="HomeHD" component={BottomNavBarHD} 
       options={{
         headerRight:()=>{
           return(
@@ -82,14 +78,10 @@ function MyStack() {
             <HeaderLeft />
           )
         },
-        headerTitle:null,
-        headerStyle: {
-          backgroundColor:'#1A446D',
-          height: 80,
-        },  
+        headerTitle:null,  
         }}
       />
-      <Stack.Screen name="WHome" component={WorkHome} options={{headerTitle:'Work From Home',}}/>
+      <Stack.Screen name="WHome" component={WorkHome} options={{headerTitle:'Work From Home', }}/>
       <Stack.Screen name="WClient" component={WorkClient} options={{headerTitle:'Work at Client Office',}}/>  
       <Stack.Screen name="DayOff" component={Dayoff} options={{headerTitle:'Day Off',}}/>  
       <Stack.Screen name="Sick" component={Sick} options={{headerTitle:'Sick',}}/>

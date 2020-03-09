@@ -1,11 +1,13 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import React from 'react'
-import LoggedIn from '../screens/LoggedIn'
-import HomeHD from '../screens//HomeHeadDivision'
+import HomeHD from '../screens/HomeHeadDivision'
 import Profile from '../screens/Profile'
+import Leave from '../screens/Leave'
 import WorkInRemote from "../screens/WorkInRemote"
 
+
+//Bottom navigation bar for Head Divisions
 const Tab = createBottomTabNavigator();
 
 export default function BottomNavBar() {
@@ -13,7 +15,7 @@ export default function BottomNavBar() {
     <Tab.Navigator
         initialRouteName='Home'
         tabBarOptions={{
-        labelStyle: { fontSize: 15, fontWeight:'bold' },
+        labelStyle: { fontSize: 15, fontWeight:'bold', fontFamily:'Nunito-Bold', },
         style: { backgroundColor: '#FFFFFF' },
         activeTintColor: '#265685',
         inactiveTintColor: '#C1C1C1',
@@ -24,28 +26,28 @@ export default function BottomNavBar() {
         }
         }}
     >
-      <Tab.Screen name="Home" component={LoggedIn} options={{
+      <Tab.Screen name="Home" component={HomeHD} options={{
           tabBarLabel: 'Home',
-          tabBarIcon: () => (
-            <FontAwesome5 name="home" color={'blue'} size={20} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="home" color={color} size={20} />
           ),
         }}/>
       <Tab.Screen name="Not at Office" component={WorkInRemote} options={{
           tabBarLabel: 'Task',
-          tabBarIcon: () => (
-            <FontAwesome5 name="clipboard" color={'blue'} size={20} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="clipboard" color={color} size={20} />
           ),
         }}/>
-      <Tab.Screen name="Leave" component={Profile} options={{
+      <Tab.Screen name="Leave" component={Leave} options={{
           tabBarLabel: 'Leave',
-          tabBarIcon: () => (
-            <FontAwesome5 name="suitcase" color={'blue'} size={20} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="suitcase" color={color} size={20} />
           ),
         }}/>
         <Tab.Screen name="Profile" component={Profile} options={{
           tabBarLabel: 'Profile',
-          tabBarIcon: () => (
-            <FontAwesome5 name="user" color={'blue'} size={20} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="user" color={color} size={20} />
           ),
         }}/>
     </Tab.Navigator>

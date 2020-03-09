@@ -1,85 +1,93 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, ActivityIndicator,RefreshControl, ToastAndroid } from 'react-native';
+import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, RefreshControl, ToastAndroid, Text, TouchableOpacity, Image } from 'react-native';
 import { Loading } from '../components/Loading';
+import deviceStorage from '../services/deviceStorage';
+import AsyncStorage from '@react-native-community/async-storage';
 import moment from 'moment';
 import axios from 'axios';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { connect } from 'react-redux';
 import { addNama, addLocation, addStatusClockin, addLoading } from '../actions/DataActions';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {
-  ApplicationProvider,
-  Button,
-  Card,
-  CardHeader,
-  Text,
-} from '@ui-kitten/components';
-import { mapping, light } from '@eva-design/eva';
-
-const Header0 = () => (
-    <CardHeader title='Approval'/> 
-  );
-
-const Header1 = () => (
-  <CardHeader title='Meetings'/> 
-);
-
-const Header2 = () => (
-  <CardHeader title='Task'/> 
-);
-
-const Header3 = () => (
-  <CardHeader title='Task Done'/> 
-);
-
-const Footer = () => (
-  <View style={styles.footerContainer}>
-    <Text category='s2'>Tap for details!</Text>
-  </View>
-);
+import {ApiMaps} from '../config/apiKey'
+import { Card } from 'react-native-elements'
+import WFH from '../../image/wfh.svg'
+import Buildings from '../../image/buildings.svg'
 
 class HomeHeadDivision extends Component {
+  _isMounted = false;
   constructor(props){
     super(props);
     this.state = {
         loadingCheckin: false,
         idUser:'',
-        username: '',
+        username: 'User',
         fullname:'',
         status:'Work at Office',
-        Location:'',
+        Location:'Location',
         statusCheckInn:'You have not clocked in yet!',
-        clockInstatus: false,
-        url: 'https://absensiapiendpoint.azurewebsites.net/api/atOffice',
-        refreshing : false
+        clockInstatus: true,
+        url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+        refreshing : false,
+        textButton:'',
+        textApproved:'No events need to be approved'
       }
       this.checkIn = this.checkIn.bind(this);
       this.checkOut = this.checkOut.bind(this);
       this.onBack = this.onBack.bind(this);
-      this.wait - this.wait.bind(this);
       this.onRefresh = this.onRefresh.bind(this);
       this.loadData = this.loadData.bind(this);
       this.findCoordinates = this.findCoordinates.bind(this);
-      this.gotoApprovalPage = this.gotoApprovalPage.bind(this)
+      this.checkClockInStatus = this.checkClockInStatus.bind(this);
+      this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
+      this.checkClockInDouble = this.checkClockInDouble.bind(this)
+      this.gotoApprovalPage = this.gotoApprovalPage.bind(this);
+      this.movetoWAC = this.movetoWAC.bind(this);
+      this.movetoWFH = this.movetoWFH.bind(this);
+      this.ButtonCheck = this.ButtonCheck.bind(this);
+      this.loadDataApproval = this.loadDataApproval.bind(this)
     }
 
-    componentDidMount() {
-      this.setState({
-        hour : moment().format('hh:mm a'),
-        day : moment().format('dddd'),
-        monthYear : moment().format('MMM Do YYYY'),
-      })
+    async componentDidMount() {
+      this.props.addLoad(true)
+      this.intervalID = setInterval( () => {
+        this.setState({
+          hour : moment().format('hh:mm a'),
+          day : moment().format('dddd'),
+          monthYear : moment().format('D MMMM YYYY'),
+        })
+      },1000)
 
+      this.checkClockInDouble()
+      this.checkClockInStatus();
       this.findCoordinates();
+      this.loadDataApproval();
       this.loadData();
+      this.props.addLoad(false)
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
-    
-    wait = (timeout) => {
-      return new Promise(resolve => {
-        setTimeout(resolve, timeout);
-      });
+
+    async checkClockInStatus(){
+      const value = await AsyncStorage.getItem('clockin_state');
+        if(value === 'clockin'){
+          this.props.addClockin(true, ' ', this.state.idUser, this.state.status)
+          this.setState({
+            textButton:'Clock Out'
+          })
+        }else{
+          this.props.addClockin(false, this.state.statusCheckInn, this.state.idUser, this.state.status)
+          this.setState({
+            textButton:'Clock In'
+          })
+        }     
+    }
+
+    async checkClockInDouble(){
+      var time = new Date().getHours();
+        if(time > 6 && time < 12){
+        this.deleteStatusClockIn();
+        }
     }
 
     onRefresh = () =>{
@@ -91,15 +99,18 @@ class HomeHeadDivision extends Component {
         day : moment().format('dddd'),
         monthYear : moment().format('MMM Do YYYY'),
       })
+
+      this.checkClockInDouble();
+      this.checkClockInStatus();
       this.findCoordinates();
       this.loadData();
-      this.props.addClockin(this.props.clockin_status, this.props.status_Checkin, this.props.id, this.props.workStatus)
+      this.loadDataApproval();
       this.setState({
         refreshing : false
       })
     }
 
-    loadData = async () => {
+    loadData = async () => {     
       const headers = {
        accept: 'application/json',
       'Authorization': 'Bearer ' + this.props.tokenJWT 
@@ -109,106 +120,151 @@ class HomeHeadDivision extends Component {
           method: 'GET',
           url: 'https://userabensiendpoint.azurewebsites.net/v1/me',
           headers: headers,
-        }).then((response) => {     
+        }).then((response) => { 
+          console.log(response)    
           this.setState({
             username: response.data.data.username,
             fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
           });
+          deviceStorage.saveItem("username", this.state.username);
+          deviceStorage.saveItem("name", this.state.fullname);
+
           this.props.addName(this.state.username, this.state.fullname)
-          this.props.addLoad(this.state.loading)
-        }).catch((errorr) => {       
+          this.props.addLoad(false)
+        }).catch((errorr) => {
+          console.log(errorr)       
             this.setState({
               error: 'Error retrieving data',
             });
             this.props.addLoad(false)
           });
       };
+
+      async loadDataApproval(){
+        const headers = {
+          accept: '*/*',
+         };  
+         axios({
+             method: 'GET',
+             url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+             headers: headers,
+           }).then((response) => { 
+             console.log(response)    
+             this.setState({
+               textApproved : 'You have some approval requests!',
+               dataApproval: response
+             });      
+           }).catch((errorr) => {
+             console.log(errorr)       
+           });
+        
+      }
+
     findCoordinates = async () => {
       Geolocation.getCurrentPosition(
         position => {
-          Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
+          Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
-              console.log(json);
-              var addressComponent = json.results[1].address_components[0].long_name;
+                console.log(json);
+                var addressComponent = json.results[1].address_components[0].long_name;
                 this.setState({
                   Location: addressComponent
                 })
-                console.log(addressComponent);
+                deviceStorage.saveItem("location", this.state.Location);
+                this.props.addLoc(this.state.Location)
+                console.log(addressComponent);          
             })
           .catch(error => console.warn(error));
-          this.props.addLoc(this.state.Location)
         },
         error => Alert.alert(error.message),
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
-          // this.watchID = Geolocation.watchPosition(position => {
-          // //Will give you the location on location change
-          // console.log(position);
-          // const currentLongitude = JSON.stringify(position.coords.longitude);
-          // //getting the Longitude from the location json
-          // const currentLatitude = JSON.stringify(position.coords.latitude);
-          // //getting the Latitude from the location json
-          // this.setState({ Location: currentLongitude + ' ' + currentLatitude});
-          // });       
+        { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
+      );       
      };
 
   componentWillUnmount() {
-    this.backHandler.remove();
-    //this.watchID != null && Geolocation.clearWatch(this.watchID);
+    this._isMounted = false;
+    clearInterval(this.intervalID);
+    BackHandler.removeEventListener('hardwareBackPress', this.onBack)
   }
 
- checkIn(){ 
-  this.setState({
-    loadingCheckin: true
-  }) 
-  axios({
-    method: 'POST',
-    url: this.state.url,
-    headers: {
-      accept: '*/*',
-      'Content-Type': 'application/json',
-    },
-    data: {
-      username: this.state.username,
-      name: this.state.fullname,
-      checkIn: new Date(),
-      state: this.state.status,
-      location : this.state.Location,
-    }
-  }).then((response) => {
-    alert(response)
-    this.setState({
-      statusCheckInn: 'You have clocked in!',
-      idUser: response.data.absenceId,
-      clockInstatus: true,
-      loadingCheckin: false
-    });
-    this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
-    ToastAndroid.showWithGravity(
-      'Clock in success',
-      ToastAndroid.SHORT,
-      ToastAndroid.BOTTOM,
+ async ButtonCheck(){
+  const value = await AsyncStorage.getItem('state');
+   if(value === '1'){
+    this.checkOut()
+   }
+   else if(value === '0'){
+    this.checkIn()
+   }
+ }  
+
+ async checkIn(){
+  this.props.addLoad(true) 
+  const value = await AsyncStorage.getItem('clockin_state2');
+  if(value === 'clockin'){
+    Alert.alert(
+      'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+      [
+        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+      ],
+      { cancelable: false },
     );
-  })
-  .catch((errorr) => {
-    alert(errorr)
-    this.setState({
-      loadingCheckin: false
-    });
-    ToastAndroid.showWithGravity(
-      'Clock out fail',
-      ToastAndroid.SHORT,
-      ToastAndroid.BOTTOM,
-    );
- });
+    this.props.addLoad(false)
+    return true;   
+  } 
+  else{
+    axios({
+      method: 'POST',
+      url: this.state.url,
+      headers: {
+        accept: '*/*',
+        'Content-Type': 'application/json',
+      },
+      data: {
+        username: this.state.username,
+        name: this.state.fullname,
+        checkIn: new Date(),
+        state: this.state.status,
+        location : this.state.Location,
+      }
+    }).then((response) => {
+      console.log(response)
+      this.setState({
+        statusCheckInn: ' ',
+        idUser: response.data.absenceId,
+        clockInstatus: true,
+        textButton: 'Clock Out'
+      });
+      this.props.addLoad(false)
+      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
+      ToastAndroid.showWithGravity(
+        'Clock in success',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+      deviceStorage.saveItem("state", '1');
+      deviceStorage.saveItem("clockin_state", "clockin");
+      deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
+    })
+    .catch((errorr) => {
+      console.log(errorr)
+      this.props.addLoad(false)
+      ToastAndroid.showWithGravity(
+        'Clock in fail',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
+   });
+  } 
 }
 
- checkOut(){
-   if(this.props.workStatus === 'Work at Office'){
+ async checkOut(){
+  this.props.addLoad(true)
+  const value = await AsyncStorage.getItem('id_user');
+  const id = parseInt(value);
     axios({
       method: 'put',
-      url: this.state.url + '/' + this.props.id,
+      url: this.state.url + '/' + id,
       headers: { 'accept' : '*/*',
       'Content-Type' : 'application/json'},
       data : {
@@ -217,15 +273,21 @@ class HomeHeadDivision extends Component {
     }).then(data => {
       this.setState({
         statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false
+        clockInstatus: false,
+        textButton: 'Clock In'
       });
+      this.props.addLoad(false)
       this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
+      deviceStorage.saveItem("state", '0');
+      deviceStorage.saveItem("clockin_state2", "clockin");
+      deviceStorage.deleteClockInStatus();
       ToastAndroid.showWithGravity(
         'Clock out success',
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
     }).catch(err => {
+        this.props.addLoad(false)
         console.log(err);
         ToastAndroid.showWithGravity(
           'Clock out fail',
@@ -233,94 +295,6 @@ class HomeHeadDivision extends Component {
           ToastAndroid.BOTTOM,
         );
     });
-   }
-   else if(this.props.workStatus === 'Work at Home'){
-    axios({
-      method: 'put',
-      url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkFromHome'+ '/' + this.props.id,
-      headers: { 'accept' : '*/*',
-      'Content-Type' : 'application/json'},
-      data : {
-        checkOut : new Date()
-      }
-    }).then(data => {
-      this.setState({
-        statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false
-      });
-      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
-      ToastAndroid.showWithGravity(
-        'Clock out success',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
-    }).catch(err => {
-        console.log(err);
-        ToastAndroid.showWithGravity(
-          'Clock out fail',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
-    });
-   }
-   else if(this.props.workStatus === 'Work at Client'){
-    axios({
-      method: 'put',
-      url: 'https://absensiapiendpoint.azurewebsites.net/api/WorkAtClient'+ '/' + this.props.id,
-      headers: { 'accept' : '*/*',
-      'Content-Type' : 'application/json'},
-      data : {
-        checkOut : new Date()
-      }
-    }).then(data => {
-      this.setState({
-        statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false
-      });
-      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
-      ToastAndroid.showWithGravity(
-        'Clock out success',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
-    }).catch(err => {
-        console.log(err);
-        ToastAndroid.showWithGravity(
-          'Clock out fail',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
-    });
-  }
-   else if(this.props.workStatus === 'Sick'){
-    axios({
-      method: 'put',
-      url: 'https://absensiapiendpoint.azurewebsites.net/api/Sick'+ '/' + this.props.id,
-      headers: { 'accept' : '*/*',
-      'Content-Type' : 'application/json'},
-      data : {
-        checkOut : new Date()
-      }
-    }).then(data => {
-      this.setState({
-        statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false
-      });
-      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
-      ToastAndroid.showWithGravity(
-        'Clock out success',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
-    }).catch(err => {
-        console.log(err);
-        ToastAndroid.showWithGravity(
-          'Clock out fail',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );  
-    });
-  }
   }
 
  onBack = () => {
@@ -335,176 +309,293 @@ class HomeHeadDivision extends Component {
     return true;
  };
 
+ movetoWFH(){
+  this.props.navigation.navigate('WHome')
+ }
+
+ movetoWAC(){
+  this.props.navigation.navigate('WClient')
+}
+
+ async deleteStatusClockIn(){
+  await AsyncStorage.removeItem('clockin_state2')
+ }
+
  gotoApprovalPage(){
-     this.props.navigation.navigate('Approval')
+  this.props.navigation.navigate('Approval', {item: this.state.dataApproval})
  }
 
   render() {
-    const { container } = styles;
-
-    if (this.props.loading){
-        return(
-            <View style={container}>
-              <Loading size={'large'}/>
-            </View>
-        )
-      } else {
-          return(
-          <SafeAreaView style={{backgroundColor:'#e5e5e5'}}>
-            <ScrollView 
-            refreshControl={
-              <RefreshControl refreshing={this.state.refreshing} 
+    const loadings = this.props.loading
+      return(
+          <SafeAreaView style={{backgroundColor:'#F9FCFF'}}>
+            <ScrollView
+              alwaysBounceVertical={true} 
+              refreshControl={
+                <RefreshControl refreshing={this.state.refreshing} 
               onRefresh={this.onRefresh} />
             }>
-              <ApplicationProvider mapping={mapping} theme={light}>
-                <View style={styles.card}>
-                <View style={styles.Split}>
-                  <View style={styles.childcard1}>
-                    <View style={styles.childcard2}>
-                      <Text category='h2' status='info'>
-                      {this.state.hour}
-                      </Text>
-                    </View>
-                    <View style={styles.childcard21}>
-                      <Text category='s1' status='info'>
-                        {this.state.day},
-                      </Text>
-                      <Text category='s1' status='info'>
-                        {this.state.monthYear}
-                      </Text>
-                    </View>  
-                    <View style={styles.childcard3}>
-                        <View style={styles.viewIcon}>
-                          <FontAwesome5 name='map-marker' size={30} color='#3366FF'/>       
-                        </View>
-                        <View style={styles.viewLocation}>
-                          <Text category='s1'>{this.state.Location}</Text>       
-                        </View>
-                    </View>
-                  </View>
-
-                  <View style={{alignItems:'center', paddingLeft:8, paddingTop:20, flex:1, display: this.props.clockin_status === false ? 'flex':'none'}}>
-                    <Text>{this.props.status_Checkin}</Text>
-                    <View style={{display: this.state.loadingCheckin === true ? 'flex' : 'none'}}>
-                      <ActivityIndicator size={'large'} />
-                    </View>
-                    <Button
-                      style={{marginHorizontal: 4, marginTop : 8, borderRadius:15, borderWidth:1, display: this.state.loadingCheckin === false ? 'flex' : 'none'}}
-                      size='giant'
-                      status='primary'
-                      onPress={this.checkIn}>
-                      CLOCK IN
-                    </Button>                                     
-                  </View>
-                  
-                  <View style={{alignItems:'center', flex:1, paddingLeft:8, paddingTop:20, display: this.props.clockin_status === true ? 'flex':'none'}}>
-                    <Text>{this.props.status_Checkin}</Text>
-                    <Button
-                      style={styles.clockIn}
-                      size='giant'
-                      status='danger'
-                      onPress={this.checkOut}>
-                      CLOCK OUT
-                    </Button>                                         
-                  </View>
+              <View style={{marginLeft:'5%'}}>
+                <Text style={styles.textUsername}>Hi, {this.state.username}!</Text>
+                <View style={styles.view1}>
+                <View style={{width:20, height:'100%', alignItems:'center'}}>
+                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:2}}/>
                 </View>
+                <View style={{width:150, height:'100%',}}>
+                  <Text style={styles.textLocation}>{this.state.Location}</Text>
+                </View> 
                 </View>
-
-                <Text category='h5' style={{paddingLeft:23, paddingTop:10, paddingBottom:10}}>Schedule</Text>
-                <View style={styles.viewCardSchedule}>
-                <Card style={styles.card1} header={Header0} footer={Footer} status='primary' onPress={this.gotoApprovalPage}>
-                  <Text>
-                    The Maldives, 
+              </View>
+              <View style={{ flex:1,}}>
+                <Card containerStyle={styles.card4}>
+                  <Text style={styles.textHour}>
+                    {this.state.hour}
                   </Text>
-                </Card>
-
-                <Card style={styles.card1} header={Header1} footer={Footer} status='primary'>
-                  <Text>
-                    The Maldives, 
+                  <Text style={styles.textDay}>
+                    {this.state.day}, {this.state.monthYear}
                   </Text>
+                  <View>
+                    <TouchableOpacity style={[this.props.clockin_status === false ? styles.buttonClockIn : styles.buttonClockOut]} onPress={this.ButtonCheck}>
+                      <Text style={styles.textClockin}>{this.state.textButton}</Text>
+                    </TouchableOpacity>
+                    <Text style={[styles.textStatus]}>{this.props.status_Checkin}</Text>
+                  </View>
                 </Card>
+              </View>
 
-                <Card style={styles.card1} header={Header2} footer={Footer} status='basic'>
-                  <Text>
-                  Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem I
-                  </Text>
-                </Card>
-
-                <Card style={styles.card1} header={Header3} footer={Footer} status='info'>
-                  <Text>
-                    The Maldives, officially the Republic of Maldives, is a small country in South Asia,
-                    located in the Arabian Sea of the Indian Ocean.
-                  </Text>
-                </Card>
-
+              <View style={{flexDirection:'row', flex:0.5, marginTop:36}}>
+                <View style={{width:'50%', flex:1}}>
+                  <Card containerStyle={styles.card4}>
+                    <TouchableOpacity style={{flexDirection:'row', padding:0}} onPress={this.movetoWFH}>
+                    <WFH width={35} height={35}/>  
+                    <Text style={styles.text1}>Work From {'\n'}Home</Text>
+                    </TouchableOpacity>
+                  </Card>
                 </View>
-              </ApplicationProvider>
+                <View style={{width:'50%', flex:1}}>
+                  <Card containerStyle={styles.card4}>
+                    <TouchableOpacity style={{flexDirection:'row', paddingBottom:3}} onPress={this.movetoWAC}>
+                    <Buildings width={35} height={35}/> 
+                    <Text style={styles.text1}>Work At {'\n'}Client Office</Text>
+                    </TouchableOpacity>
+                  </Card>
+                </View>            
+              </View> 
+
+              <View style={{ flex:3, paddingBottom:'5%'}}>
+              <Text style={styles.textDashboard}>Dashboard</Text>
+                <Card containerStyle={styles.cardApprove}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.gotoApprovalPage}>
+                    <Text style={styles.text2}>Approval</Text>
+                    <Text style={styles.text3}>{this.state.textApproved}</Text>
+                    <View style={styles.view2InCard1}>
+                      <View style={{flex:3, flexDirection:'row'}}>
+                      </View>
+                      <View style={{flex:3}}>
+                      <Text style={styles.textViewDetails}>View Details</Text>
+                      </View>                     
+                    </View> 
+                  </TouchableOpacity>
+                </Card>
+
+                <Card containerStyle={styles.card1}>
+                  <TouchableOpacity style={styles.baseTouchAble}>
+                    <Text style={styles.text2}>Meeting</Text>
+                    <Text style={styles.text3}>Scrum Meetings</Text>
+                    <View style={styles.viewInCard1}>
+                        <FontAwesome5 name='map-marker-alt' size={16} color='#505050'/>
+                        <Text style={styles.text4}>Meeting Room A, Moonlay Office</Text>                  
+                    </View>
+                    <Image style={{width: '100%'}} source={require('../../image/line.png')}/>
+                    <View style={styles.view2InCard1}>
+                      <View style={{flex:3, flexDirection:'row'}}>
+                        <FontAwesome5 name='clock' size={16} color='#505050' style={{marginTop:1}}/>
+                        <Text style={styles.text5}>02.00 PM</Text>
+                      </View>
+                      <View style={{flex:3}}>
+                      <Text style={styles.textViewDetails}>View Details</Text>
+                      </View>                     
+                    </View> 
+                  </TouchableOpacity>
+                </Card>
+
+                <Card containerStyle={styles.card2}>
+                  <TouchableOpacity style={styles.baseTouchAble}>
+                    <Text style={styles.text2}>Ongoing Task</Text>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={{flexDirection:'row'}}>
+                      <View style={{flex:3}}>
+                        <Text style={styles.text6}>...</Text>
+                      </View>
+                      <View style={{flex:3}}>
+                        <Text style={styles.textViewDetails}>View Details</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </Card>
+                
+                <Card containerStyle={styles.card3}>
+                  <TouchableOpacity style={styles.baseTouchAble}>
+                  <Text style={styles.text2}>Task Done</Text>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={styles.viewInCard2}>
+                      <FontAwesome5 name='circle' size={8} color='#505050' solid/>
+                      <Text style={styles.text6}>Task 01 - 25 Feb 2020</Text>
+                    </View>
+                    <View style={{flexDirection:'row'}}>
+                      <View style={{flex:3}}>
+                        <Text style={styles.text6}>...</Text>
+                      </View>
+                      <View style={{flex:3}}>
+                        <Text style={styles.textViewDetails}>View Details</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </Card>        
+          </View>
+              <Loading visible={loadings === true ? true : false}/>               
             </ScrollView>
           </SafeAreaView>
         );
       }
   }
-}
-
 const styles = StyleSheet.create({
-  card:{
-   height:'20%', paddingLeft: 30, paddingRight: 15, backgroundColor:'white' 
+  textUsername:{
+    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, lineHeight:25, color:'#505050'
   },
-  childcard1:{
-    flex:1, alignItems:'flex-start', backgroundColor:'white'
+  view1:{
+    flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
-  childcard2:{
-   width:'100%', height:'40%', alignSelf:'center', alignItems:'center', backgroundColor:'white', paddingTop:'5%'
+  textLocation:{
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, lineHeight:16, color:'#505050'
   },
-  childcard21:{
-   width:'100%', height:'20%', borderBottomColor:'#4A90E2', borderBottomWidth:1, justifyContent:'flex-end'
+  textHour:{
+    color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44
   },
-  childcard3:{
-    flexDirection:'row', justifyContent:'flex-start',
+  textDay:{
+    textAlign:'center', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:19, color:'#505050'
+  },
+  buttonClockIn:{
+    backgroundColor:'#26BF64', width:'90%', alignSelf:'center', height:'45%',justifyContent:'center', marginTop:10, borderRadius:10, alignItems:'center'
+  },
+  buttonClockOut:{
+    backgroundColor:'#EA5656', width:'90%', alignSelf:'center', height:'45%', marginTop:10,justifyContent:'center', borderRadius:10, alignItems:'center', alignContent:'center'
+  },
+  textClockin:{
+    color:'#FFFFFF', fontFamily:'Nunito-Light', fontSize:22, lineHeight:25, marginBottom:5
+  },
+  textStatus:{
+    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:13, marginTop:10, color:'#505050', lineHeight:16, fontWeight:'300'
+  },
+  text1:{
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, fontWeight:'600', marginLeft:5, lineHeight:16, color:'#505050'
+  },
+  textDashboard:{
+    marginLeft:'4%', marginTop:'4%', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:25, color:'#505050'
   },
   card1:{
-    height: '100%',
-    flex:1,
-    borderRadius:20,
-    marginBottom:10
-  },
-  viewIcon: {
-    paddingTop:10,
-    marginLeft:20,
-	},
-	viewLocation: {
-  paddingLeft:15, justifyContent:'center'
-  },
-  locText:{
-    fontSize: 15,
-    textAlign:'left'
-  },
-  Split:{
-    flex: 1,
-    flexDirection: 'row',
-  },
-  footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  clockIn: {
-    marginHorizontal: 4,
-    marginTop : 8,
-    borderRadius:15,
-    borderWidth:1
-  },
-  container: {
-    flex: 1,
-    backgroundColor : 'gray',
-    padding: 15
-  },
-  viewCardSchedule:{
-    height:'30%', width:'90%', alignSelf:'center', paddingBottom:30
-  },
-  headerText: {
-    fontSize:18,
-    fontWeight:'bold'
-  },
+    flex:1, borderRadius:7,borderWidth:5, borderStartColor:'#DB984A', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5, 
+   },
+   baseTouchAble:{
+    flexWrap:'wrap', padding:0, height:'100%', width:'100%',
+   },
+   text2:{
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:5, lineHeight:19
+   },
+   text3:{
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:18, color:'#505050', fontWeight:'600', marginLeft:5, lineHeight:22
+   },
+   viewInCard1:{
+    flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
+   },
+   view2InCard1:{
+    flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
+   },
+   text4:{
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
+   },
+   text5:{
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
+   },
+   textViewDetails:{
+    marginLeft:10, textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'300', lineHeight:16
+   },
+   card2:{
+    flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#4A90E2', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF',shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  elevation: 5,
+   },
+   viewInCard2:{
+    flexDirection:'row', marginTop:10, marginLeft:5, alignContent:'center', alignItems:'center'
+   },
+   text6:{
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, color:'#505050', fontWeight:'600', lineHeight:22
+   },
+   card3:{
+    backgroundColor:'#EFFFF6', flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#26BF64', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
+   },
+   card4:{
+    borderRadius:7,
+    maxHeight:'150%',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+   },
+   card5:{
+     flex:1, alignItems:'flex-start', backgroundColor:'white'
+   },
+   cardApprove:{
+    flex:1, borderRadius:7,borderWidth:5, borderStartColor:'#1A446D', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+   },
 });
 
 const mapStateToPropsData = (state) => {
