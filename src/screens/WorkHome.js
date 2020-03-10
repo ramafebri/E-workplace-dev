@@ -56,12 +56,12 @@ import ImageResizer from 'react-native-image-resizer';
    };
 
    loadData = async () => {   
-    const username = await AsyncStorage.getItem('username');  
-    const name = await AsyncStorage.getItem('name');
-    const location = await AsyncStorage.getItem('location');
+    const username = await AsyncStorage.getItem("username");  
+    const name = await AsyncStorage.getItem("name");
+    const location = await AsyncStorage.getItem("location");
     this.setState({
       username : username,
-      name : name,
+      fullname : name,
       Location : location
     })
     };
@@ -142,7 +142,7 @@ import ImageResizer from 'react-native-image-resizer';
 
       async submitAll(){
         const value = await AsyncStorage.getItem('clockin_state2');
-        if(this.props.clockin_status === false || value === 'clockin'){
+        if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
             'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
             [
@@ -156,7 +156,7 @@ import ImageResizer from 'react-native-image-resizer';
         else if(this.state.scrumMaster === '' || this.state.urlphoto === '' || this.state.projectName === ''){
           alert('All form must be filled!');
         }
-        else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === true){
+        else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
           axios({
             method: 'POST',
             url: this.state.url,
@@ -181,7 +181,7 @@ import ImageResizer from 'react-native-image-resizer';
             this.setState({
               statusCheckIn: ' ',
               idUser: response.data.absenceId,
-              clockInstatus: false,
+              clockInstatus: true,
             });
             deviceStorage.saveItem("clockin_state", "clockin");
             deviceStorage.saveItem("state", '1');
@@ -189,7 +189,7 @@ import ImageResizer from 'react-native-image-resizer';
             this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
             this.props.addLoad(true)
             ToastAndroid.showWithGravity(
-              'Clock in success',
+              'Clock in success!',
               ToastAndroid.SHORT,
               ToastAndroid.BOTTOM,
             );
@@ -203,7 +203,12 @@ import ImageResizer from 'react-native-image-resizer';
             )
           })
           .catch((errorr) => {
-            alert(errorr)
+            console.log(errorr)
+            ToastAndroid.showWithGravity(
+              'Clock in fail!',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
         });     
       }
     }
@@ -349,14 +354,7 @@ const styles = StyleSheet.create({
 const mapStateToPropsData = (state) => {
   console.log(state);
   return {
-    tokenJWT: state.JwtReducer.jwt,
-    nameUser: state.DataReducer.username,
-    namee: state.DataReducer.fullname,
-    userLocation: state.DataReducer.locations,
     clockin_status : state.DataReducer.clockIn,
-    status_Checkin : state.DataReducer.statusCheckIn,
-    id : state.DataReducer.id,
-    workStatus :  state.DataReducer.workStatus
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

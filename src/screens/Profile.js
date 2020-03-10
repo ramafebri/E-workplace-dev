@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, FlatList} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loading from '../components/Loading';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -20,12 +20,14 @@ class Profile extends Component {
     this.state = {
         username: '',
         name:'',
+        monthYear : moment().format('MMMM YYYY'),
         refreshing : false,
         history:[]
       }
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
-      this.loadData = this.loadData.bind(this)
+      this.loadData = this.loadData.bind(this);
+      this.movetoClockinHistory = this.movetoClockinHistory.bind(this);
   }
 
   async componentDidMount(){
@@ -50,12 +52,12 @@ class Profile extends Component {
 
      axios({
          method: 'GET',
-         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?CheckIn='+year+'-'+month,
+         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Username='+this.state.username+'&CheckIn='+year+'-'+month,
          headers: headers,
        }).then((response) => { 
          console.log(response)    
          this.setState({
-            history: response.data
+            history: response.data.slice(0,5)
          });
          this.props.addLoad(false)
        }).catch((errorr) => {
@@ -80,6 +82,10 @@ class Profile extends Component {
       })
     );
   }
+ }
+
+ movetoClockinHistory(){
+   this.props.navigation.navigate('ClockinHistory')
  }
 
   render() {
@@ -131,31 +137,34 @@ class Profile extends Component {
                     <Card containerStyle={styles.dcard}>                   
                      <Text style={styles.text4}>Overwork</Text>
                      <Text style={styles.text4}>Form</Text>
-                     <FontAwesome5 name='file-alt' size={20} color='#505050' style={{alignSelf:'flex-end', marginTop:'15%'}}/>
-                
+                     <FontAwesome5 name='file-alt' size={20} color='#505050' style={{alignSelf:'flex-end', marginTop:'15%'}}/>                
                     </Card>
                   </View>
                   <View style={{ width:'100%', alignSelf:'center'}}>
-                    <Text style={styles.textHistory}>History</Text>
-                    <Text style={styles.textMonth}>February 2020</Text>
+                    <Text style={styles.text8}>History</Text>
+                    <Text style={styles.textMonth}>{this.state.monthYear}</Text>
                     <Card containerStyle={[styles.cardHistory]} >
-                    {this.state.history.map((u, i) => {
-                        return (
-                          <ListItem
-                            key={i}
-                            title={'    '+u.checkIn}
-                            bottomDivider              
-                          />
-                        );
-                      })
-                    } 
-                  </Card>
-                 
+                      {this.state.history.map((u, i) => {
+                          return (
+                            <View key={i} style={styles.history}>
+                                <View style={{flex:1, marginLeft:10}}>
+                                    <Text style={styles.Text}>{u.checkIn.substr(0,10)}</Text>
+                                </View>
+                                <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
+                                    <Text style={styles.Text}>{u.checkIn.substr(11,8)+'-'+u.checkOut.substr(11,8)}</Text>
+                                </View>
+                            </View>
+                          );
+                        })
+                      }
+                    </Card>
+                    <TouchableOpacity style={{width:'40%', alignSelf:'center'}} onPress={this.movetoClockinHistory}>
+                       <Text style={styles.textVD}>View More History</Text>
+                    </TouchableOpacity>
                   </View>
                   <TouchableOpacity style={styles.Button} onPress={this.LogOut}>
                       <Text style={styles.textLogOut}>Log Out</Text>
                   </TouchableOpacity>
-
                   <Loading visible={this.props.loading === true ? true : false}/>  
               </ScrollView>
             </SafeAreaView>           
@@ -189,15 +198,22 @@ const styles = StyleSheet.create({
     flex:1, borderWidth:1, borderColor:'#C1C1C1', borderRadius:7, flexWrap:'nowrap'
   },
   cardHistory: {
-    padding: 0,borderRadius:7, shadowColor: "#000",
-                      shadowOffset: {
-                        width: 0,
-                        height: 1,
-                      },
-                      shadowOpacity: 0.22,
-                      shadowRadius: 2.22,
+    padding: 0,borderRadius:7,
+    width:'90%',
+    alignSelf:'center',
+    marginTop:10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
 
-                      elevation: 3,     
+    elevation: 5,    
+  },
+  textHistory:{
+    color:'#505050', fontFamily:'Nunito-Light', fontSize:14
   },
   textLogOut: {
     color:'white', textAlign:'center', fontSize:20, fontFamily:'Nunito-SemiBold', fontWeight:'600', lineHeight:25
@@ -226,15 +242,21 @@ const styles = StyleSheet.create({
   text7:{
     paddingLeft:'5%', paddingTop:'35%', fontSize:12, color: '#505050',fontFamily:'Nunito', fontWeight:'300', lineHeight:16,
   },
-  textHistory:{
-    marginLeft:15, marginTop:20, fontSize:20, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:25, color: '#505050'
+  text8:{
+    fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#505050', marginLeft:15
+  },
+  Text:{
+    fontFamily:'Nunito-Light', fontSize:16, fontWeight:'600', color:'#505050'
   },
   textMonth:{
-    marginLeft:15, marginTop:16, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:19, color:'#265685'
+    marginLeft:15, marginTop:10, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:19, color:'#265685'
   },
   textVD:{
-    textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:14, color:'#4A90E2', fontWeight:'600', margin:15
+    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'600'
   },
+  history:{
+    height:40, borderBottomColor:'#505050', borderBottomWidth:0.5, justifyContent:'center', flexDirection:'row'
+},
 })
 
 const mapStateToPropsData = (state) => {

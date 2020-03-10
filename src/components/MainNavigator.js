@@ -9,6 +9,7 @@ import WorkClient from "../screens/WorkClient";
 import Dayoff from "../screens/dayOff"
 import Sick from "../screens/sick"
 import Approval from '../screens/ApprovalPage'
+import ClockInHistory from '../screens/ClockInHistory'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import BottomNavBar from './BottomNavBar'
 import BottomNavBarHD from './BottomNavBarHD'
@@ -48,6 +49,8 @@ function MyStack() {
         headerTintColor:'#FFFFFF',
         headerStyle:{backgroundColor: '#1A446D'},
         safeAreaInsets: { top: 5 },
+        headerTitleAlign:'center',
+        headerTitleStyle:{fontFamily:'Nunito-SemiBold'}
       }}
       
       initialRouteName='SplashScreen'
@@ -88,7 +91,8 @@ function MyStack() {
       <Stack.Screen name="WClient" component={WorkClient} options={{headerTitle:'Work at Client Office',}}/>  
       <Stack.Screen name="DayOff" component={Dayoff} options={{headerTitle:'Day Off',}}/>  
       <Stack.Screen name="Sick" component={Sick} options={{headerTitle:'Sick',}}/>
-      <Stack.Screen name="Approval" component={Approval} options={{headerTitle:'Approval',}}/>    
+      <Stack.Screen name="Approval" component={Approval} options={{headerTitle:'Approval',}}/>
+      <Stack.Screen name="ClockinHistory" component={ClockInHistory} options={{headerTitle:'Clock In History'}}/>     
     </Stack.Navigator>
   );
 }

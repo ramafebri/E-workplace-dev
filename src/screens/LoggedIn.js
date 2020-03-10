@@ -269,7 +269,7 @@ class LoggedIn extends Component {
     }).then(data => {
       this.setState({
         statusCheckInn: 'You have not clocked in!',
-        clockInstatus: true,
+        clockInstatus: false,
         textButton: 'Clock In'
       });
       this.props.addLoad(false)

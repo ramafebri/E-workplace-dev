@@ -56,12 +56,12 @@ class WorkClient extends Component {
  };
 
  loadData = async () => {     
-  const username = await AsyncStorage.getItem('username');  
-    const name = await AsyncStorage.getItem('name');
-    const location = await AsyncStorage.getItem('location');
+  const username = await AsyncStorage.getItem("username");  
+  const name = await AsyncStorage.getItem("name");
+  const location = await AsyncStorage.getItem("location");
     this.setState({
       username : username,
-      name : name,
+      fullname : name,
       Location : location
     })
   };
@@ -142,7 +142,7 @@ class WorkClient extends Component {
 
   async submitAll(){
     const value = await AsyncStorage.getItem('clockin_state2');
-    if(this.props.clockin_status === false || value === 'clockin'){
+    if(this.props.clockin_status === true || value === 'clockin'){
       Alert.alert(
         'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
         [
@@ -157,10 +157,10 @@ class WorkClient extends Component {
       alert('All form must be filled!');
     }
     else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
-    && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === true){
+    && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === false){
       axios({
         method: 'POST',
-        url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+        url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?HeadDivision=java',
         headers: {
           accept: '*/*',
           'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ class WorkClient extends Component {
         console.log(response)
         this.setState({
           statusCheckIn: ' ',
-          clockInstatus: false,
+          clockInstatus: true,
           idUser: response.data.absenceId,
         });
         deviceStorage.saveItem("clockin_state", "clockin");
@@ -192,7 +192,7 @@ class WorkClient extends Component {
         this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
         this.props.addLoad(true)
         ToastAndroid.showWithGravity(
-          'Clock in success',
+          'Clock in success!',
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
@@ -206,7 +206,12 @@ class WorkClient extends Component {
         )
       })
       .catch((errorr) => {
-        alert(errorr)
+        console.log(errorr)
+        ToastAndroid.showWithGravity(
+          'Clock in fail!',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
     });
     }       
   }

@@ -28,8 +28,6 @@ class Login extends Component {
     this.iconPress = this.iconPress.bind(this)
 }
 
-static navigationOptions = { headerShown: false }
-
 loginUser() {
   const { username, password} = this.state;
   this.setState({
@@ -71,7 +69,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
           loading: false
         })
         this.props.add(this.state.jwtt)
-        this.props.navigation.push('Home');
+        this.props.navigation.push('HomeHD');
        })
       .catch((errorr) => {
         console.log(errorr)

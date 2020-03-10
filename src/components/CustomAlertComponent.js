@@ -11,7 +11,7 @@ export default class CustomAlertComponent extends React.Component {
             transparent={true}
             animationType={"fade"}>
             <View style={styles.mainOuterComponent}>
-             <View style={styles.viewalert}>
+             <View style={[styles.viewalert,{height: this.props.details.state === 'Work at client office' ? 400:350}]}>
               <View style={styles.view1}>
                 <Text style={styles.text}>{this.props.details.state}</Text>
                 <View style={styles.viewPhoto}>
@@ -22,19 +22,25 @@ export default class CustomAlertComponent extends React.Component {
                 </View>
                 <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.name} <Text style={styles.text2}>needs you approval</Text></Text>
                 <Text style={styles.text1}>Working on : <Text style={styles.text2}>{this.props.details.projectName}</Text></Text>
-                <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.clientName}</Text></Text>
-                <Text style={styles.text1}>Company : <Text style={styles.text2}>{this.props.details.companyName}{'\n'}</Text></Text>
+                <View style={{display: this.props.details.state === 'Work at client office' ? 'flex':'none'}}>
+                  <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.clientName}</Text></Text>
+                  <Text style={styles.text1}>Company : <Text style={styles.text2}>{this.props.details.companyName}{'\n'}</Text></Text>
+                </View>
+                <View style={{display: this.props.details.state !== 'Work at client office' ? 'flex':'none'}}>
+                  <Text style={styles.text1}>Notes : <Text style={styles.text2}>{this.props.details.note}</Text></Text>
+                </View>
 
                 <View style={{height:20, flexDirection:'row', marginTop:10}}>
-                  <View style={{width:20, height:'100%', alignItems:'center'}}>
-                    <FontAwesome5 name='map-marker-alt' size={16} color='#1A446D' style={{marginTop:2}}/>
+                  <View style={{width:20, height:'100%', flex:1}}>
+                    <FontAwesome5 name='map-marker-alt' size={16} color='#1A446D' style={{marginTop:2, marginLeft:50}}/>
                   </View>
-                  <View style={{width:150, height:'100%', justifyContent:'center'}}>
-                    <Text style={styles.textLocation}>Location : {this.props.details.location}</Text>
+                  <View style={{width:250, height:'100%', justifyContent:'center', flex:3}}>
+                    <Text style={styles.textLocation}>{this.props.details.location}</Text>
                   </View>              
                 </View>
+
               </View> 
-                <View style={{flexDirection:'row', justifyContent:'center', borderRadius:20, alignSelf:'center', width:'100%', marginTop:10}}>
+                <View style={styles.viewButton}>
                     <TouchableOpacity style={styles.button} onPress={this.props.decline}>
                         <Text style={styles.textDecline}>Decline</Text>
                     </TouchableOpacity>  
@@ -57,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000088'
   },
   viewalert:{
-    height:'55%', width:'80%', borderRadius:10, backgroundColor:'white'
+    width:320, borderRadius:10, backgroundColor:'white'
   },
   view1:{
     height:'80%', alignItems:'center',
@@ -66,7 +72,7 @@ const styles = StyleSheet.create({
     fontFamily:'Nunito-Bold', fontSize:20, color:'#505050', fontWeight:'600',textAlignVertical:'center', paddingTop:10
   },
   text1:{
-    fontFamily:'Nunito-Bold', fontSize:16, color:'#505050', fontWeight:'600', textAlignVertical:'center'
+    fontFamily:'Nunito-Bold', fontSize:16, color:'#505050', fontWeight:'600', textAlignVertical:'center', textAlign:'center'
   },
   textLocation:{
     fontFamily:'Nunito-Light', fontSize:16, color:'#1A446D', fontWeight:'300', textAlignVertical:'center', paddingBottom:3
@@ -88,5 +94,8 @@ const styles = StyleSheet.create({
   },
   text2:{
     marginBottom: 10, fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:'6%'
+},
+viewButton:{
+  flexDirection:'row', justifyContent:'center', borderRadius:20, alignSelf:'center', width:'100%', marginTop:10
 },
 });

@@ -77,6 +77,7 @@ export default class CardApproval extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.BOTTOM,
           );
+          this.props.loadData;
         }).catch((errorr) => {
           alert(errorr)
           this.setState({
@@ -112,6 +113,7 @@ export default class CardApproval extends Component {
             ToastAndroid.SHORT,
             ToastAndroid.BOTTOM,
           );
+          this.props.loadData;
         }).catch((errorr) => {
           alert(errorr)
           this.setState({

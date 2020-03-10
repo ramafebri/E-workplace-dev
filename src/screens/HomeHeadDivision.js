@@ -31,7 +31,8 @@ class HomeHeadDivision extends Component {
         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
         refreshing : false,
         textButton:'',
-        textApproved:'No events need to be approved'
+        textApproved:'No events need to be approved',
+        dataApproval:[]
       }
       this.checkIn = this.checkIn.bind(this);
       this.checkOut = this.checkOut.bind(this);
@@ -50,7 +51,6 @@ class HomeHeadDivision extends Component {
     }
 
     async componentDidMount() {
-      this.props.addLoad(true)
       this.intervalID = setInterval( () => {
         this.setState({
           hour : moment().format('hh:mm a'),
@@ -64,7 +64,6 @@ class HomeHeadDivision extends Component {
       this.findCoordinates();
       this.loadDataApproval();
       this.loadData();
-      this.props.addLoad(false)
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
@@ -85,7 +84,7 @@ class HomeHeadDivision extends Component {
 
     async checkClockInDouble(){
       var time = new Date().getHours();
-        if(time > 6 && time < 12){
+        if(time > 6 && time < 13){
         this.deleteStatusClockIn();
         }
     }
@@ -146,14 +145,18 @@ class HomeHeadDivision extends Component {
          };  
          axios({
              method: 'GET',
-             url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+             url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Approval=pending&HeadDivision=java',
              headers: headers,
            }).then((response) => { 
              console.log(response)    
              this.setState({
-               textApproved : 'You have some approval requests!',
-               dataApproval: response
-             });      
+               dataApproval: response.data
+             });
+             if(this.state.dataApproval.length !== 0){
+              this.setState({
+                textApproved : 'You have some approval requests!',
+              });
+             }      
            }).catch((errorr) => {
              console.log(errorr)       
            });
@@ -322,7 +325,7 @@ class HomeHeadDivision extends Component {
  }
 
  gotoApprovalPage(){
-  this.props.navigation.navigate('Approval', {item: this.state.dataApproval})
+  this.props.navigation.navigate('Approval')
  }
 
   render() {
@@ -341,7 +344,7 @@ class HomeHeadDivision extends Component {
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
                   <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:2}}/>
                 </View>
-                <View style={{width:150, height:'100%',}}>
+                <View style={{width:450, height:'100%',}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
                 </View> 
                 </View>
@@ -479,13 +482,13 @@ class HomeHeadDivision extends Component {
   }
 const styles = StyleSheet.create({
   textUsername:{
-    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, lineHeight:25, color:'#505050'
+    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, lineHeight:25, color:'#505050', marginTop:5
   },
   view1:{
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, lineHeight:16, color:'#505050'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, color:'#505050'
   },
   textHour:{
     color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44

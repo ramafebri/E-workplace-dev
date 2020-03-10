@@ -12,16 +12,14 @@ export default class ApprovalPage extends Component {
           monthYear : moment().format('Do MMM YYYY'),
           loadings : true,
           refreshing: false,
+          people:[]
         }
         this.loadData = this.loadData.bind(this);
         this.onBack = this.onBack.bind(this);
     }
     async componentDidMount(){
       BackHandler.addEventListener('hardwareBackPress', this.onBack);
-      this.setState({
-        people : this.props.route.params.item.data,
-        loadings : false,
-      })  
+      this.loadData();  
     }
 
     componentWillUnmount() {
@@ -33,17 +31,17 @@ export default class ApprovalPage extends Component {
       return true;
    };
 
-    loadData = async () => {     
+    loadData = async () => {   
       const headers = {
        accept: '*/*',
       };
 
       axios({
           method: 'GET',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+          url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Approval=pending&HeadDivision=java',
           headers: headers,
         }).then((response) => { 
-          //console.log(response)    
+          console.log(response)   
           this.setState({
             people: response.data,
             loadings: false
@@ -61,10 +59,10 @@ export default class ApprovalPage extends Component {
         return (
             <SafeAreaView style={styles.container}>           
               <FlatList
-                keyExtractor={(item) => item.absenceId}
+                keyExtractor={(item, index) => index.toString()}
                 data={this.state.people}
                 renderItem={({ item }) =>
-                    <PeopleCard person={item} date={this.state.monthYear}/>         
+                    <PeopleCard person={item} date={this.state.monthYear} loadData={this.loadData}/>         
                 }
                 refreshControl={
                 <RefreshControl refreshing={this.state.refreshing} 
