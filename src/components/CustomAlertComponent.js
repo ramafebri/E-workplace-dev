@@ -11,7 +11,7 @@ export default class CustomAlertComponent extends React.Component {
             transparent={true}
             animationType={"fade"}>
             <View style={styles.mainOuterComponent}>
-             <View style={[styles.viewalert,{height: this.props.details.state === 'Work at client office' ? 400:350}]}>
+             <View style={[styles.viewalert,{height: this.props.details.state === 'Work at client office' ? 400:420}]}>
               <View style={styles.view1}>
                 <Text style={styles.text}>{this.props.details.state}</Text>
                 <View style={styles.viewPhoto}>
@@ -38,8 +38,8 @@ export default class CustomAlertComponent extends React.Component {
                     <Text style={styles.textLocation}>{this.props.details.location}</Text>
                   </View>              
                 </View>
+              </View>
 
-              </View> 
                 <View style={styles.viewButton}>
                     <TouchableOpacity style={styles.button} onPress={this.props.decline}>
                         <Text style={styles.textDecline}>Decline</Text>
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
     marginBottom: 10, fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:'6%'
 },
 viewButton:{
-  flexDirection:'row', justifyContent:'center', borderRadius:20, alignSelf:'center', width:'100%', marginTop:10
+  flexDirection:'row', justifyContent:'center', borderRadius:20, alignSelf:'center', width:'100%', marginTop:10,
 },
 });

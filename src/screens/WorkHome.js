@@ -283,6 +283,7 @@ import ImageResizer from 'react-native-image-resizer';
                 </Text>
                 <TextInput
                     multiline={true}
+                    numberOfLines={4}
                     placeholder="any message..." 
                     style={styles.textInput}
                     onChangeText={text => this.setState({message: text})}

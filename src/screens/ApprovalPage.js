@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, SafeAreaView, FlatList, BackHandler, RefreshControl } from 'react-native'
+import { StyleSheet, SafeAreaView, FlatList, BackHandler, RefreshControl, View, Text } from 'react-native'
 import axios from 'axios';
 import moment from 'moment';
 import Loading from '../components/Loading';
@@ -67,7 +67,11 @@ export default class ApprovalPage extends Component {
                 refreshControl={
                 <RefreshControl refreshing={this.state.refreshing} 
                 onRefresh={this.loadData}/>}
+                style={{display: this.state.people.length !== 0 ? 'flex':'none'}}
               />
+              <View style={[styles.view,{display: this.state.people.length === 0 ? 'flex':'none'}]}>
+                <Text style={styles.text}>No Data</Text>
+              </View>
               <Loading visible={this.state.loadings === true ? true : false}/>
             </SafeAreaView>
         )
@@ -76,6 +80,12 @@ export default class ApprovalPage extends Component {
 
 const styles = StyleSheet.create({
   container:{
-       flex:1,      
+       flex:1,     
   },
+  view:{
+    alignSelf:'center', marginBottom:400
+  },
+  text:{
+    fontFamily:'Nunito-Light', fontSize:26, fontWeight:'600', color:'#505050'
+  }
 })
