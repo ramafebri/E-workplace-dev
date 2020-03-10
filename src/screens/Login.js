@@ -26,6 +26,13 @@ class Login extends Component {
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.iconPress = this.iconPress.bind(this)
+    this.onBack = this.onBack.bind(this);
+}
+componentDidMount(){
+  BackHandler.addEventListener('hardwareBackPress', this.onBack);
+}
+componentWillUnmount() {
+  BackHandler.removeEventListener('hardwareBackPress', this.onBack);
 }
 
 loginUser() {
@@ -112,6 +119,18 @@ if((username != null && username != "" ) && ( password != null && password != ""
       })
     }
   }
+
+  onBack = () => {
+    Alert.alert(
+      'Exit from the app?','',
+      [
+        { text: "Yes", onPress: () => BackHandler.exitApp() },
+        { text: "No", onPress: () => console.log('NO Pressed'), style: "cancel" },
+      ],
+      { cancelable: false },
+    );
+    return true;
+ };
 
   render() {
     const { username, password} = this.state;

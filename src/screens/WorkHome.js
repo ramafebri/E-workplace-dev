@@ -42,12 +42,11 @@ import ImageResizer from 'react-native-image-resizer';
     }
 
     componentDidMount(){
-      this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
+      BackHandler.addEventListener('hardwareBackPress', this.onBack);
       this.loadData()
     }
     componentWillUnmount() {
-        this.watchID != null && Geolocation.clearWatch(this.watchID);
-        this.backHandler.remove();
+      BackHandler.removeEventListener('hardwareBackPress', this.onBack);
     }
 
     onBack = () => {
@@ -284,6 +283,7 @@ import ImageResizer from 'react-native-image-resizer';
                 <TextInput
                     multiline={true}
                     numberOfLines={4}
+                    maxLength={200}
                     placeholder="any message..." 
                     style={styles.textInput}
                     onChangeText={text => this.setState({message: text})}
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     height: '100%', width: '100%', borderWidth:20, borderColor:'black'
   },
   textInput:{
-    paddingLeft:10, paddingRight:10, height:160, borderColor: 'gray', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'black', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18, fontFamily:'Nunito', fontWeight:'600',
+    paddingLeft:10, paddingRight:10, height:160, borderColor: 'gray', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'black', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18, fontFamily:'Nunito-Regular', fontWeight:'600',
   },
   buttonSubmit:{
     backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
   },
   inputText:{
-    paddingLeft:10, paddingRight:10,textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18 
+    paddingLeft:10, paddingRight:10,textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito-Regular', fontWeight:'600'
   },
 });
 

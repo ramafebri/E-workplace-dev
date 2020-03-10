@@ -34,11 +34,11 @@ class sick extends Component {
       }
   
       componentDidMount(){
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
+        BackHandler.addEventListener('hardwareBackPress', this.onBack);
         this.findCoordinates()
       }
       componentWillUnmount() {
-          this.backHandler.remove();
+        BackHandler.removeEventListener('hardwareBackPress', this.onBack);
       }
 
       onBack = () => {
@@ -159,7 +159,7 @@ class sick extends Component {
                 <RefreshControl refreshing={this.state.refreshing} 
                 onRefresh={this.findCoordinates} />
               }>
-              <View style={{flex:10}}>
+              <View style={{flex:8}}>
                 <Text style={styles.textareaContainer}>
                     Please fill this forms
                 </Text>
@@ -187,6 +187,7 @@ class sick extends Component {
                 </Text>
                 <TextInput
                   style={styles.inputText}
+                  maxLength={40}
                   onChangeText={text => this.setState({projectName: text})}
                   value={this.state.projectName}>
                 </TextInput>
@@ -197,14 +198,15 @@ class sick extends Component {
                 </Text>
                 <TextInput
                     multiline={true}
-                    placeholder="kamu sakit apa..." 
+                    placeholder="kamu sakit apa..."
+                    maxLength={200} 
                     style={styles.textInput}
                     onChangeText={text => this.setState({message: text})}
                     value={this.state.message}>
                 </TextInput>
                 </View>
 
-                <View style={{flex:1, marginTop:130}}>
+                <View style={{flex:1, marginTop:30}}>
                   <TouchableOpacity onPress={this.submitAll} style={styles.buttonSubmit}>
                       <Text style={styles.textbtnSubmit} >Submit</Text>
                   </TouchableOpacity>
@@ -229,13 +231,13 @@ const styles = StyleSheet.create({
     fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
   },
   viewPicker:{
-    width:'90%', height:'15%', marginLeft:20, borderRadius:5, borderColor:'gray', borderWidth:1, backgroundColor:'white'
+    width:'90%', height:50, marginLeft:20, borderRadius:5, borderColor:'gray', borderWidth:1, backgroundColor:'white'
   },
   picker:{
     height: '100%', width: '100%', borderWidth:20, borderColor:'gray'
   },
   textInput:{
-    paddingLeft:10, paddingRight:10,height:'55%', borderColor: 'gray', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'gray', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18
+    paddingLeft:10, paddingRight:10,height:200, borderColor: 'gray', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'gray', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18
   },
   buttonSubmit:{
     backgroundColor:'#1A446D', marginTop:30, alignItems:'center', width:'90%', height:50, alignSelf:'center', borderRadius:5
@@ -244,8 +246,8 @@ const styles = StyleSheet.create({
     color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold', marginBottom:7 
   },
   inputText:{
-    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'15%', marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito', fontWeight:'600', paddingLeft:10, paddingRight:10,
-    borderColor:'gray' 
+    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:50, marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito', fontWeight:'600', paddingLeft:10, paddingRight:10,
+    borderColor:'gray', fontFamily:'Nunito-Regular', fontWeight:'600' 
   },
 });
 

@@ -69,12 +69,12 @@ class LoggedIn extends Component {
     async checkClockInStatus(){
       const value = await AsyncStorage.getItem('clockin_state');
         if(value === 'clockin'){
-          this.props.addClockin(false, ' ', this.state.idUser, this.state.status)
+          this.props.addClockin(true, ' ', this.state.idUser, this.state.status)
           this.setState({
             textButton:'Clock Out'
           })
         }else{
-          this.props.addClockin(true, this.state.statusCheckInn, this.state.idUser, this.state.status)
+          this.props.addClockin(false, this.state.statusCheckInn, this.state.idUser, this.state.status)
           this.setState({
             textButton:'Clock In'
           })
@@ -351,7 +351,7 @@ class LoggedIn extends Component {
                     {this.state.day}, {this.state.monthYear}
                   </Text>
                   <View>
-                    <TouchableOpacity style={[this.props.clockin_status === true ? styles.buttonClockIn : styles.buttonClockOut]} onPress={this.ButtonCheck}>
+                    <TouchableOpacity style={[this.props.clockin_status === false ? styles.buttonClockIn : styles.buttonClockOut]} onPress={this.ButtonCheck}>
                       <Text style={styles.textClockin}>{this.state.textButton}</Text>
                     </TouchableOpacity>
                     <Text style={[styles.textStatus]}>{this.props.status_Checkin}</Text>

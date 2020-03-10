@@ -34,11 +34,10 @@ export default class sick extends Component {
       }
   
       componentDidMount(){
-        this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
+        BackHandler.addEventListener('hardwareBackPress', this.onBack);
       }
       componentWillUnmount() {
-          this.watchID != null && Geolocation.clearWatch(this.watchID);
-          this.backHandler.remove();
+        BackHandler.removeEventListener('hardwareBackPress', this.onBack);
       }
 
     onBack = () => {
@@ -188,6 +187,7 @@ export default class sick extends Component {
                 </Text>
                 <TextInput
                     multiline={true}
+                    maxLength={200}
                     placeholder="" 
                     style={styles.inputText}
                     onChangeText={text => this.setState({message: text})}
@@ -210,7 +210,7 @@ export default class sick extends Component {
                     <Picker.Item label="JavaScript" value="js" />
                   </Picker>
                 </View>               
-                <TouchableOpacity onPress={this.handleUpload} style={styles.buttonSubmit}>
+                <TouchableOpacity onPress={() => alert('Under Development!')} style={styles.buttonSubmit}>
                     <Text style={styles.textbtnSubmit} >Submit</Text>
                 </TouchableOpacity>
                 
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
   },
    Split:{
-     flex: 0.35,
+     flex: 0.3,
      flexDirection: 'row',
      marginTop: 16,
    },
