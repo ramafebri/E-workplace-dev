@@ -35,7 +35,8 @@ class sick extends Component {
   
       componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress', this.onBack);
-        this.findCoordinates()
+        this.loadData();
+        this.findCoordinates();
       }
       componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBack);

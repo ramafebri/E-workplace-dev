@@ -107,6 +107,7 @@ export default class sick extends Component {
                     onValueChange={(itemValue, itemIndex) =>
                       this.setState({scrumMaster: itemValue})
                     }>
+                    <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
                     <Picker.Item label="JavaScript" value="js" />
                   </Picker>
@@ -206,6 +207,7 @@ export default class sick extends Component {
                     onValueChange={(itemValue, itemIndex) =>
                       this.setState({scrumMaster: itemValue})
                     }>
+                    <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
                     <Picker.Item label="JavaScript" value="js" />
                   </Picker>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, FlatList} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loading from '../components/Loading';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -8,7 +8,7 @@ import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { addLoading } from '../actions/DataActions';
 import { deleteToken } from '../actions/JwtActions';
-import { Card, ListItem, } from 'react-native-elements'
+import { Card } from 'react-native-elements'
 import Person from '../../image/person.svg'
 import ProfileEdit from '../../image/profile-edit.svg'
 import axios from 'axios';
@@ -52,7 +52,7 @@ class Profile extends Component {
 
      axios({
          method: 'GET',
-         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Username='+this.state.username+'&CheckIn='+year+'-'+month,
+         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&SortByDate=1',
          headers: headers,
        }).then((response) => { 
          console.log(response)    

@@ -43,7 +43,7 @@ import ImageResizer from 'react-native-image-resizer';
 
     componentDidMount(){
       BackHandler.addEventListener('hardwareBackPress', this.onBack);
-      this.loadData()
+      this.loadData();
     }
     componentWillUnmount() {
       BackHandler.removeEventListener('hardwareBackPress', this.onBack);

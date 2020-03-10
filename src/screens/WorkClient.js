@@ -42,8 +42,7 @@ class WorkClient extends Component {
 
   componentDidMount(){
     BackHandler.addEventListener('hardwareBackPress', this.onBack);
-    this.loadData()
-    this.findCoordinates()
+    this.loadData();
   }
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.onBack);
