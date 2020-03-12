@@ -5,6 +5,7 @@ import moment from 'moment';
 import Loading from '../components/Loading';
 import PeopleCard from '../components/CardApproval'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {Url_GetDataApproval} from '../config/URL'
 
 export default class ApprovalPage extends Component {
     constructor(props) {
@@ -34,12 +35,13 @@ export default class ApprovalPage extends Component {
 
     loadData = async () => {   
       const headers = {
-       accept: '*/*',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + this.props.tokenJWT 
       };
 
       axios({
           method: 'GET',
-          url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Approval=pending&HeadDivision=java',
+          url: Url_GetDataApproval,
           headers: headers,
         }).then((response) => { 
           console.log(response)   
@@ -71,7 +73,7 @@ export default class ApprovalPage extends Component {
                 style={{display: this.state.people.length !== 0 ? 'flex':'none'}}
               />
               <View style={[styles.view,{display: this.state.people.length === 0 ? 'flex':'none'}]}>
-                <FontAwesome5 name='exclamation-triangle' size={80} color='#505050' style={{opacity:0.5}}/>
+                <FontAwesome5 name='exclamation-triangle' size={80} color='#1A446D' style={{opacity:0.7}}/>
                 <Text style={styles.text}>No Approval Request</Text>
               </View>
               <Loading visible={this.state.loadings === true ? true : false}/>
@@ -88,6 +90,6 @@ const styles = StyleSheet.create({
     alignSelf:'center', marginBottom:350, alignItems:'center'
   },
   text:{
-    fontFamily:'Nunito-Light', fontSize:26, fontWeight:'600', color:'#505050', opacity:0.5
+    fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#265685'
   }
 })

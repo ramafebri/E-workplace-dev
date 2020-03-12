@@ -3,6 +3,7 @@ import { Text, View, StyleSheet,TouchableOpacity, TextInput, ActivityIndicator, 
 import axios from 'axios';
 import deviceStorage from '../services/deviceStorage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import {Url_Login} from '../config/URL'
 import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
 import { addLoading } from '../actions/DataActions';
@@ -58,7 +59,7 @@ loginUser() {
 if((username != null && username != "" ) && ( password != null && password != "") ){
     axios({
         method: 'post',
-        url: 'https://userabensiendpoint.azurewebsites.net/v1/authenticate',
+        url: Url_Login,
         headers: {
           accept: 'application/json',
           'Content-Type': 'application/json-patch+json',
@@ -73,7 +74,9 @@ if((username != null && username != "" ) && ( password != null && password != ""
         deviceStorage.saveItem("state", '0');
         this.setState({
           jwtt: response.data.data,
-          loading: false
+          loading: false,
+          username:'',
+          password:''
         })
         this.props.add(this.state.jwtt)
         this.props.navigation.push('HomeHD');

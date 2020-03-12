@@ -12,6 +12,7 @@ import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import ImageResizer from 'react-native-image-resizer';
+import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
 class WorkClient extends Component {
   constructor(props){
@@ -23,12 +24,11 @@ class WorkClient extends Component {
         fullname:'',
         Location: '',
         urlphoto:'',
-        message:'',
         status: 'Work at client office',
         client : '',
         clientCompany : '',
         projectName : '',
-        scrumMaster : '',
+        headDivision : '',
         loadingPhoto: false,
         refreshing:false
       }
@@ -82,7 +82,7 @@ class WorkClient extends Component {
         })
         ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 100).then((response) => {
           console.log(response.size)
-          var url = 'https://absensiapiendpoint.azurewebsites.net/api/BlobStorage/InsertFile';
+          var url = Url_UploadPhoto;
           const Header = {
             // 'Content-Type': 'multipart/form-data',
             // 'accept' : 'text/plain'
@@ -151,42 +151,45 @@ class WorkClient extends Component {
       this.props.addLoad(false)
       return true;
     }
-    else if(this.state.scrumMaster === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.client === '' || this.state.clientCompany === ''){
+    else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.client === '' || this.state.clientCompany === ''){
       alert('All form must be filled!');
     }
-    else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
+    else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
     && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === false){
+      const clockintime = new Date();
       axios({
         method: 'POST',
-        url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?HeadDivision=java',
+        url: Url_Clockin,
         headers: {
-          accept: '*/*',
-          'Content-Type': 'application/json',
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT
         },
         data: {
-          username: this.state.username,
-          name: this.state.fullname,
-          checkIn: new Date(),
-          state: this.state.status,
-          location : this.state.Location,
-          message : this.state.message,
-          approval: "pending",
-          photo: this.state.urlphoto,
-          companyName: this.state.clientCompany,
-          clientName: this.state.client,
-          projectName: this.state.projectName,
-          headDivision: this.state.scrumMaster
+          Username: this.state.username,
+          Name: this.state.fullname,
+          CheckIn: clockintime,
+          CheckOut: clockintime,
+          State: this.state.status,
+          Location : this.state.Location,
+          Approval: "pending",
+          Photo: this.state.urlphoto,
+          CompanyName: this.state.clientCompany,
+          ClientName: this.state.client,
+          ProjectName: this.state.projectName,
+          HeadDivision: this.state.headDivision
         }
       }).then((response) => {
         console.log(response)
         this.setState({
           statusCheckIn: ' ',
           clockInstatus: true,
-          idUser: response.data.absenceId,
+          idUser: response.data.Id,
         });
         deviceStorage.saveItem("clockin_state", "clockin");
         deviceStorage.saveItem("state", '1');
         deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
+        deviceStorage.saveItem("clockin_time", response.data.CheckIn);
+
         this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
         this.props.addLoad(true)
         ToastAndroid.showWithGravity(
@@ -257,10 +260,10 @@ class WorkClient extends Component {
                  <View style={styles.viewPicker}>            
                    <Picker
                     mode={"dropdown"}
-                    selectedValue={this.state.scrumMaster}
+                    selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({scrumMaster: itemValue})
+                      this.setState({headDivision: itemValue})
                     }>
                     <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
@@ -361,13 +364,7 @@ const mapStateToPropsData = (state) => {
   console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
-    nameUser: state.DataReducer.username,
-    namee: state.DataReducer.fullname,
-    userLocation: state.DataReducer.locations,
     clockin_status : state.DataReducer.clockIn,
-    status_Checkin : state.DataReducer.statusCheckIn,
-    id : state.DataReducer.id,
-    workStatus :  state.DataReducer.workStatus
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

@@ -12,6 +12,7 @@ import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import ImageResizer from 'react-native-image-resizer';
+import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
  class WorkHome extends Component {
       constructor(props){
@@ -27,11 +28,10 @@ import ImageResizer from 'react-native-image-resizer';
             statusCheckInn: 'You have clocked in!',
             message:'',
             status: 'Work from home',
-            scrumMaster: '',
+            headDivision: '',
             projectName: '',
             loadingPhoto: false,
             refreshing: false,
-            url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi'
           }
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
@@ -104,7 +104,7 @@ import ImageResizer from 'react-native-image-resizer';
             })
             ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 100).then((response) => {
               console.log(response.size)
-              var url = 'https://absensiapiendpoint.azurewebsites.net/api/BlobStorage/InsertFile';
+              var url = Url_UploadPhoto;
               const Header = {
                 // 'Content-Type': 'multipart/form-data',
                 // 'accept' : 'text/plain'
@@ -152,39 +152,43 @@ import ImageResizer from 'react-native-image-resizer';
           this.props.addLoad(false)
           return true;
         }
-        else if(this.state.scrumMaster === '' || this.state.urlphoto === '' || this.state.projectName === ''){
+        else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === ''){
           alert('All form must be filled!');
         }
-        else if(this.state.scrumMaster !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
+        else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
+          const clockintime = new Date();
           axios({
             method: 'POST',
-            url: this.state.url,
+            url: Url_Clockin,
             headers: {
-              accept: '*/*',
-              'Content-Type': 'application/json',
+              'accept': 'application/json',
+              'Authorization': 'Bearer ' + this.props.tokenJWT
             },
             data: {
-              username: this.state.username,
-              name: this.state.fullname,
-              checkIn: new Date(),
-              state: this.state.status,
-              photo : this.state.urlphoto,
-              location : this.state.Location,
-              note : this.state.message,
-              projectName : this.state.projectName,
-              approval : 'pending',
-              headDivision : this.state.scrumMaster
+              Username: this.state.username,
+              Name: this.state.fullname,
+              CheckIn: clockintime,
+              CheckOut: clockintime,
+              State: this.state.status,
+              Photo : this.state.urlphoto,
+              Location : this.state.Location,
+              Note : this.state.message,
+              ProjectName : this.state.projectName,
+              Approval : 'pending',
+              HeadDivision : this.state.headDivision
             }
           }).then((response) => {
             console.log(response)
             this.setState({
               statusCheckIn: ' ',
-              idUser: response.data.absenceId,
+              idUser: response.data.Id,
               clockInstatus: true,
             });
             deviceStorage.saveItem("clockin_state", "clockin");
             deviceStorage.saveItem("state", '1');
             deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
+            deviceStorage.saveItem("clockin_time", response.data.CheckIn);
+
             this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
             this.props.addLoad(true)
             ToastAndroid.showWithGravity(
@@ -255,11 +259,11 @@ import ImageResizer from 'react-native-image-resizer';
                 <View style={styles.viewPicker}>            
                   <Picker
                     mode={"dropdown"}
-                    value={this.state.scrumMaster}
-                    selectedValue={this.state.scrumMaster}
+                    value={this.state.headDivision}
+                    selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({scrumMaster: itemValue})
+                      this.setState({headDivision: itemValue})
                     }>
                     <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
@@ -356,6 +360,7 @@ const mapStateToPropsData = (state) => {
   console.log(state);
   return {
     clockin_status : state.DataReducer.clockIn,
+    tokenJWT: state.JwtReducer.jwt,
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

@@ -15,6 +15,7 @@ import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
 import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
+import {Url_GetDataUser, Url_Clockin} from '../config/URL'
 
 class LoggedIn extends Component {
   _isMounted = false;
@@ -29,14 +30,13 @@ class LoggedIn extends Component {
         Location:'Location',
         statusCheckInn:'You have not clocked in yet!',
         clockInstatus: true,
-        url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
         refreshing : false,
         textButton:'',
         latitude : null,
         longitude : null,
       }
-      this.checkIn = this.checkIn.bind(this);
-      this.checkOut = this.checkOut.bind(this);
+      this.clockIn = this.clockIn.bind(this);
+      this.clockOut = this.clockOut.bind(this);
       this.onBack = this.onBack.bind(this);
       this.onRefresh = this.onRefresh.bind(this);
       this.loadData = this.loadData.bind(this);
@@ -93,7 +93,7 @@ class LoggedIn extends Component {
         refreshing : true
       })  
       this.setState({
-        hour : moment().format('hh:mm a'),
+        hour : moment().format('hh:mm A'),
         day : moment().format('dddd'),
         monthYear : moment().format('MMM Do YYYY'),
       })
@@ -109,13 +109,13 @@ class LoggedIn extends Component {
 
     loadData = async () => {     
       const headers = {
-       accept: 'application/json',
-      'Authorization': 'Bearer ' + this.props.tokenJWT 
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + this.props.tokenJWT 
       };
 
       axios({
           method: 'GET',
-          url: 'https://userabensiendpoint.azurewebsites.net/v1/me',
+          url: Url_GetDataUser,
           headers: headers,
         }).then((response) => { 
           console.log(response)    
@@ -169,102 +169,154 @@ class LoggedIn extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.onBack)
   }
 
- async ButtonCheck(){
-  const value = await AsyncStorage.getItem('state');
-   if(value === '1'){
-    this.checkOut()
-   }
-   else if(value === '0' || value === null){
-    this.checkIn()
-   }
- }  
+  async ButtonCheck(){
+    const value = await AsyncStorage.getItem('state');
+    if(value === '1'){
+      this.clockOut()
+    }
+    else if(value === '0' || value === null){
+      this.clockIn()
+    }
+  }  
 
- async checkIn(){
-  this.props.addLoad(true)
+  async clockIn(){
+    this.props.addLoad(true)
 
-  //Check Location Radius
-  var p = 0.017453292519943295;    // Math.PI / 180
-  var c = Math.cos;
-  var a = 0.5 - c((this.state.latitude - MoonlayLat) * p)/2 +
-          c(this.state.latitude * p) * c(this.state.latitude * p) *
-          (1 - c((this.state.longitude - MoonlayLong) * p))/2;
- 
-  const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
-  console.log(location_radius)
+    //Check Location Radius
+    var p = 0.017453292519943295;    // Math.PI / 180
+    var c = Math.cos;
+    var a = 0.5 - c((this.state.latitude - MoonlayLat) * p)/2 +
+            c(this.state.latitude * p) * c(this.state.latitude * p) *
+            (1 - c((this.state.longitude - MoonlayLong) * p))/2;
+  
+    const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
+    console.log(location_radius)
 
-  const value = await AsyncStorage.getItem('clockin_state2');
-  if(value === 'clockin'){
-    Alert.alert(
-      'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
-      [
-        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
-      ],
-      { cancelable: false },
-    );
-    this.props.addLoad(false)
-    return true;   
-  }
-  else if(location_radius > 80){
-    alert('You are far from the office right now, go closer!')
-    this.props.addLoad(false)
-  }
-  else if(location_radius <= 80 && value !== 'clockin'){
-    axios({
-      method: 'POST',
-      url: this.state.url,
-      headers: {
-        accept: '*/*',
-        'Content-Type': 'application/json',
-      },
-      data: {
-        username: this.state.username,
-        name: this.state.fullname,
-        checkIn: new Date(),
-        state: this.state.status,
-        location : this.state.Location,
-      }
-    }).then((response) => {
-      console.log(response)
-      this.setState({
-        statusCheckInn: ' ',
-        idUser: response.data.absenceId,
-        clockInstatus: false,
-        textButton: 'Clock Out'
-      });
-      this.props.addLoad(false)
-      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
-      ToastAndroid.showWithGravity(
-        'Clock in success',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
+    const value = await AsyncStorage.getItem('clockin_state2');
+    if(value === 'clockin'){
+      Alert.alert(
+        'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+        [
+          { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+        ],
+        { cancelable: false },
       );
-      deviceStorage.saveItem("state", '1');
-      deviceStorage.saveItem("clockin_state", "clockin");
-      deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
-    })
-    .catch((errorr) => {
-      console.log(errorr)
       this.props.addLoad(false)
-      ToastAndroid.showWithGravity(
-        'Clock in fail',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
-   });
-  } 
-}
+      return true;   
+    }
+    else if(location_radius > 80){
+      alert('You are far from the office right now, go closer!')
+      this.props.addLoad(false)
+    }
+    else if(location_radius <= 80 && value !== 'clockin'){
+      const clockintime = new Date();
+      axios({
+        method: 'POST',
+        url: Url_Clockin,
+        headers: {
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT   
+        },
+        data: {
+          Username: this.state.username,
+          Name: this.state.fullname,
+          CheckIn: clockintime,
+          CheckOut: clockintime,
+          State: this.state.status,
+          Location : this.state.Location,
+          Approval : 'approve',
+          ApprovalByAdmin : 'approve'
+        }
+      }).then((response) => {
+        console.log(response)
+        this.setState({
+          statusCheckInn: ' ',
+          idUser: response.data.Id,
+          clockInstatus: false,
+          textButton: 'Clock Out',
+        });
+        this.props.addLoad(false)
+        this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
+        ToastAndroid.showWithGravity(
+          'Clock in success',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+        deviceStorage.saveItem("state", '1');
+        deviceStorage.saveItem("clockin_state", "clockin");
+        deviceStorage.saveItem("clockin_time", response.data.CheckIn);
+        deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
+      })
+      .catch((errorr) => {
+        console.log(errorr)
+        this.props.addLoad(false)
+        ToastAndroid.showWithGravity(
+          'Clock in fail',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+    });
+    } 
+  }
 
- async checkOut(){
+ async clockOut(){
   this.props.addLoad(true)
   const value = await AsyncStorage.getItem('id_user');
   const id = parseInt(value);
+  const clockin_time = await AsyncStorage.getItem('clockin_time');
+
+    axios({
+      method: 'GET',
+      url: Url_Clockin + '/' + id,
+      headers: { 
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + this.props.tokenJWT 
+      },
+    }).then((response) => { 
+      console.log(response)    
+      this.setState({
+        username: response.data.Username,
+        fullname: response.data.Name,
+        Approval: response.data.Approval,
+        Location: response.data.Location,
+        ApprovalByAdmin: response.data.ApprovalByAdmin,
+        photo: response.data.Photo,
+        note: response.data.Note,
+        projectname: response.data.ProjectName,
+        headdivision: response.data.HeadDivision,
+        companyname: response.data.CompanyName,
+        clientname: response.data.ClientName,
+        status: response.data.State,
+      });
+    }).catch((errorr) => {
+    console.log(errorr)       
+      this.setState({
+        error: 'Error retrieving data',
+      });
+    });
+
     axios({
       method: 'put',
-      url: this.state.url + '/' + id,
-      headers: { 'accept' : '*/*',
-      'Content-Type' : 'application/json'},
+      url: Url_Clockin + '/' + id,
+      headers: { 
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + this.props.tokenJWT 
+      },
       data : {
-        checkOut : new Date()
+        Name: this.state.fullname,
+        Username: this.state.username,
+        CheckIn: clockin_time,
+        State: this.state.status,
+        Location: this.state.Location,
+        CheckOut: new Date(),
+        Approval: this.state.Approval,
+        Photo: this.state.photo,
+        Note: this.state.note,
+        ProjectName: this.state.projectname,
+        HeadDivision: this.state.headdivision,
+        ApprovalByAdmin: this.state.ApprovalByAdmin,
+        CompanyName: this.state.companyname,
+        ClientName: this.state.clientname,
       }
     }).then(data => {
       this.setState({

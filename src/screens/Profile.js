@@ -13,6 +13,7 @@ import Person from '../../image/person.svg'
 import ProfileEdit from '../../image/profile-edit.svg'
 import axios from 'axios';
 import moment from 'moment';
+import {Url_Clockin} from '../config/URL'
 
 class Profile extends Component {
   constructor(props){
@@ -49,17 +50,18 @@ class Profile extends Component {
     }
 
     const headers = {
-      accept: '*/*',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + this.props.tokenJWT
      };
 
      axios({
          method: 'GET',
-         url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&SortByDate=1',
+         url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&SortByDate=1',
          headers: headers,
        }).then((response) => { 
          console.log(response)    
          this.setState({
-            history: response.data.slice(0,5)
+            history: response.data.slice(0,6)
          });
          this.props.addLoad(false)
        }).catch((errorr) => {
@@ -147,13 +149,15 @@ class Profile extends Component {
                     <Text style={styles.textMonth}>{this.state.monthYear}</Text>
                     <Card containerStyle={styles.cardHistory} >
                       {this.state.history.map((u, i) => {
+                          const clockin = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                          const clockout = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
                           return (
                             <View key={i} style={styles.history}>
                                 <View style={{flex:1, marginLeft:10}}>
-                                    <Text style={styles.Text}>{u.checkIn.substr(0,10)}</Text>
+                                    <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
                                 </View>
                                 <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
-                                    <Text style={styles.Text}>{u.checkIn.substr(11,8)+'-'+u.checkOut.substr(11,8)}</Text>
+                                    <Text style={styles.Text}>{clockin.substr(11,5)+' '+clockin.substr(20,15) +'-'+clockout.substr(11,5)+' '+clockout.substr(20,15)}</Text>
                                 </View>
                             </View>
                           );
@@ -269,7 +273,8 @@ const styles = StyleSheet.create({
 const mapStateToPropsData = (state) => {
   console.log(state);
   return {
-    loading : state.DataReducer.loading
+    loading : state.DataReducer.loading,
+    tokenJWT: state.JwtReducer.jwt,
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

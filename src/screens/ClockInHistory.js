@@ -5,8 +5,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import moment from 'moment';
+import {Url_Clockin} from '../config/URL';
+import { connect } from 'react-redux';
 
-export default class ClockInHistory extends Component {
+class ClockInHistory extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -43,12 +45,13 @@ export default class ClockInHistory extends Component {
         })
     
         const headers = {
-          accept: '*/*',
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT
          };
     
          axios({
              method: 'GET',
-             url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi?Username='+this.state.username+'&CheckIn='+year+'-'+month,
+             url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month,
              headers: headers,
            }).then((response) => { 
              console.log(response)    
@@ -73,13 +76,15 @@ export default class ClockInHistory extends Component {
                     <Card containerStyle={{marginBottom:10}}>
                         {
                             this.state.history.map((u, i) => {
+                              const clockin = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                              const clockout = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
                             return (
                             <View key={i} style={styles.history}>
                                 <View style={{flex:1, marginLeft:10}}>
-                                    <Text style={styles.Text}>{u.checkIn.substr(0,10)}</Text>
+                                    <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
                                 </View>
                                 <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
-                                    <Text style={styles.Text}>{u.checkIn.substr(11,8)+'-'+u.checkOut.substr(11,8)}</Text>
+                                    <Text style={styles.Text}>{clockin.substr(11,5)+' '+clockin.substr(20,15) +'-'+clockout.substr(11,5)+' '+clockout.substr(20,15)}</Text>
                                 </View>
                             </View>
                             );
@@ -88,7 +93,7 @@ export default class ClockInHistory extends Component {
                     </Card>
                   </View>
                   <View style={{display: this.state.history.length === 0 ? 'flex':'none', alignItems:'center', marginTop:250}}>
-                    <FontAwesome5 name='exclamation-triangle' size={80} color='#505050' style={{opacity:0.5}}/>    
+                    <FontAwesome5 name='exclamation-triangle' size={80} color='#1A446D' style={{opacity:0.7}}/>    
                     <Text style={[styles.TextStatus]}>No History</Text>
                   </View>
                 </ScrollView>
@@ -108,6 +113,20 @@ const styles = StyleSheet.create({
       fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#4A90E2', marginLeft:20  
   },
   TextStatus:{
-    fontFamily:'Nunito-SemiBold', fontSize:25, fontWeight:'600', color:'#505050', textAlign:'center', opacity:0.5
+    fontFamily:'Nunito-SemiBold', fontSize: 20, fontWeight:'600', color:'#265685', textAlign:'center'
   }
 })
+
+const mapStateToPropsData = (state) => {
+  console.log(state);
+  return {
+    tokenJWT: state.JwtReducer.jwt,
+  }
+}
+const mapDispatchToPropsData = (dispatch) => {
+  return {
+
+  }
+}
+  
+export default connect(mapStateToPropsData, mapDispatchToPropsData)(ClockInHistory)

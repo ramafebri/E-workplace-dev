@@ -8,6 +8,7 @@ import Buildings from '../../image/buildings.svg'
 import WFH from '../../image/wfh.svg'
 import Sick from '../../image/first-aid.svg'
 import moment from 'moment';
+import {Url_Clockin} from '../config/URL'
 
 export default class CardApproval extends Component {
     constructor(props) {
@@ -16,7 +17,6 @@ export default class CardApproval extends Component {
           detail: [],
           date :'',
           visible: false,
-          url:'https://absensiapiendpoint.azurewebsites.net/api/absensi/'
         }
         
         this.onDetails = this.onDetails.bind(this);
@@ -42,7 +42,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'GET',
-          url: this.state.url + this.props.person.absenceId,
+          url: Url_Clockin + this.props.person.Id,
           headers: headers,
         }).then((response) => { 
           console.log(response)    
@@ -62,7 +62,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'PUT',
-          url: this.state.url + this.props.person.absenceId,
+          url: Url_Clockin + this.props.person.Id,
           headers: headers,
           data : {
             approval : 'decline'
@@ -98,7 +98,7 @@ export default class CardApproval extends Component {
         };
         axios({
           method: 'PUT',
-          url: this.state.url + this.props.person.absenceId,
+          url: Url_Clockin + this.props.person.Id,
           headers: headers,
           data : {
             approval : 'accept'
@@ -130,25 +130,24 @@ export default class CardApproval extends Component {
         return (           
           <View style={styles.viewContainer} >
             <TouchableOpacity style={{height:'100%', width:'100%', flexDirection : 'row',}} onPress={this.onDetails}>
-                    <View style={[styles.view1,{display: this.props.person.state === 'Work at client office' ? 'flex':'none'}]}>
+                    <View style={[styles.view1,{display: this.props.person.State === 'Work at client office' ? 'flex':'none'}]}>
                       <Buildings width={64} heigth={64}/>
                     </View>
-                    <View style={[styles.view1,{display: this.props.person.state === 'Taking day off' ? 'flex':'none'}]}>
+                    <View style={[styles.view1,{display: this.props.person.State === 'Taking day off' ? 'flex':'none'}]}>
                       <Coffee width={64} heigth={64}/>
                     </View>
-                    <View style={[styles.view1,{display: this.props.person.state === 'Work from home' ? 'flex':'none'}]}>
+                    <View style={[styles.view1,{display: this.props.person.State === 'Work from home' ? 'flex':'none'}]}>
                       <WFH width={64} heigth={64}/>
                     </View>
-                    <View style={[styles.view1,{display: this.props.person.state === 'Sick Leave' ? 'flex':'none'}]}>
+                    <View style={[styles.view1,{display: this.props.person.State === 'Sick Leave' ? 'flex':'none'}]}>
                       <Sick width={64} heigth={64}/>
                     </View>
                     <View style={styles.viewText}>
                       <Text style={styles.text}>
-                          {this.props.person.name}
+                          {this.props.person.Name}
                       </Text>
                       <Text style={styles.text1}>
-                          {this.props.person.state}
-                          {this.props.person.idWFH}
+                          {this.props.person.State}
                       </Text>
                     </View>
                           

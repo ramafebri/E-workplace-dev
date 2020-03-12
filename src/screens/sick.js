@@ -9,6 +9,7 @@ import {ApiMaps} from '../config/apiKey'
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
+import {Url_Clockin} from '../config/URL'
 
 class sick extends Component {
     constructor(props){
@@ -21,7 +22,7 @@ class sick extends Component {
             Location:'',
             message:'',
             status: 'Sick Leave',
-            scrumMaster: '',
+            headDivision: '',
             projectName :'',
             clockInstatus: false,
             statusCheckInn: 'You have clocked in!',
@@ -71,34 +72,34 @@ class sick extends Component {
           this.props.addLoad(false)
           return true;
         }
-        else if(this.state.scrumMaster === '' || this.state.projectName === ''){
+        else if(this.state.headDivision === '' || this.state.projectName === ''){
           alert('All form must be filled!');
         }
-        else if(this.state.scrumMaster !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
+        else if(this.state.headDivision !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
           axios({
             method: 'POST',
-            url: 'https://absensiapiendpoint.azurewebsites.net/api/absensi',
+            url: Url_Clockin,
             headers: {
-              accept: '*/*',
-              'Content-Type': 'application/json',
+              'accept': 'application/json',
+              'Authorization': 'Bearer ' + this.props.tokenJWT
             },
             data: {
-              username: this.state.username,
-              name: this.state.fullname,
-              checkIn: new Date(),
-              state: this.state.status,
-              location : this.state.Location,
-              approval: "pending",
-              headDivision: this.state.scrumMaster,
-              projectName: this.state.projectName,
-              note: this.state.message
+              Username: this.state.username,
+              Name: this.state.fullname,
+              CheckIn: new Date(),
+              State: this.state.status,
+              Location : this.state.Location,
+              Approval: "pending",
+              HeadDivision: this.state.headDivision,
+              ProjectName: this.state.projectName,
+              Note: this.state.message
             }
           }).then((response) => {
             console.log(response)
             this.setState({
-              statusCheckIn: ' ',
-              clockInstatus: true,
-              idUser: response.data.absenceId,
+              // statusCheckIn: ' ',
+              // clockInstatus: true,
+              idUser: response.data.Id,
             });
             // deviceStorage.saveItem("clockin_state", "clockin");
             // deviceStorage.saveItem("state", '1');
@@ -171,7 +172,7 @@ class sick extends Component {
                 <View style={styles.viewPicker}>            
                   <Picker
                     mode={"dropdown"}
-                    selectedValue={this.state.scrumMaster}
+                    selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
                       this.setState({scrumMaster: itemValue})
@@ -256,13 +257,7 @@ const mapStateToPropsData = (state) => {
   console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
-    nameUser: state.DataReducer.username,
-    namee: state.DataReducer.fullname,
-    userLocation: state.DataReducer.locations,
     clockin_status : state.DataReducer.clockIn,
-    status_Checkin : state.DataReducer.statusCheckIn,
-    id : state.DataReducer.id,
-    workStatus :  state.DataReducer.workStatus
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

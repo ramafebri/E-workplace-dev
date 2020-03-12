@@ -11,23 +11,23 @@ export default class CustomAlertComponent extends React.Component {
             transparent={true}
             animationType={"fade"}>
             <View style={styles.mainOuterComponent}>
-             <View style={[styles.viewalert,{height: this.props.details.state === 'Work at client office' ? 400:420}]}>
+             <View style={[styles.viewalert,{height: this.props.details.State === 'Work at client office' ? 400:420}]}>
               <View style={styles.view1}>
-                <Text style={styles.text}>{this.props.details.state}</Text>
+                <Text style={styles.text}>{this.props.details.State}</Text>
                 <View style={styles.viewPhoto}>
-                  <View style={{display: this.props.details.photo === null ? 'flex' : 'none',marginTop:100}}>
+                  <View style={{display: this.props.details.Photo === null ? 'flex' : 'none',marginTop:100}}>
                     <Person width={70} height={70}/>
                     </View>
-                  <Image style={{width: 100, height: 100, borderRadius:100/2}} source={{uri:this.props.details.photo}}/>                  
+                  <Image style={{width: 100, height: 100, borderRadius:100/2}} source={{uri:this.props.details.Photo}}/>                  
                 </View>
-                <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.name} <Text style={styles.text2}>needs you approval</Text></Text>
-                <Text style={styles.text1}>Working on : <Text style={styles.text2}>{this.props.details.projectName}</Text></Text>
-                <View style={{display: this.props.details.state === 'Work at client office' ? 'flex':'none'}}>
-                  <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.clientName}</Text></Text>
-                  <Text style={styles.text1}>Company : <Text style={styles.text2}>{this.props.details.companyName}{'\n'}</Text></Text>
+                <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.Name} <Text style={styles.text2}>needs you approval</Text></Text>
+                <Text style={styles.text1}>Working on : <Text style={styles.text2}>{this.props.details.ProjectName}</Text></Text>
+                <View style={{display: this.props.details.State === 'Work at client office' ? 'flex':'none'}}>
+                  <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.ClientName}</Text></Text>
+                  <Text style={styles.text1}>Company : <Text style={styles.text2}>{this.props.details.CompanyName}{'\n'}</Text></Text>
                 </View>
-                <View style={{display: this.props.details.state !== 'Work at client office' ? 'flex':'none'}}>
-                  <Text style={styles.text1}>Notes : <Text style={styles.text2}>{this.props.details.note}</Text></Text>
+                <View style={{display: this.props.details.State !== 'Work at client office' ? 'flex':'none'}}>
+                  <Text style={styles.text1}>Notes : <Text style={styles.text2}>{this.props.details.Note}</Text></Text>
                 </View>
 
                 <View style={{height:20, flexDirection:'row', marginTop:10}}>
@@ -35,7 +35,7 @@ export default class CustomAlertComponent extends React.Component {
                     <FontAwesome5 name='map-marker-alt' size={16} color='#1A446D' style={{marginTop:2, marginLeft:50}}/>
                   </View>
                   <View style={{width:250, height:'100%', justifyContent:'center', flex:3}}>
-                    <Text style={styles.textLocation}>{this.props.details.location}</Text>
+                    <Text style={styles.textLocation}>{this.props.details.Location}</Text>
                   </View>              
                 </View>
               </View>
