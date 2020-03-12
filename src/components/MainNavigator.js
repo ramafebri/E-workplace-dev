@@ -27,7 +27,7 @@ function HeaderRight () {
         solid       
       />}
       buttonStyle={{backgroundColor:'#1A446D'}}
-      onPress={()=>{alert('hai gay')}}  
+      onPress={()=>{alert('hai')}}  
     />
       
     </View>

@@ -19,7 +19,7 @@ class Profile extends Component {
     super(props);
     this.state = {
         username: '',
-        name:'',
+        name:'Name',
         monthYear : moment().format('MMMM YYYY'),
         refreshing : false,
         history:[]
@@ -41,10 +41,12 @@ class Profile extends Component {
     const month = moment().format('MM');
     const year = new Date().getFullYear();
 
-    this.setState({
-      username : username,
-      name : name
-    })
+    if(name !== null){
+      this.setState({
+        username : username,
+        name : name
+      })
+    }
 
     const headers = {
       accept: '*/*',
@@ -157,6 +159,7 @@ class Profile extends Component {
                           );
                         })
                       }
+                      <Text style={[styles.textStatus,{display: this.state.history.length === 0 ? 'flex':'none'}]}>No History</Text>
                     </Card>
                     <TouchableOpacity style={{width:'40%', alignSelf:'center'}} onPress={this.movetoClockinHistory}>
                        <Text style={styles.textVD}>View More History</Text>
@@ -198,8 +201,9 @@ const styles = StyleSheet.create({
     flex:1, borderWidth:1, borderColor:'#C1C1C1', borderRadius:7, flexWrap:'nowrap'
   },
   cardHistory: {
-    padding: 0,borderRadius:7,
-    width:'90%',
+    padding: 0,
+    borderRadius:7,
+    width:'93%',
     alignSelf:'center',
     marginTop:10,
     shadowColor: "#000",
@@ -209,8 +213,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-
-    elevation: 5,    
+    elevation: 5,  
+    height:250  
   },
   textHistory:{
     color:'#505050', fontFamily:'Nunito-Light', fontSize:14
@@ -257,6 +261,9 @@ const styles = StyleSheet.create({
   history:{
     height:40, borderBottomColor:'#505050', borderBottomWidth:0.5, justifyContent:'center', flexDirection:'row'
 },
+ textStatus:{
+  fontFamily:'Nunito-SemiBold', fontSize:20, textAlign:'center', textAlignVertical:'center', marginTop:100, color:'#505050'
+ }
 })
 
 const mapStateToPropsData = (state) => {

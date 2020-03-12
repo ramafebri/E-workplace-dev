@@ -4,7 +4,8 @@ import React from 'react'
 import HomeHD from '../screens/HomeHeadDivision'
 import Profile from '../screens/Profile'
 import Leave from '../screens/Leave'
-import WorkInRemote from "../screens/WorkInRemote"
+import Task from '../screens/Task'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 //Bottom navigation bar for Head Divisions
@@ -29,10 +30,10 @@ export default function BottomNavBar() {
       <Tab.Screen name="Home" component={HomeHD} options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="home" color={color} size={20} />
+            <Icon name="home-outline" color={color} size={25} />
           ),
         }}/>
-      <Tab.Screen name="Not at Office" component={WorkInRemote} options={{
+      <Tab.Screen name="Task" component={Task} options={{
           tabBarLabel: 'Task',
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="clipboard" color={color} size={20} />

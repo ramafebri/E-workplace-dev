@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, StyleSheet, SafeAreaView, ScrollView, BackHandler, RefreshControl } from 'react-native'
 import { Card } from 'react-native-elements'
 import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -19,7 +20,6 @@ export default class ClockInHistory extends Component {
       }
     
       async componentDidMount(){
-        //this.props.addLoad(true)
         this.loadData();
         BackHandler.addEventListener('hardwareBackPress', this.onBack);
       }
@@ -55,10 +55,8 @@ export default class ClockInHistory extends Component {
              this.setState({
                 history: response.data
              });
-             //this.props.addLoad(false)
            }).catch((errorr) => {
              console.log(errorr)       
-             //this.props.addLoad(false)
           });
       }
 
@@ -70,6 +68,7 @@ export default class ClockInHistory extends Component {
                 refreshControl={
                   <RefreshControl refreshing={this.state.refreshing} onRefresh={this.loadData} />
                 }>
+                  <View style={{display: this.state.history.length !== 0 ? 'flex':'none'}}>
                     <Text style={styles.TextTittle}>{this.state.monthYear}</Text>
                     <Card containerStyle={{marginBottom:10}}>
                         {
@@ -87,6 +86,11 @@ export default class ClockInHistory extends Component {
                             })
                         }
                     </Card>
+                  </View>
+                  <View style={{display: this.state.history.length === 0 ? 'flex':'none', alignItems:'center', marginTop:250}}>
+                    <FontAwesome5 name='exclamation-triangle' size={80} color='#505050' style={{opacity:0.5}}/>    
+                    <Text style={[styles.TextStatus]}>No History</Text>
+                  </View>
                 </ScrollView>
             </SafeAreaView>
         )
@@ -102,5 +106,8 @@ const styles = StyleSheet.create({
   },
   TextTittle:{
       fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#4A90E2', marginLeft:20  
+  },
+  TextStatus:{
+    fontFamily:'Nunito-SemiBold', fontSize:25, fontWeight:'600', color:'#505050', textAlign:'center', opacity:0.5
   }
 })

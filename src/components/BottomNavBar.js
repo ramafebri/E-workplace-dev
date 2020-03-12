@@ -4,7 +4,7 @@ import React from 'react'
 import LoggedIn from '../screens/LoggedIn'
 import Profile from '../screens/Profile'
 import Leave from '../screens/Leave'
-import WorkInRemote from "../screens/WorkInRemote"
+import Task from '../screens/Task'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Tab = createBottomTabNavigator();
@@ -31,7 +31,7 @@ export default function BottomNavBar() {
             <Icon name="home-outline" color={color} size={25} />
           ),
         }}/>
-      <Tab.Screen name="Not at Office" component={WorkInRemote} options={{
+      <Tab.Screen name="Task" component={Task} options={{
           tabBarLabel: 'Task',
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="clipboard" color={color} size={20} />
