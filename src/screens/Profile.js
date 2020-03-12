@@ -145,7 +145,7 @@ class Profile extends Component {
                   <View style={{ width:'100%', alignSelf:'center'}}>
                     <Text style={styles.text8}>History</Text>
                     <Text style={styles.textMonth}>{this.state.monthYear}</Text>
-                    <Card containerStyle={[styles.cardHistory]} >
+                    <Card containerStyle={styles.cardHistory} >
                       {this.state.history.map((u, i) => {
                           return (
                             <View key={i} style={styles.history}>

@@ -4,6 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Loading from '../components/Loading';
 import PeopleCard from '../components/CardApproval'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 export default class ApprovalPage extends Component {
     constructor(props) {
@@ -70,7 +71,8 @@ export default class ApprovalPage extends Component {
                 style={{display: this.state.people.length !== 0 ? 'flex':'none'}}
               />
               <View style={[styles.view,{display: this.state.people.length === 0 ? 'flex':'none'}]}>
-                <Text style={styles.text}>No Data</Text>
+                <FontAwesome5 name='exclamation-triangle' size={80} color='#505050' style={{opacity:0.5}}/>
+                <Text style={styles.text}>No Approval Request</Text>
               </View>
               <Loading visible={this.state.loadings === true ? true : false}/>
             </SafeAreaView>
@@ -83,9 +85,9 @@ const styles = StyleSheet.create({
        flex:1,     
   },
   view:{
-    alignSelf:'center', marginBottom:400
+    alignSelf:'center', marginBottom:350, alignItems:'center'
   },
   text:{
-    fontFamily:'Nunito-Light', fontSize:26, fontWeight:'600', color:'#505050'
+    fontFamily:'Nunito-Light', fontSize:26, fontWeight:'600', color:'#505050', opacity:0.5
   }
 })

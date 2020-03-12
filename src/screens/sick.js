@@ -100,10 +100,10 @@ class sick extends Component {
               clockInstatus: true,
               idUser: response.data.absenceId,
             });
-            deviceStorage.saveItem("clockin_state", "clockin");
-            deviceStorage.saveItem("state", '1');
-            deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
-            this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
+            // deviceStorage.saveItem("clockin_state", "clockin");
+            // deviceStorage.saveItem("state", '1');
+            // deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
+            // this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
             this.props.addLoad(true)
             ToastAndroid.showWithGravity(
               'Clock in success!',

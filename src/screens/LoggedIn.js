@@ -174,7 +174,7 @@ class LoggedIn extends Component {
    if(value === '1'){
     this.checkOut()
    }
-   else if(value === '0'){
+   else if(value === '0' || value === null){
     this.checkIn()
    }
  }  
