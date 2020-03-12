@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:5, color:'#505050'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', color:'#505050'
   },
   textHour:{
     color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44

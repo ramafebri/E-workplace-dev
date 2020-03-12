@@ -196,7 +196,7 @@ class HomeHeadDivision extends Component {
    if(value === '1'){
     this.checkOut()
    }
-   else if(value === '0'){
+   else if(value === '0' || value === null){
     this.checkIn()
    }
  }  
@@ -342,7 +342,7 @@ class HomeHeadDivision extends Component {
                 <Text style={styles.textUsername}>Hi, {this.state.username}!</Text>
                 <View style={styles.view1}>
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
-                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:2}}/>
+                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:5}}/>
                 </View>
                 <View style={{width:450, height:'100%',}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', marginBottom:3, color:'#505050'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', color:'#505050'
   },
   textHour:{
     color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44
