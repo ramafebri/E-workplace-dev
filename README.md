@@ -20,7 +20,7 @@ E workpalce is a mobile application that is made for employee of moonlay technol
 
 ## Getting Started
 ### Installation process
-This app was build with React Native and NPM Versions : 6.13.6 <br/>
+This app was build with React Native. NPM Versions : 6.13.6 React Native Versions: 0.61.5<br/>
 Step 1 : Clone or download the repository then open the project in text editor\
 Step 2 : Open terminal in your text editor and run the code below
 ```bash
