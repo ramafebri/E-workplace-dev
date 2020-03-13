@@ -11,7 +11,6 @@ import axios from 'axios';
 import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
-import ImageResizer from 'react-native-image-resizer';
 import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
 class WorkClient extends Component {
@@ -70,17 +69,19 @@ class WorkClient extends Component {
       storageOptions: {
         skipBackup: true,
         path: 'images',
+        maxWidth: 1000,
+        maxHeight: 1000,
+        quality: 1
       },
     };
     ImagePicker.showImagePicker(options, response => {
       if (response.uri) {
-        console.log(response)
+        //console.log(response)
         const name = response.fileName;
         const type = response.type;
         this.setState({ 
           loadingPhoto: true 
         })
-        ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 100).then((response) => {
           console.log(response.size)
           var url = Url_UploadPhoto;
           const Header = {
@@ -109,10 +110,6 @@ class WorkClient extends Component {
                   );
                 }
               )
-        })
-          .catch((err) => {
-              alert('Compress photo fail!')
-          });
       }
     })
   }
@@ -123,7 +120,7 @@ class WorkClient extends Component {
         Geocoder.init(ApiMaps);
         Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(json => {
-            console.log(json);
+           // console.log(json);
             var addressComponent = json.results[1].address_components[0].long_name;
               this.setState({
                 Location: addressComponent
@@ -361,7 +358,7 @@ textbtnSubmit:{
 });
 
 const mapStateToPropsData = (state) => {
-  console.log(state);
+  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
     clockin_status : state.DataReducer.clockIn,

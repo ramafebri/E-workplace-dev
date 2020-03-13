@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToPropsData = (state) => {
-  console.log(state);
+  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt
   }

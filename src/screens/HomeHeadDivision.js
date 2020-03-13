@@ -24,6 +24,7 @@ class HomeHeadDivision extends Component {
         loadingCheckin: false,
         idUser:'',
         username: 'User',
+        firstname:'User',
         fullname:'',
         status:'Work at Office',
         Location:'Location',
@@ -124,6 +125,7 @@ class HomeHeadDivision extends Component {
           this.setState({
             username: response.data.data.username,
             fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
+            firstname: response.data.data.profile.firstname
           });
           deviceStorage.saveItem("username", this.state.username);
           deviceStorage.saveItem("name", this.state.fullname);
@@ -392,10 +394,10 @@ class HomeHeadDivision extends Component {
               onRefresh={this.onRefresh} />
             }>
               <View style={{marginLeft:'5%'}}>
-                <Text style={styles.textUsername}>Hi, {this.state.username}!</Text>
+                <Text style={styles.textUsername}>Hi, {this.state.firstname}!</Text>
                 <View style={styles.view1}>
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
-                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:5}}/>
+                  <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:3}}/>
                 </View>
                 <View style={{width:450, height:'100%',}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
@@ -655,7 +657,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToPropsData = (state) => {
-  console.log(state);
+  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
     nameUser: state.DataReducer.username,

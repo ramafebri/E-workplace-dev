@@ -25,8 +25,6 @@ export default class CardApproval extends Component {
     }
 
     componentDidMount(){    
-      this.checkWorkStatus
-
       const dateApi = this.props.person.checkIn.substr(0, 10)
       var convertToMMDD = dateApi.split("-");
       var finalDate = moment(convertToMMDD, "YYYY/MM/DD").toString().substr(3, 7)

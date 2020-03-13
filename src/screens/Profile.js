@@ -189,14 +189,13 @@ const styles = StyleSheet.create({
   },
   card:{
     shadowColor: "#000",
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.22,
-                  shadowRadius: 2.22,
-
-                  elevation: 3, borderRadius:7,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3, borderRadius:7,
   },
   viewPhoto:{
     backgroundColor:'#d4d4d4', width:100, height:100, alignSelf:'center', borderRadius:100/2, justifyContent:'center', alignItems:'center', marginTop:5 
@@ -271,7 +270,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToPropsData = (state) => {
-  console.log(state);
+  //console.log(state);
   return {
     loading : state.DataReducer.loading,
     tokenJWT: state.JwtReducer.jwt,

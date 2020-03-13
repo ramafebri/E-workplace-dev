@@ -233,13 +233,13 @@ const styles = StyleSheet.create({
     fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
   },
   viewPicker:{
-    width:'90%', height:50, marginLeft:20, borderRadius:5, borderColor:'gray', borderWidth:1, backgroundColor:'white'
+    width:'90%', height:50, marginLeft:20, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white'
   },
   picker:{
-    height: '100%', width: '100%', borderWidth:20, borderColor:'gray'
+    height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
   },
   textInput:{
-    paddingLeft:10, paddingRight:10,height:200, borderColor: 'gray', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'gray', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18
+    paddingLeft:10, paddingRight:10,height:200, borderColor: '#505050', textAlignVertical: 'top', borderWidth: 1, marginLeft:20, borderColor:'#505050', width:'90%', borderRadius:5, backgroundColor:'white', fontSize:18
   },
   buttonSubmit:{
     backgroundColor:'#1A446D', marginTop:30, alignItems:'center', width:'90%', height:50, alignSelf:'center', borderRadius:5
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   inputText:{
     textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:50, marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito', fontWeight:'600', paddingLeft:10, paddingRight:10,
-    borderColor:'gray', fontFamily:'Nunito-Regular', fontWeight:'600' 
+    borderColor:'#505050', fontFamily:'Nunito-Regular', fontWeight:'600' 
   },
 });
 
