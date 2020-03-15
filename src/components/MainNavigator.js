@@ -3,7 +3,7 @@ import { View, StyleSheet} from 'react-native';
 import { Button } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../screens/Login';
-import JwtCheck from "../screens/JwtCheck";
+import SplashScreens from "../screens/SplashScreens";
 import WorkHome from "../screens/WorkHome";
 import OverworkForm from "../screens/OverworkForm";
 import WorkClient from "../screens/WorkClient";
@@ -56,7 +56,7 @@ function MyStack() {
       
       initialRouteName='SplashScreen'
     >
-      <Stack.Screen name="SplashScreen" component={JwtCheck} options={{headerShown: false}}/>
+      <Stack.Screen name="SplashScreen" component={SplashScreens} options={{headerShown: false}}/>
       <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
       <Stack.Screen name="Home" component={BottomNavBar} 
       options={{

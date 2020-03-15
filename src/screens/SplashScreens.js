@@ -11,7 +11,7 @@ import { addLoading } from '../actions/DataActions';
 import Logo from '../../image/eworkplace.svg'
 import { CommonActions } from '@react-navigation/native';
 
-class JwtCheck extends Component {    
+class SplashScreens extends Component {    
       componentDidMount() {
         this.loadJWT();
       }
@@ -84,4 +84,4 @@ const mapDispatchToPropsData = (dispatch) => {
   }
 }
 
-export default connect(mapStateToPropsData, mapDispatchToPropsData)(JwtCheck)
+export default connect(mapStateToPropsData, mapDispatchToPropsData)(SplashScreens)
