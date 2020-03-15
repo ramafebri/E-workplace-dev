@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../screens/Login';
 import JwtCheck from "../screens/JwtCheck";
 import WorkHome from "../screens/WorkHome";
+import OverworkForm from "../screens/OverworkForm";
 import WorkClient from "../screens/WorkClient";
 import Dayoff from "../screens/dayOff"
 import Sick from "../screens/sick"
@@ -92,7 +93,8 @@ function MyStack() {
       <Stack.Screen name="DayOff" component={Dayoff} options={{headerTitle:'Day Off',}}/>  
       <Stack.Screen name="Sick" component={Sick} options={{headerTitle:'Sick',}}/>
       <Stack.Screen name="Approval" component={Approval} options={{headerTitle:'Approval',}}/>
-      <Stack.Screen name="ClockinHistory" component={ClockInHistory} options={{headerTitle:'Clock In History'}}/>     
+      <Stack.Screen name="ClockinHistory" component={ClockInHistory} options={{headerTitle:'Clock In History'}}/>  
+      <Stack.Screen name="OverworkForm" component={OverworkForm} options={{headerTitle:'Overwork Form'}}/>   
     </Stack.Navigator>
   );
 }

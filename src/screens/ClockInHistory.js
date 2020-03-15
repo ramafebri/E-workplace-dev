@@ -76,18 +76,26 @@ class ClockInHistory extends Component {
                     <Card containerStyle={{marginBottom:10}}>
                         {
                             this.state.history.map((u, i) => {
-                              const clockin = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
-                              const clockout = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
-                            return (
-                            <View key={i} style={styles.history}>
-                                <View style={{flex:1, marginLeft:10}}>
-                                    <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
-                                </View>
-                                <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
-                                    <Text style={styles.Text}>{clockin.substr(11,5)+' '+clockin.substr(20,15) +'-'+clockout.substr(11,5)+' '+clockout.substr(20,15)}</Text>
-                                </View>
-                            </View>
-                            );
+                              const clockinTime = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                              const clockoutTime = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                              const clockin = clockinTime.substr(11,5)+' '+clockinTime.substr(20,15)
+                              var clockout = '';
+                              if(clockoutTime.substr(11,5) === '07:00' && clockoutTime.substr(20,15) === 'AM'){
+                                  clockout = 'Now'
+                              }
+                              else{
+                                  clockout = clockoutTime.substr(11,5)+' '+clockoutTime.substr(20,15)
+                              }
+                              return (
+                              <View key={i} style={styles.history}>
+                                  <View style={{flex:1, marginLeft:10}}>
+                                      <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
+                                  </View>
+                                  <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
+                                      <Text style={styles.Text}>{clockin+'-'+clockout}</Text>
+                                  </View>
+                              </View>
+                              );
                             })
                         }
                     </Card>

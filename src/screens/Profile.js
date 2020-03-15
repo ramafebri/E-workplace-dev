@@ -29,6 +29,7 @@ class Profile extends Component {
       this.LogOut = this.LogOut.bind(this);
       this.loadData = this.loadData.bind(this);
       this.movetoClockinHistory = this.movetoClockinHistory.bind(this);
+      this.movetoOverworkForm = this.movetoOverworkForm.bind(this);
   }
 
   async componentDidMount(){
@@ -92,6 +93,10 @@ class Profile extends Component {
    this.props.navigation.navigate('ClockinHistory')
  }
 
+ movetoOverworkForm(){
+  this.props.navigation.navigate('OverworkForm')
+ }
+
   render() {
           return(
             <SafeAreaView style={styles.container}>
@@ -126,22 +131,24 @@ class Profile extends Component {
                     <Card containerStyle={styles.dcard}>
                     <Text style={styles.text4}>Day Off</Text>
                      <View style={{flexDirection:'row'}}>
-                       <Text style={styles.text5}>5</Text>
+                       <Text style={styles.text5}>-</Text>
                        <Text style={styles.text6}>Days {'\n'}Remaining</Text>
                      </View>                 
                     </Card>
                     <Card containerStyle={styles.dcard}> 
                      <Text style={styles.text4}>Overwork</Text>
                      <View style={{flexDirection:'row'}}>
-                       <Text style={styles.text5}>12</Text>
+                       <Text style={styles.text5}>-</Text>
                        <Text style={styles.text7}>Hours</Text>
                      </View>
                   
                     </Card>
-                    <Card containerStyle={styles.dcard}>                   
-                     <Text style={styles.text4}>Overwork</Text>
-                     <Text style={styles.text4}>Form</Text>
-                     <FontAwesome5 name='file-alt' size={20} color='#505050' style={{alignSelf:'flex-end', marginTop:'15%'}}/>                
+                    <Card containerStyle={styles.dcard}>
+                      <TouchableOpacity onPress={this.movetoOverworkForm}>                   
+                        <Text style={styles.text4}>Overwork</Text>
+                        <Text style={styles.text4}>Form</Text>
+                        <FontAwesome5 name='file-alt' size={20} color='#505050' style={{alignSelf:'flex-end', marginTop:'15%'}}/>
+                      </TouchableOpacity>                
                     </Card>
                   </View>
                   <View style={{ width:'100%', alignSelf:'center'}}>
