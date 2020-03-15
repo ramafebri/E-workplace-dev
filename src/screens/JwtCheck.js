@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
 import { addLoading } from '../actions/DataActions';
 import Logo from '../../image/eworkplace.svg'
+import { CommonActions } from '@react-navigation/native';
 
 class JwtCheck extends Component {    
       componentDidMount() {
@@ -21,6 +22,26 @@ class JwtCheck extends Component {
         this.props.addLoad(true)
 
         // this.props.navigation.push(userToken ? 'Home' : 'Home');
+        // this.props.navigation.dispatch( userToken ?
+        //   CommonActions.navigate({
+        //     name: 'HomeHD',
+        //   })
+        //   :
+        //   CommonActions.navigate({
+        //     name: 'Login',
+        //   })
+        // );
+        // this.props.navigation.reset( userToken ?
+        //   {
+        //     index: 0,
+        //     routes: [{ name: 'HomeHD' }],
+        //   }
+        //   :
+        //   {
+        //     index: 0,
+        //     routes: [{ name: 'Login' }],
+        //   }
+        //   );
          this.props.navigation.push(userToken ? 'HomeHD' : 'Login');
       };
     

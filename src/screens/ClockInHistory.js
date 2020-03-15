@@ -51,7 +51,7 @@ class ClockInHistory extends Component {
     
          axios({
              method: 'GET',
-             url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month,
+             url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&NotState=Sick%20Leave&SortByDate=1',
              headers: headers,
            }).then((response) => { 
              console.log(response)    

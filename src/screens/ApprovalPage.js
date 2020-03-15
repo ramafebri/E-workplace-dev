@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import { StyleSheet, SafeAreaView, FlatList, BackHandler, RefreshControl, View, Text } from 'react-native'
 import axios from 'axios';
 import moment from 'moment';
+import { connect } from 'react-redux';
 import Loading from '../components/Loading';
 import PeopleCard from '../components/CardApproval'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {Url_GetDataApproval} from '../config/URL'
 
-export default class ApprovalPage extends Component {
+class ApprovalPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -93,3 +94,16 @@ const styles = StyleSheet.create({
     fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#265685'
   }
 })
+
+const mapStateToPropsData = (state) => {
+  return {
+    tokenJWT: state.JwtReducer.jwt,
+  }
+}
+const mapDispatchToPropsData = (dispatch) => {
+  return {
+
+  }
+}
+  
+export default connect(mapStateToPropsData, mapDispatchToPropsData)(ApprovalPage)

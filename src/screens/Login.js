@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet,TouchableOpacity, TextInput, ActivityIndicator, BackHandler, Alert } from 'react-native';
+import { Text, View, StyleSheet,TouchableOpacity, TextInput, ActivityIndicator, BackHandler, Alert, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 import deviceStorage from '../services/deviceStorage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -139,8 +139,9 @@ if((username != null && username != "" ) && ( password != null && password != ""
     const { username, password} = this.state;
 
     return (
-      <View style={{flex:1}}>
-        <View style={{flex:1, backgroundColor:'#1A446D', paddingLeft:'5%', alignContent:'center'}}>
+      <SafeAreaView style={{flex:1}}>
+        <ScrollView>
+        <View style={{height:100, backgroundColor:'#1A446D', paddingLeft:'5%', justifyContent:'center'}}>
           <Text style={styles.logintitle}>
             Welcome!
           </Text>
@@ -148,7 +149,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
             Login to Continue
           </Text>
         </View>
-        <View style={{flex:5.5, backgroundColor:'#F9FCFF',}}>
+        <View style={{height:500, backgroundColor:'#F9FCFF',}}>
           <View style={{alignSelf:'center', marginTop:'10%'}}>
             <Logo width={230} height={60}/>
           </View>
@@ -186,7 +187,8 @@ if((username != null && username != "" ) && ( password != null && password != ""
             </View>
           </View>
         </View>
-      </View>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }
@@ -218,7 +220,6 @@ const styles = StyleSheet.create({
   logintitle: {
     fontSize: 24,
     color: '#FFFFFF',
-    paddingTop: '5%',
     fontFamily:'Nunito-SemiBold',
     fontWeight:'600',
   },

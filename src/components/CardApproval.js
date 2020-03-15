@@ -8,9 +8,10 @@ import Buildings from '../../image/buildings.svg'
 import WFH from '../../image/wfh.svg'
 import Sick from '../../image/first-aid.svg'
 import moment from 'moment';
+import { connect } from 'react-redux';
 import {Url_Clockin} from '../config/URL'
 
-export default class CardApproval extends Component {
+class CardApproval extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,12 +21,13 @@ export default class CardApproval extends Component {
         }
         
         this.onDetails = this.onDetails.bind(this);
+        this.onBack = this.onBack.bind(this);
         this.buttonApprove = this.buttonApprove.bind(this)
         this.buttonDecline = this.buttonDecline.bind(this)
     }
 
-    componentDidMount(){    
-      const dateApi = this.props.person.checkIn.substr(0, 10)
+    componentDidMount(){   
+      const dateApi = this.props.person.CheckIn.substr(0, 10)
       var convertToMMDD = dateApi.split("-");
       var finalDate = moment(convertToMMDD, "YYYY/MM/DD").toString().substr(3, 7)
 
@@ -33,14 +35,25 @@ export default class CardApproval extends Component {
         date : finalDate
       })
     }
+
+    componentWillUnmount() {
+      
+    }
+
+    onBack = () => {
+      this.setState({
+        visible:false
+      })
+    };
      
     onDetails = async () =>{
         const headers = {
-            accept: '*/*',
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT 
         };
         axios({
           method: 'GET',
-          url: Url_Clockin + this.props.person.Id,
+          url: Url_Clockin + '/' + this.props.person.Id,
           headers: headers,
         }).then((response) => { 
           console.log(response)    
@@ -55,27 +68,40 @@ export default class CardApproval extends Component {
 
     buttonDecline(){
         const headers = {
-            accept: '*/*',
-           'Content-Type': 'application/json'
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT 
         };
+
         axios({
           method: 'PUT',
-          url: Url_Clockin + this.props.person.Id,
+          url: Url_Clockin+ '/' + this.props.person.Id,
           headers: headers,
           data : {
-            approval : 'decline'
+            Name: this.props.person.Name,
+            Username: this.props.person.Username,
+            CheckIn: this.props.person.CheckIn,
+            State: this.props.person.State,
+            Location: this.props.person.Location,
+            Approval: 'Decline',
+            Photo: this.props.person.Photo,
+            Note: this.props.person.Note,
+            ProjectName: this.props.person.Projectname,
+            HeadDivision: this.props.person.Headdivision,
+            ApprovalByAdmin: this.props.person.ApprovalByAdmin,
+            CompanyName: this.props.person.CompanyName,
+            ClientName: this.props.person.ClientName,
           }
         }).then((response) => { 
           console.log(response)    
           this.setState({
             visible: false
           });
+          this.props.loadData();
           ToastAndroid.showWithGravity(
             'Decline success',
             ToastAndroid.SHORT,
             ToastAndroid.BOTTOM,
           );
-          this.props.loadData;
         }).catch((errorr) => {
           alert(errorr)
           this.setState({
@@ -91,27 +117,39 @@ export default class CardApproval extends Component {
 
     buttonApprove(){
         const headers = {
-            accept: '*/*',
-           'Content-Type': 'application/json'
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT 
         };
         axios({
           method: 'PUT',
-          url: Url_Clockin + this.props.person.Id,
+          url: Url_Clockin + '/' + this.props.person.Id,
           headers: headers,
           data : {
-            approval : 'accept'
+            Name: this.props.person.Name,
+            Username: this.props.person.Username,
+            CheckIn: this.props.person.CheckIn,
+            State: this.props.person.State,
+            Location: this.props.person.Location,
+            Approval: 'Approve',
+            Photo: this.props.person.Photo,
+            Note: this.props.person.Note,
+            ProjectName: this.props.person.Projectname,
+            HeadDivision: this.props.person.Headdivision,
+            ApprovalByAdmin: this.props.person.ApprovalByAdmin,
+            CompanyName: this.props.person.CompanyName,
+            ClientName: this.props.person.ClientName,
           }
         }).then((response) => { 
           console.log(response)    
           this.setState({
             visible: false
           });
+          this.props.loadData();
           ToastAndroid.showWithGravity(
             'Approve success',
             ToastAndroid.SHORT,
             ToastAndroid.BOTTOM,
           );
-          this.props.loadData;
         }).catch((errorr) => {
           alert(errorr)
           this.setState({
@@ -153,8 +191,8 @@ export default class CardApproval extends Component {
                         <Text style={styles.text2}>{this.state.date}</Text>
                         <Text style={styles.textViewDetails}>View Details</Text>
                     </View>
-                  </TouchableOpacity>  
-                  <CustomAlert details={this.state.detail} visible={this.state.visible} decline={this.buttonDecline} approve={this.buttonApprove}/>
+            </TouchableOpacity>  
+                  <CustomAlert details={this.state.detail} visible={this.state.visible} decline={this.buttonDecline} approve={this.buttonApprove} onClose={this.onBack}/>
           </View>
         )
     }
@@ -200,3 +238,16 @@ const styles = StyleSheet.create({
       flex:2,justifyContent:'space-between'
     },
   })
+
+  const mapStateToPropsData = (state) => {
+    return {
+      tokenJWT: state.JwtReducer.jwt,
+    }
+  }
+  const mapDispatchToPropsData = (dispatch) => {
+    return {
+  
+    }
+  }
+    
+  export default connect(mapStateToPropsData, mapDispatchToPropsData)(CardApproval)  

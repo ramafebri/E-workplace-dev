@@ -23,7 +23,7 @@ class Profile extends Component {
         name:'Name',
         monthYear : moment().format('MMMM YYYY'),
         refreshing : false,
-        history:[]
+        history:[],
       }
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
@@ -56,7 +56,7 @@ class Profile extends Component {
 
      axios({
          method: 'GET',
-         url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&SortByDate=1',
+         url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&NotState=Sick%20Leave&SortByDate=1',
          headers: headers,
        }).then((response) => { 
          console.log(response)    
@@ -149,15 +149,23 @@ class Profile extends Component {
                     <Text style={styles.textMonth}>{this.state.monthYear}</Text>
                     <Card containerStyle={styles.cardHistory} >
                       {this.state.history.map((u, i) => {
-                          const clockin = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
-                          const clockout = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                        const clockinTime = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                        const clockoutTime = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
+                        const clockin = clockinTime.substr(11,5)+' '+clockinTime.substr(20,15)
+                        var clockout = '';
+                        if(clockoutTime.substr(11,5) === '07:00' && clockoutTime.substr(20,15) === 'AM'){
+                            clockout = 'Now'
+                        }
+                        else{
+                            clockout = clockoutTime.substr(11,5)+' '+clockoutTime.substr(20,15)
+                        }
                           return (
                             <View key={i} style={styles.history}>
                                 <View style={{flex:1, marginLeft:10}}>
                                     <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
                                 </View>
                                 <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
-                                    <Text style={styles.Text}>{clockin.substr(11,5)+' '+clockin.substr(20,15) +'-'+clockout.substr(11,5)+' '+clockout.substr(20,15)}</Text>
+                                    <Text style={styles.Text}>{clockin+'-'+clockout}</Text>
                                 </View>
                             </View>
                           );

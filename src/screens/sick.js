@@ -89,7 +89,8 @@ class sick extends Component {
               CheckIn: new Date(),
               State: this.state.status,
               Location : this.state.Location,
-              Approval: "pending",
+              Approval : 'Pending',
+              ApprovalByAdmin : 'Pending',
               HeadDivision: this.state.headDivision,
               ProjectName: this.state.projectName,
               Note: this.state.message
@@ -97,17 +98,11 @@ class sick extends Component {
           }).then((response) => {
             console.log(response)
             this.setState({
-              // statusCheckIn: ' ',
-              // clockInstatus: true,
               idUser: response.data.Id,
             });
-            // deviceStorage.saveItem("clockin_state", "clockin");
-            // deviceStorage.saveItem("state", '1');
-            // deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
-            // this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
             this.props.addLoad(true)
             ToastAndroid.showWithGravity(
-              'Clock in success!',
+              'Submit success!',
               ToastAndroid.SHORT,
               ToastAndroid.BOTTOM,
             );
@@ -175,7 +170,7 @@ class sick extends Component {
                     selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({scrumMaster: itemValue})
+                      this.setState({headDivision: itemValue})
                     }>
                     <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />

@@ -171,7 +171,8 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
               Location : this.state.Location,
               Note : this.state.message,
               ProjectName : this.state.projectName,
-              Approval : 'pending',
+              Approval : 'Pending',
+              ApprovalByAdmin : 'Pending',
               HeadDivision : this.state.headDivision
             }
           }).then((response) => {

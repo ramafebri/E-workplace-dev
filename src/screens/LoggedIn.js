@@ -226,8 +226,8 @@ class LoggedIn extends Component {
           CheckOut: clockintime,
           State: this.state.status,
           Location : this.state.Location,
-          Approval : 'approve',
-          ApprovalByAdmin : 'approve'
+          Approval : 'Pending',
+          ApprovalByAdmin : 'Pending'
         }
       }).then((response) => {
         console.log(response)
@@ -280,7 +280,7 @@ class LoggedIn extends Component {
         username: response.data.Username,
         fullname: response.data.Name,
         Approval: response.data.Approval,
-        Location: response.data.Location,
+        Location2: response.data.Location,
         ApprovalByAdmin: response.data.ApprovalByAdmin,
         photo: response.data.Photo,
         note: response.data.Note,
@@ -309,7 +309,7 @@ class LoggedIn extends Component {
         Username: this.state.username,
         CheckIn: clockin_time,
         State: this.state.status,
-        Location: this.state.Location,
+        Location: this.state.Location2,
         CheckOut: new Date(),
         Approval: this.state.Approval,
         Photo: this.state.photo,

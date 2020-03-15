@@ -1,16 +1,18 @@
 import React from 'react';
-import { StyleSheet, Modal,View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Modal,View, Text, TouchableOpacity, Image} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Person from '../../image/person.svg'
 
 export default class CustomAlertComponent extends React.Component {
+
   render() {
     return (
         <Modal
             visible={this.props.visible}
+            onRequestClose={this.props.onClose}
             transparent={true}
             animationType={"fade"}>
-            <View style={styles.mainOuterComponent}>
+            <View style={styles.mainOuterComponent} >
              <View style={[styles.viewalert,{height: this.props.details.State === 'Work at client office' ? 400:420}]}>
               <View style={styles.view1}>
                 <Text style={styles.text}>{this.props.details.State}</Text>

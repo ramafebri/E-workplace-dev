@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput, RefreshControl, SafeAreaView, ScrollView } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
@@ -21,8 +21,8 @@ export default class sick extends Component {
             Location:'',
             message:'',
             status: 'Taking day off',
-            scrumMaster: '',
-            reson:'',
+            headDivision: '',
+            reason:'',
             substitute:'',
             show1: false,
             show2: false          
@@ -91,7 +91,8 @@ export default class sick extends Component {
     render() {
         const { show1, show2 } = this.state
         return (
-            <View style={styles.container2}>
+            <SafeAreaView style={styles.container2}>
+              <ScrollView>
                 <Text style={styles.textareaContainer}>
                     Please fill this forms
                 </Text>
@@ -102,10 +103,10 @@ export default class sick extends Component {
                 <View style={styles.viewPicker}>            
                   <Picker
                     mode={"dropdown"}
-                    selectedValue={this.state.scrumMaster}
+                    selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({scrumMaster: itemValue})
+                      this.setState({headDivision: itemValue})
                     }>
                     <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
@@ -114,74 +115,74 @@ export default class sick extends Component {
                 </View>
                 
 
-            <View style={styles.Split}>
-            <View style={styles.viewDate1}>
-                <Text
-                  style={styles.TextDate}>
-                    Start Date *
-                </Text> 
-                
-                <View style={styles.viewDate2}>
-                  <View style={styles.viewDate3}>
-                    <View style={{flex:4, justifyContent:'center',}}>
-                      <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
+              <View style={styles.Split}>
+                <View style={styles.viewDate1}>
+                    <Text
+                      style={styles.TextDate}>
+                        Start Date *
+                    </Text> 
+                    
+                    <View style={styles.viewDate2}>
+                      <View style={styles.viewDate3}>
+                        <View style={{flex:4, justifyContent:'center',}}>
+                          <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateStart}</Text>
+                        </View>
+                        <View style={{flex:1, justifyContent:'center'}}>
+                          <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
+                        </View>              
+                      </View>
                     </View>
-                    <View style={{flex:1, justifyContent:'center'}}>
-                      <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker1}/>  
-                    </View>              
-                  </View>
+                    {show1 && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={this.state.startDate}
+                        mode={'date'}
+                        display="calendar"
+                        onChange={(event, selectedDate) => {
+                            const date = selectedDate.toString()
+                            this.setState({
+                                startDate: selectedDate,
+                                dateStart: date.substr(0, 15),
+                                show1: false
+                            })
+                        }}    
+                    />
+                    )}
                 </View>
-                {show1 && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={this.state.startDate}
-                    mode={'date'}
-                    display="calendar"
-                    onChange={(event, selectedDate) => {
-                        const date = selectedDate.toString()
-                        this.setState({
-                            startDate: selectedDate,
-                            dateStart: date.substr(0, 15),
-                            show1: false
-                        })
-                    }}    
-                />
-                )}
-            </View>
-            <View style={styles.viewDate1}>
-                <Text
-                  style={styles.TextDate}>
-                    End Date *
-                </Text>
-                <View style={styles.viewDate22}>
-                  <View style={styles.viewDate3}>
-                    <View style={{flex:4, justifyContent:'center',}}>
-                      <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
+                <View style={styles.viewDate1}>
+                    <Text
+                      style={styles.TextDate}>
+                        End Date *
+                    </Text>
+                    <View style={styles.viewDate22}>
+                      <View style={styles.viewDate3}>
+                        <View style={{flex:4, justifyContent:'center',}}>
+                          <Text style={{marginLeft:10, fontSize:15}}>{this.state.dateEnd}</Text>
+                        </View>
+                        <View style={{flex:1, justifyContent:'center'}}>
+                          <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
+                        </View>
+                      </View>
                     </View>
-                    <View style={{flex:1, justifyContent:'center'}}>
-                      <FontAwesome5 style={styles.iconDate} name='calendar' size={25} color='#1A446D' onPress={this.showDatepicker2}/>  
-                    </View>
-                  </View>
-                </View>
-                
-                {show2 && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={this.state.endDate}
-                    mode={'date'}
-                    display="calendar"
-                    onChange={(event, selectedDate) => {
-                        const date = selectedDate.toString()
-                        this.setState({
-                            endDate: selectedDate,
-                            dateEnd: date.substr(0, 15),
-                            show2: false
-                        })
-                    }}    
-                />
-                )}              
-            </View> 
-          </View>
+                    
+                    {show2 && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={this.state.endDate}
+                        mode={'date'}
+                        display="calendar"
+                        onChange={(event, selectedDate) => {
+                            const date = selectedDate.toString()
+                            this.setState({
+                                endDate: selectedDate,
+                                dateEnd: date.substr(0, 15),
+                                show2: false
+                            })
+                        }}    
+                    />
+                    )}              
+                </View> 
+              </View>
                 <Text
                   style={styles.textSM}>
                     Substitute *
@@ -202,22 +203,22 @@ export default class sick extends Component {
                 <View style={styles.viewPicker}>            
                   <Picker
                     mode={"dropdown"}
-                    selectedValue={this.state.scrumMaster}
+                    selectedValue={this.state.reason}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({scrumMaster: itemValue})
+                      this.setState({reason: itemValue})
                     }>
                     <Picker.Item label="" value="" />
                     <Picker.Item label="Java" value="java" />
                     <Picker.Item label="JavaScript" value="js" />
                   </Picker>
-                </View>               
+                </View>     
+
                 <TouchableOpacity onPress={() => alert('Under Development!')} style={styles.buttonSubmit}>
                     <Text style={styles.textbtnSubmit} >Submit</Text>
                 </TouchableOpacity>
-                
-                
-          </View>
+            </ScrollView>                 
+          </SafeAreaView>
         )
     }
 }
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
     fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light',marginLeft:22, marginBottom:3
   },
   viewPicker:{
-    width:'90%', height:'8%', borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white', alignSelf:'center'
+    width:'90%', flex:1.5, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white', alignSelf:'center'
   },
   picker:{
     height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
@@ -253,10 +254,10 @@ const styles = StyleSheet.create({
      marginTop: 16,
    },
    inputText:{
-    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'8%',backgroundColor:'white', fontSize:18, borderColor:'#505050', alignSelf:'center', paddingLeft:10, paddingRight:10
+    textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'9%',backgroundColor:'white', fontSize:18, borderColor:'#505050', alignSelf:'center', paddingLeft:10, paddingRight:10
   },
   buttonSubmit:{
-    marginTop:40, backgroundColor:'#1A446D', height:'8%', width:'90%', borderRadius:5, alignSelf:'center'
+    marginTop:40, backgroundColor:'#1A446D', height:50, width:'90%', borderRadius:5, alignSelf:'center'
   },
   textbtnSubmit:{
     color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold', marginBottom:7 
