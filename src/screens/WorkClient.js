@@ -252,7 +252,7 @@ class WorkClient extends Component {
               <View style={{flex:1, marginTop:15, paddingBottom:30}}>
                 <Text style={styles.titleText}>Please Fill This Form</Text>
                 <Text style={styles.textSM}>
-                    Select Your Scrum Master *
+                    Select Your Head Division *
                 </Text>
 
                  <View style={styles.viewPicker}>            

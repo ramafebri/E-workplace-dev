@@ -161,7 +161,7 @@ class sick extends Component {
                     Please fill this forms
                 </Text>
                 <Text style={styles.textSM}>
-                    Select Your Scrum Master *
+                    Select Your Head Division *
                 </Text>
 
                 <View style={styles.viewPicker}>            
