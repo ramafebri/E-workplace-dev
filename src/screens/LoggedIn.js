@@ -111,7 +111,7 @@ class LoggedIn extends Component {
 
     async checkClockInDouble(){
       var time = new Date().getHours();
-        if(time > 6 && time < 12){
+        if(time > 6 && time < 13){
         this.deleteStatusClockIn();
         }
     }
