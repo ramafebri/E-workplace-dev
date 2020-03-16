@@ -354,13 +354,13 @@ textSM:{
   fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
 },
 viewPicker:{
-  width:'90%', height:'10%', marginLeft:20, borderRadius:5, borderColor:'grey', borderWidth:1, backgroundColor:'white'
+  width:'90%', height:'10%', marginLeft:20, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white'
 },
 picker:{
-  height: '100%', width: '100%', borderWidth:20, borderColor:'black'
+  height: '100%', width: '100%', borderWidth:20, borderColor:'#505050'
 },
 inputText:{
-  textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18, borderColor:'grey', fontFamily:'Nunito-Regular', fontWeight:'600' 
+  textAlignVertical: 'top', borderWidth: 1, borderRadius:5, width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18, borderColor:'#505050', fontFamily:'Nunito-Regular', fontWeight:'600' 
 },
 buttonSubmit:{
   backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
