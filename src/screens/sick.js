@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import {Url_Clockin} from '../config/URL'
 
+//Sick Form
 class Sick extends Component {
     constructor(props){
         super(props);

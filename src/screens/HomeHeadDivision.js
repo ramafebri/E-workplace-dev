@@ -17,6 +17,7 @@ import Buildings from '../../image/buildings.svg'
 import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
 import {Url_GetDataUser, Url_Clockin, Url_GetDataApproval} from '../config/URL'
 
+//Home Page For Head Division
 class HomeHeadDivision extends Component {
   _isMounted = false;
   constructor(props){
