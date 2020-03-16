@@ -17,6 +17,7 @@ import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
 import {Url_GetDataUser, Url_Clockin} from '../config/URL'
 
+//Home Page For Non Head Division Employee
 class LoggedIn extends Component {
   _isMounted = false;
   constructor(props){
@@ -45,9 +46,10 @@ class LoggedIn extends Component {
       this.checkClockInStatus = this.checkClockInStatus.bind(this);
       this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
       this.checkClockInDouble = this.checkClockInDouble.bind(this)
-      this.gotoApprovalPage = this.gotoApprovalPage.bind(this);
       this.movetoWAC = this.movetoWAC.bind(this);
       this.movetoWFH = this.movetoWFH.bind(this);
+      this.movetoMeetingsPage = this.movetoMeetingsPage.bind(this);
+      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this)
       this.ButtonCheck = this.ButtonCheck.bind(this)
     }
 
@@ -223,7 +225,6 @@ class LoggedIn extends Component {
           Username: this.state.username,
           Name: this.state.fullname,
           CheckIn: clockintime,
-          CheckOut: clockintime,
           State: this.state.status,
           Location : this.state.Location,
           Approval : 'Pending',
@@ -365,14 +366,18 @@ class LoggedIn extends Component {
 
  movetoWAC(){
   this.props.navigation.navigate('WClient')
-}
+ }
+
+ movetoMeetingsPage(){
+  this.props.navigation.navigate('Meetings')
+ }
+
+ movetoTaskDonePage(){
+  this.props.navigation.navigate('TaskDone')
+ }
 
  async deleteStatusClockIn(){
   await AsyncStorage.removeItem('clockin_state2')
- }
-
- gotoApprovalPage(){
-  this.props.navigation.navigate('Approval')
  }
 
   render() {
@@ -435,7 +440,7 @@ class LoggedIn extends Component {
               <View style={{ flex:3, paddingBottom:'5%'}}>
               <Text style={styles.textDashboard}>Dashboard</Text>
                 <Card containerStyle={styles.card1}>
-                  <TouchableOpacity style={styles.baseTouchAble}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.movetoMeetingsPage}>
                     <Text style={styles.text2}>Meeting</Text>
                     <Text style={styles.text3}>Scrum Meetings</Text>
                     <View style={styles.viewInCard1}>
@@ -483,7 +488,7 @@ class LoggedIn extends Component {
                 </Card>
                 
                 <Card containerStyle={styles.card3}>
-                  <TouchableOpacity style={styles.baseTouchAble}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.movetoTaskDonePage}>
                   <Text style={styles.text2}>Task Done</Text>
                     <View style={styles.viewInCard2}>
                       <FontAwesome5 name='circle' size={8} color='#505050' solid/>

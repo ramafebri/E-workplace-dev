@@ -120,7 +120,7 @@ class Profile extends Component {
                         <Text style={styles.text3}>Developer</Text>
                       </View>
                       <View>
-                        <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}}>
+                        <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}} onPress={() => alert('Under Development!')}>
                           <ProfileEdit width={25} height={25}/>
                         </TouchableOpacity> 
                       </View>
@@ -131,14 +131,14 @@ class Profile extends Component {
                     <Card containerStyle={styles.dcard}>
                     <Text style={styles.text4}>Day Off</Text>
                      <View style={{flexDirection:'row'}}>
-                       <Text style={styles.text5}>-</Text>
+                       <Text style={styles.text5}>--</Text>
                        <Text style={styles.text6}>Days {'\n'}Remaining</Text>
                      </View>                 
                     </Card>
                     <Card containerStyle={styles.dcard}> 
                      <Text style={styles.text4}>Overwork</Text>
                      <View style={{flexDirection:'row'}}>
-                       <Text style={styles.text5}>-</Text>
+                       <Text style={styles.text5}>--</Text>
                        <Text style={styles.text7}>Hours</Text>
                      </View>
                   
@@ -168,10 +168,10 @@ class Profile extends Component {
                         }
                           return (
                             <View key={i} style={styles.history}>
-                                <View style={{flex:1, marginLeft:10}}>
+                                <View style={{flex:1, marginLeft:10, justifyContent:'center'}}>
                                     <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
                                 </View>
-                                <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
+                                <View style={{flex:1, alignItems:'flex-end', marginRight:10, justifyContent:'center'}}>
                                     <Text style={styles.Text}>{clockin+'-'+clockout}</Text>
                                 </View>
                             </View>
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#505050', marginLeft:15
   },
   Text:{
-    fontFamily:'Nunito-Light', fontSize:16, fontWeight:'600', color:'#505050'
+    fontFamily:'Nunito-Light', fontSize:16, fontWeight:'600', color:'#505050', textAlignVertical:'center'
   },
   textMonth:{
     marginLeft:15, marginTop:10, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:19, color:'#265685'

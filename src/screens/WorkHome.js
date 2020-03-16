@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
+//Work From Home
  class WorkHome extends Component {
       constructor(props){
         super(props);
@@ -165,7 +166,6 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
               Username: this.state.username,
               Name: this.state.fullname,
               CheckIn: clockintime,
-              CheckOut: clockintime,
               State: this.state.status,
               Photo : this.state.urlphoto,
               Location : this.state.Location,

@@ -14,6 +14,7 @@ import {ApiMaps} from '../config/apiKey'
 import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
+import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
 import {Url_GetDataUser, Url_Clockin, Url_GetDataApproval} from '../config/URL'
 
 class HomeHeadDivision extends Component {
@@ -33,7 +34,9 @@ class HomeHeadDivision extends Component {
         refreshing : false,
         textButton:'',
         textApproved:'No events need to be approved',
-        dataApproval:[]
+        dataApproval:[],
+        latitude : null,
+        longitude : null,
       }
       this.clockIn = this.clockIn.bind(this);
       this.clockOut = this.clockOut.bind(this);
@@ -44,9 +47,11 @@ class HomeHeadDivision extends Component {
       this.checkClockInStatus = this.checkClockInStatus.bind(this);
       this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
       this.checkClockInDouble = this.checkClockInDouble.bind(this)
-      this.gotoApprovalPage = this.gotoApprovalPage.bind(this);
+      this.movetoApprovalPage = this.movetoApprovalPage.bind(this);
       this.movetoWAC = this.movetoWAC.bind(this);
       this.movetoWFH = this.movetoWFH.bind(this);
+      this.movetoMeetingsPage = this.movetoMeetingsPage.bind(this);
+      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this)
       this.ButtonCheck = this.ButtonCheck.bind(this);
       this.loadDataApproval = this.loadDataApproval.bind(this)
     }
@@ -169,6 +174,10 @@ class HomeHeadDivision extends Component {
     findCoordinates = async () => {
       Geolocation.getCurrentPosition(
         position => {
+          this.setState({
+            latitude : position.coords.latitude,
+            longitude : position.coords.longitude
+          })
           Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
@@ -205,7 +214,18 @@ class HomeHeadDivision extends Component {
  }  
 
  async clockIn(){
-  this.props.addLoad(true) 
+  this.props.addLoad(true)
+  
+  //Check Location Radius
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((this.state.latitude - MoonlayLat) * p)/2 +
+          c(this.state.latitude * p) * c(this.state.latitude * p) *
+          (1 - c((this.state.longitude - MoonlayLong) * p))/2;
+    
+  const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
+  console.log(location_radius)
+
   const value = await AsyncStorage.getItem('clockin_state2');
   if(value === 'clockin'){
     Alert.alert(
@@ -217,8 +237,12 @@ class HomeHeadDivision extends Component {
     );
     this.props.addLoad(false)
     return true;   
+  }
+  else if(location_radius > 80){
+    alert('You are far from the office right now, go closer!')
+    this.props.addLoad(false)
   } 
-  else{
+  else if(location_radius <= 80 && value !== 'clockin'){
     const clockintime = new Date();
     axios({
       method: 'POST',
@@ -231,7 +255,6 @@ class HomeHeadDivision extends Component {
         Username: this.state.username,
         Name: this.state.fullname,
         CheckIn: clockintime,
-        CheckOut: clockintime,
         State: this.state.status,
         Location : this.state.Location,
         Approval : 'Pending',
@@ -375,12 +398,20 @@ class HomeHeadDivision extends Component {
   this.props.navigation.navigate('WClient')
 }
 
- async deleteStatusClockIn(){
-  await AsyncStorage.removeItem('clockin_state2')
+ movetoApprovalPage(){
+  this.props.navigation.navigate('Approval')
  }
 
- gotoApprovalPage(){
-  this.props.navigation.navigate('Approval')
+ movetoMeetingsPage(){
+  this.props.navigation.navigate('Meetings')
+ }
+
+ movetoTaskDonePage(){
+  this.props.navigation.navigate('TaskDone')
+ }
+
+ async deleteStatusClockIn(){
+  await AsyncStorage.removeItem('clockin_state2')
  }
 
   render() {
@@ -443,7 +474,7 @@ class HomeHeadDivision extends Component {
               <View style={{ flex:3, paddingBottom:'5%'}}>
               <Text style={styles.textDashboard}>Dashboard</Text>
                 <Card containerStyle={styles.cardApprove}>
-                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.gotoApprovalPage}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.movetoApprovalPage}>
                     <Text style={styles.text2}>Approval</Text>
                     <Text style={styles.text3}>{this.state.textApproved}</Text>
                     <View style={styles.view2InCard1}>
@@ -457,7 +488,7 @@ class HomeHeadDivision extends Component {
                 </Card>
 
                 <Card containerStyle={styles.card1}>
-                  <TouchableOpacity style={styles.baseTouchAble}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.movetoMeetingsPage}>
                     <Text style={styles.text2}>Meeting</Text>
                     <Text style={styles.text3}>Scrum Meetings</Text>
                     <View style={styles.viewInCard1}>
@@ -504,7 +535,7 @@ class HomeHeadDivision extends Component {
                 </Card>
                 
                 <Card containerStyle={styles.card3}>
-                  <TouchableOpacity style={styles.baseTouchAble}>
+                  <TouchableOpacity style={styles.baseTouchAble} onPress={this.movetoTaskDonePage}>
                   <Text style={styles.text2}>Task Done</Text>
                     <View style={styles.viewInCard2}>
                       <FontAwesome5 name='circle' size={8} color='#505050' solid/>

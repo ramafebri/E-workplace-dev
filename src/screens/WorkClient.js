@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
+//Work at Client Office
 class WorkClient extends Component {
   constructor(props){
     super(props);
@@ -165,7 +166,6 @@ class WorkClient extends Component {
           Username: this.state.username,
           Name: this.state.fullname,
           CheckIn: clockintime,
-          CheckOut: clockintime,
           State: this.state.status,
           Location : this.state.Location,
           Approval : 'Pending',

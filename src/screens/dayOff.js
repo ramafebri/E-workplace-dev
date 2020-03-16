@@ -5,7 +5,7 @@ import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-export default class sick extends Component {
+export default class DayOff extends Component {
     constructor(props){
         super(props);
         this.state = {

@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import {Url_Clockin} from '../config/URL'
 
-class sick extends Component {
+class Sick extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -262,4 +262,4 @@ const mapDispatchToPropsData = (dispatch) => {
   }
 }
 
-export default connect(mapStateToPropsData, mapDispatchToPropsData)(sick)
+export default connect(mapStateToPropsData, mapDispatchToPropsData)(Sick)

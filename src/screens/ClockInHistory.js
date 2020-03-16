@@ -88,10 +88,10 @@ class ClockInHistory extends Component {
                               }
                               return (
                               <View key={i} style={styles.history}>
-                                  <View style={{flex:1, marginLeft:10}}>
+                                  <View style={{flex:1, marginLeft:10, justifyContent:'center'}}>
                                       <Text style={styles.Text}>{u.CheckIn.substr(8,2)+' / '+u.CheckIn.substr(5,2) +' / '+u.CheckIn.substr(0,4)}</Text>
                                   </View>
-                                  <View style={{flex:1, alignItems:'flex-end', marginRight:10}}>
+                                  <View style={{flex:1, alignItems:'flex-end', marginRight:10, justifyContent:'center'}}>
                                       <Text style={styles.Text}>{clockin+'-'+clockout}</Text>
                                   </View>
                               </View>
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
       fontFamily:'Nunito-SemiBold', fontSize:16, fontWeight:'600', color:'#505050'
   },
   TextTittle:{
-      fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#4A90E2', marginLeft:20  
+      fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#4A90E2', marginLeft:20, marginTop:10  
   },
   TextStatus:{
     fontFamily:'Nunito-SemiBold', fontSize: 20, fontWeight:'600', color:'#265685', textAlign:'center'

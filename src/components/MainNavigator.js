@@ -7,8 +7,10 @@ import SplashScreens from "../screens/SplashScreens";
 import WorkHome from "../screens/WorkHome";
 import OverworkForm from "../screens/OverworkForm";
 import WorkClient from "../screens/WorkClient";
-import Dayoff from "../screens/dayOff"
-import Sick from "../screens/sick"
+import Dayoff from "../screens/DayOff"
+import Meetings from "../screens/Meetings"
+import TaskDone from "../screens/TaskDone"
+import Sick from "../screens/Sick"
 import Approval from '../screens/ApprovalPage'
 import ClockInHistory from '../screens/ClockInHistory'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -94,7 +96,9 @@ function MyStack() {
       <Stack.Screen name="Sick" component={Sick} options={{headerTitle:'Sick',}}/>
       <Stack.Screen name="Approval" component={Approval} options={{headerTitle:'Approval',}}/>
       <Stack.Screen name="ClockinHistory" component={ClockInHistory} options={{headerTitle:'Clock In History'}}/>  
-      <Stack.Screen name="OverworkForm" component={OverworkForm} options={{headerTitle:'Overwork Form'}}/>   
+      <Stack.Screen name="OverworkForm" component={OverworkForm} options={{headerTitle:'Overwork Form'}}/> 
+      <Stack.Screen name="Meetings" component={Meetings} options={{headerTitle:'Meetings',}}/>
+      <Stack.Screen name="TaskDone" component={TaskDone} options={{headerTitle:'Task Done',}}/>  
     </Stack.Navigator>
   );
 }
