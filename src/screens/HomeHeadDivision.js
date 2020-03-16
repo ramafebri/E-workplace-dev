@@ -121,7 +121,7 @@ class HomeHeadDivision extends Component {
         }
     }
 
-    onRefresh = () =>{
+    async onRefresh (){
       this.setState({
         refreshing : true
       })  
@@ -190,11 +190,15 @@ class HomeHeadDivision extends Component {
               this.setState({
                 textApproved : 'You have some approval requests!',
               });
+             }
+             else{
+              this.setState({
+                textApproved : 'No events need to be approved',
+              });
              }      
            }).catch((errorr) => {
              console.log(errorr)       
-           });
-        
+           });       
       }
 
     findCoordinates = async () => {

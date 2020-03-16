@@ -116,7 +116,7 @@ class LoggedIn extends Component {
         }
     }
 
-    onRefresh = () =>{
+    async onRefresh (){
       this.setState({
         refreshing : true
       })  
