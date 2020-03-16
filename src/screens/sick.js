@@ -38,7 +38,6 @@ class Sick extends Component {
       componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress', this.onBack);
         this.loadData();
-        this.findCoordinates();
       }
       componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBack);
@@ -62,6 +61,7 @@ class Sick extends Component {
 
       async submitAll(){
         const value = await AsyncStorage.getItem('clockin_state2');
+        const location = await AsyncStorage.getItem('location');
         if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
             'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -75,6 +75,17 @@ class Sick extends Component {
         }
         else if(this.state.headDivision === '' || this.state.projectName === ''){
           alert('All form must be filled!');
+        }
+        else if(location === null || location === ''){
+          Alert.alert(
+            'Location is nowhere','You must enable your location before clock in!',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true; 
         }
         else if(this.state.headDivision !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
           axios({

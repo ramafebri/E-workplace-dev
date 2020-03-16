@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, Image, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput,ToastAndroid, SafeAreaView, ScrollView, RefreshControl} from 'react-native'
+import { View, Text, Image, StyleSheet, Alert, BackHandler,TouchableOpacity, Picker, TextInput,ToastAndroid, SafeAreaView, ScrollView, RefreshControl, PermissionsAndroid} from 'react-native'
 import ImagePicker from 'react-native-image-picker'
 import deviceStorage from '../services/deviceStorage';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -139,6 +139,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
 
       async submitAll(){
         const value = await AsyncStorage.getItem('clockin_state2');
+        const location = await AsyncStorage.getItem('location');
         if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
             'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -152,6 +153,17 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
         }
         else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === ''){
           alert('All form must be filled!');
+        }
+        else if(location === null || location === ''){
+          Alert.alert(
+            'Location is nowhere','You must enable your location before clock in!',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true; 
         }
         else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
           const clockintime = new Date();

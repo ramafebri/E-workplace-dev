@@ -139,7 +139,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
     const { username, password} = this.state;
 
     return (
-      <SafeAreaView style={{flex:1}}>
+      <SafeAreaView style={{flex:1, backgroundColor:'#F9FCFF',}}>
         <ScrollView>
         <View style={{height:100, backgroundColor:'#1A446D', paddingLeft:'5%', justifyContent:'center'}}>
           <Text style={styles.logintitle}>

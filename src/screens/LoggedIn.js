@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, RefreshControl, ToastAndroid, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Alert, BackHandler, SafeAreaView, ScrollView, RefreshControl, ToastAndroid, Text, TouchableOpacity, Image, PermissionsAndroid } from 'react-native';
 import Loading from '../components/Loading';
 import deviceStorage from '../services/deviceStorage';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -45,12 +45,13 @@ class LoggedIn extends Component {
       this.findCoordinates = this.findCoordinates.bind(this);
       this.checkClockInStatus = this.checkClockInStatus.bind(this);
       this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
-      this.checkClockInDouble = this.checkClockInDouble.bind(this)
+      this.checkClockInDouble = this.checkClockInDouble.bind(this);
       this.movetoWAC = this.movetoWAC.bind(this);
       this.movetoWFH = this.movetoWFH.bind(this);
       this.movetoMeetingsPage = this.movetoMeetingsPage.bind(this);
-      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this)
-      this.ButtonCheck = this.ButtonCheck.bind(this)
+      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this);
+      this.ButtonCheck = this.ButtonCheck.bind(this);
+      this.requestLocationPermission = this.requestLocationPermission.bind(this);
     }
 
     async componentDidMount() {
@@ -61,12 +62,36 @@ class LoggedIn extends Component {
           monthYear : moment().format('D MMMM YYYY'),
         })
       },1000)
-
+      this.requestLocationPermission();
       this.checkClockInDouble()
       this.checkClockInStatus();
-      this.findCoordinates();
       this.loadData();
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
+    }
+
+    async requestLocationPermission() {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message:
+              'Please enable your location ' +
+              'so you can clock in later!',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('We get your location');
+          this.findCoordinates();
+        } else {
+          console.log('Camera permission denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
     }
 
     async checkClockInStatus(){
@@ -208,6 +233,19 @@ class LoggedIn extends Component {
       this.props.addLoad(false)
       return true;   
     }
+
+    else if(this.state.latitude === null || this.state.longitude === null){
+      Alert.alert(
+        'Location is nowhere','You must enable your location before clock in!',
+        [
+          { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+        ],
+        { cancelable: false },
+      );
+      this.props.addLoad(false)
+      return true; 
+    }
+
     else if(location_radius > 80){
       alert('You are far from the office right now, go closer!')
       this.props.addLoad(false)

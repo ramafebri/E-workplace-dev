@@ -131,7 +131,7 @@ class Profile extends Component {
                     <Card containerStyle={styles.dcard}>
                     <Text style={styles.text4}>Day Off</Text>
                      <View style={{flexDirection:'row'}}>
-                       <Text style={styles.text5}>--</Text>
+                       <Text style={styles.text5}>-</Text>
                        <Text style={styles.text6}>Days {'\n'}Remaining</Text>
                      </View>                 
                     </Card>

@@ -1,8 +1,24 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, BackHandler } from 'react-native'
 import UnderDevelopment from '../../image/UnderDevelopment.svg'
 
 export default class TaskDone extends Component {
+  constructor(props){
+    super(props);
+    this.onBack = this.onBack.bind(this);
+  }
+
+  componentDidMount(){
+    BackHandler.addEventListener('hardwareBackPress', this.onBack);
+  }
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onBack);
+  }  
+
+  onBack = () => {
+      this.props.navigation.goBack();
+      return true;
+  };
     render() {
         return (
             <View style={styles.container}>

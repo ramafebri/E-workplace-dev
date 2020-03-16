@@ -30,7 +30,7 @@ class WorkClient extends Component {
         projectName : '',
         headDivision : '',
         loadingPhoto: false,
-        refreshing:false
+        refreshing:false,
       }
     this.findCoordinates = this.findCoordinates.bind(this);
     this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
@@ -138,6 +138,7 @@ class WorkClient extends Component {
 
   async submitAll(){
     const value = await AsyncStorage.getItem('clockin_state2');
+    const location = await AsyncStorage.getItem('location');
     if(this.props.clockin_status === true || value === 'clockin'){
       Alert.alert(
         'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -151,6 +152,17 @@ class WorkClient extends Component {
     }
     else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.client === '' || this.state.clientCompany === ''){
       alert('All form must be filled!');
+    }
+    else if(location === null || location === ''){
+      Alert.alert(
+        'Location is nowhere','You must enable your location before clock in!',
+        [
+          { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+        ],
+        { cancelable: false },
+      );
+      this.props.addLoad(false)
+      return true; 
     }
     else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
     && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === false){
@@ -227,7 +239,7 @@ class WorkClient extends Component {
                 alwaysBounceVertical={true} 
                 refreshControl={
                   <RefreshControl refreshing={this.state.refreshing} 
-                onRefresh={this.loadLocation} />
+                onRefresh={this.findCoordinates} />
               }>
               <View style={styles.card}>
                 <Text style={styles.textTake}>Take Picture as Evidence</Text>
