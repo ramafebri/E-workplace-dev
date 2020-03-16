@@ -176,7 +176,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
               </View>
               <Text style={styles.textError}>{this.state.messageErrPassword}</Text>
             </View>    
-            <TouchableOpacity style={{alignSelf:'flex-end', width:'40%'}}>
+            <TouchableOpacity style={{alignSelf:'flex-end', width:'40%'}} onPress={() => alert('Under development!')}>
               <Text style={styles.text1}>forgot password ?</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.buttonSubmit, {display: this.state.loading === false ? 'flex' : 'none'}]} onPress={this.loginUser}>

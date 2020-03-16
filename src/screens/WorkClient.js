@@ -198,7 +198,6 @@ class WorkClient extends Component {
         deviceStorage.saveItem("clockin_state", "clockin");
         deviceStorage.saveItem("state", '1');
         deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
-        deviceStorage.saveItem("clockin_time", response.data.CheckIn);
 
         this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
         this.props.addLoad(true)

@@ -285,7 +285,6 @@ class LoggedIn extends Component {
         );
         deviceStorage.saveItem("state", '1');
         deviceStorage.saveItem("clockin_state", "clockin");
-        deviceStorage.saveItem("clockin_time", response.data.CheckIn);
         deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
       })
       .catch((errorr) => {
@@ -304,7 +303,6 @@ class LoggedIn extends Component {
   this.props.addLoad(true)
   const value = await AsyncStorage.getItem('id_user');
   const id = parseInt(value);
-  const clockin_time = await AsyncStorage.getItem('clockin_time');
 
     axios({
       method: 'GET',
@@ -314,75 +312,59 @@ class LoggedIn extends Component {
         'Authorization': 'Bearer ' + this.props.tokenJWT 
       },
     }).then((response) => { 
-      console.log(response)    
-      this.setState({
-        username: response.data.Username,
-        fullname: response.data.Name,
-        Approval: response.data.Approval,
-        Location2: response.data.Location,
-        ApprovalByAdmin: response.data.ApprovalByAdmin,
-        photo: response.data.Photo,
-        note: response.data.Note,
-        projectname: response.data.ProjectName,
-        headdivision: response.data.HeadDivision,
-        companyname: response.data.CompanyName,
-        clientname: response.data.ClientName,
-        status: response.data.State,
+      axios({
+        method: 'put',
+        url: Url_Clockin + '/' + id,
+        headers: { 
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT 
+        },
+        data : {
+          Name: response.data.Name,
+          Username: response.data.Username,
+          CheckIn: response.data.CheckIn,
+          State: response.data.State,
+          Location: response.data.Location,
+          CheckOut: new Date(),
+          Approval: response.data.Approval,
+          Photo: response.data.Photo,
+          Note: response.data.Note,
+          ProjectName: response.data.ProjectName,
+          HeadDivision: response.data.HeadDivision,
+          ApprovalByAdmin: response.data.ApprovalByAdmin,
+          CompanyName: response.data.CompanyName,
+          ClientName: response.data.ClientName,
+        }
+      }).then(data => {
+        this.setState({
+          statusCheckInn: 'You have not clocked in!',
+          clockInstatus: false,
+          textButton: 'Clock In'
+        });
+        this.props.addLoad(false)
+        this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
+        deviceStorage.saveItem("state", '0');
+        deviceStorage.saveItem("clockin_state2", "clockin");
+        deviceStorage.deleteClockInStatus();
+        ToastAndroid.showWithGravity(
+          'Clock out success',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }).catch(err => {
+          this.props.addLoad(false)
+          console.log(err);
+          ToastAndroid.showWithGravity(
+            'Clock out fail',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+          );
       });
     }).catch((errorr) => {
     console.log(errorr)       
       this.setState({
         error: 'Error retrieving data',
       });
-    });
-
-    axios({
-      method: 'put',
-      url: Url_Clockin + '/' + id,
-      headers: { 
-        'accept': 'application/json',
-        'Authorization': 'Bearer ' + this.props.tokenJWT 
-      },
-      data : {
-        Name: this.state.fullname,
-        Username: this.state.username,
-        CheckIn: clockin_time,
-        State: this.state.status,
-        Location: this.state.Location2,
-        CheckOut: new Date(),
-        Approval: this.state.Approval,
-        Photo: this.state.photo,
-        Note: this.state.note,
-        ProjectName: this.state.projectname,
-        HeadDivision: this.state.headdivision,
-        ApprovalByAdmin: this.state.ApprovalByAdmin,
-        CompanyName: this.state.companyname,
-        ClientName: this.state.clientname,
-      }
-    }).then(data => {
-      this.setState({
-        statusCheckInn: 'You have not clocked in!',
-        clockInstatus: false,
-        textButton: 'Clock In'
-      });
-      this.props.addLoad(false)
-      this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
-      deviceStorage.saveItem("state", '0');
-      deviceStorage.saveItem("clockin_state2", "clockin");
-      deviceStorage.deleteClockInStatus();
-      ToastAndroid.showWithGravity(
-        'Clock out success',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
-    }).catch(err => {
-        this.props.addLoad(false)
-        console.log(err);
-        ToastAndroid.showWithGravity(
-          'Clock out fail',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
     });
   }
 

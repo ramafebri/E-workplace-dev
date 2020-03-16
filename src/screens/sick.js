@@ -113,11 +113,6 @@ class Sick extends Component {
               idUser: response.data.Id,
             });
             this.props.addLoad(true)
-            ToastAndroid.showWithGravity(
-              'Submit success!',
-              ToastAndroid.SHORT,
-              ToastAndroid.BOTTOM,
-            );
             this.props.navigation.dispatch(
               CommonActions.reset({
                 index: 1,
@@ -126,11 +121,16 @@ class Sick extends Component {
                 ],
               })
             )
+            ToastAndroid.showWithGravity(
+              'Submit success!',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
           })
           .catch((errorr) => {
             console.log(errorr)
             ToastAndroid.showWithGravity(
-              'Clock in fail!',
+              'Submit fail!',
               ToastAndroid.SHORT,
               ToastAndroid.BOTTOM,
             );
