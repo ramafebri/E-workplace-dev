@@ -231,13 +231,13 @@ const styles = StyleSheet.create({
   container2:{
     flex:1, backgroundColor:'#F9FCFF'
   },
-  textareaContainer: {fontSize:20, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050', paddingTop:10},
+  textareaContainer: {fontSize:20, marginLeft:21, fontWeight:'600', fontFamily:'Nunito-SemiBold', color:'#505050', paddingTop:10},
    textSM:{
     marginTop: 16,
     marginBottom:10,
     paddingLeft:20,
     fontSize:16,
-    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
+    fontWeight:'300', fontFamily:'Nunito-Light'
   },
   viewPicker:{
     width:'90%', height:50, marginLeft:20, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white'

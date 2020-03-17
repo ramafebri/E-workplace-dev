@@ -591,7 +591,7 @@ class HomeHeadDivision extends Component {
   }
 const styles = StyleSheet.create({
   textUsername:{
-    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, lineHeight:25, color:'#505050', marginTop:5
+    fontFamily:'Nunito-Bold', fontWeight:'600', fontSize:22, color:'#505050', marginTop:5
   },
   view1:{
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
@@ -600,10 +600,10 @@ const styles = StyleSheet.create({
     fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', color:'#505050'
   },
   textHour:{
-    color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center', lineHeight:44
+    color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center',
   },
   textDay:{
-    textAlign:'center', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:19, color:'#505050'
+    textAlign:'center', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', color:'#505050'
   },
   buttonClockIn:{
     backgroundColor:'#26BF64', width:'90%', alignSelf:'center', height:'45%',justifyContent:'center', marginTop:10, borderRadius:10, alignItems:'center'
@@ -612,16 +612,16 @@ const styles = StyleSheet.create({
     backgroundColor:'#EA5656', width:'90%', alignSelf:'center', height:'45%', marginTop:10,justifyContent:'center', borderRadius:10, alignItems:'center', alignContent:'center'
   },
   textClockin:{
-    color:'#FFFFFF', fontFamily:'Nunito-Light', fontSize:22, lineHeight:25, marginBottom:5
+    color:'#FFFFFF', fontFamily:'Nunito-Light', fontSize:22, marginBottom:5
   },
   textStatus:{
-    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:13, marginTop:10, color:'#505050', lineHeight:16, fontWeight:'300'
+    textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:13, marginTop:10, color:'#505050', fontWeight:'300'
   },
   text1:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, fontWeight:'600', marginLeft:5, lineHeight:16, color:'#505050'
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, fontWeight:'600', marginLeft:5, color:'#505050'
   },
   textDashboard:{
-    marginLeft:'4%', marginTop:'4%', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', lineHeight:25, color:'#505050'
+    marginLeft:'4%', marginTop:'4%', fontFamily:'Nunito-Bold', fontSize:18, fontWeight:'600', color:'#505050'
   },
   card1:{
     flex:1, borderRadius:7,borderWidth:5, borderStartColor:'#DB984A', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",
@@ -637,10 +637,10 @@ const styles = StyleSheet.create({
     flexWrap:'wrap', padding:0, height:'100%', width:'100%',
    },
    text2:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:5, lineHeight:19
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', marginLeft:5,
    },
    text3:{
-    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:18, color:'#505050', fontWeight:'600', marginLeft:5, lineHeight:22
+    textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:18, color:'#505050', fontWeight:'600', marginLeft:5,
    },
    viewInCard1:{
     flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
@@ -649,13 +649,13 @@ const styles = StyleSheet.create({
     flexDirection:'row', paddingTop:10, marginLeft:5, paddingBottom:10, alignContent:'center', alignItems:'center'
    },
    text4:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300',
    },
    text5:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300', lineHeight:19
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-Light', fontSize:16, color:'#505050', fontWeight:'300',
    },
    textViewDetails:{
-    marginLeft:10, textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'300', lineHeight:16
+    marginLeft:10, textAlign:'right', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'300',
    },
    card2:{
     flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#4A90E2', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF',shadowColor: "#000",
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', marginTop:10, marginLeft:5, alignContent:'center', alignItems:'center'
    },
    text6:{
-    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, color:'#505050', fontWeight:'600', lineHeight:22
+    marginLeft:10, textAlign:'left', textAlignVertical:'center', fontFamily:'Nunito-SemiBold', fontSize:16, color:'#505050', fontWeight:'600',
    },
    card3:{
     backgroundColor:'#EFFFF6', flex:1, borderRadius:7,borderWidth:5,borderStartColor:'#26BF64', borderLeftColor:'#FFFFFF', borderRightColor:'#FFFFFF', borderEndColor:'#FFFFFF', borderTopColor:'#FFFFFF', borderBottomColor:'#FFFFFF', shadowColor: "#000",

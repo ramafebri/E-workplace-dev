@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     textAlign:'center', paddingTop:'7%', marginLeft:'5%', marginRight:'5%', fontFamily:'Nunito-Light', fontWeight:'300', color:'#676767' 
   },
    titleText: {
-    fontSize:18, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050'
+    fontSize:18, marginLeft:21, fontWeight:'600', fontFamily:'Nunito-SemiBold', color:'#505050'
   },
   buttonPhoto:{
     borderWidth:1, borderRadius:5, borderColor:'#1A446D', backgroundColor:'#FFFFFF', width:'90%', height:50, alignSelf:'center',justifyContent:'center', marginTop:'5%'
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     marginBottom:10,
     paddingLeft:20,
     fontSize:16,
-    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
+    fontWeight:'300', fontFamily:'Nunito-Light'
   },
   viewPicker:{
     width:'90%', height:'10%', marginLeft:20, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white'

@@ -228,19 +228,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:'#F9FCFF',
   },
-  textareaContainer: {fontSize:20, marginLeft:21, fontWeight:'600', lineHeight:22, fontFamily:'Nunito-SemiBold', color:'#505050', paddingTop:10},
+  textareaContainer: {fontSize:20, marginLeft:21, fontWeight:'600', fontFamily:'Nunito-SemiBold', color:'#505050', paddingTop:10},
    textSM:{
     marginTop: 16,
     marginBottom:10,
     paddingLeft:20,
     fontSize:16,
-    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light'
+    fontWeight:'300', fontFamily:'Nunito-Light'
   },
   text1:{
-    fontSize:16, fontWeight:'300', lineHeight:19, fontFamily:'Nunito', marginLeft:22, marginTop:10
+    fontSize:16, fontWeight:'300', fontFamily:'Nunito', marginLeft:22, marginTop:10
   },
   TextDate:{
-    fontWeight:'300', lineHeight:19, fontFamily:'Nunito-Light',marginLeft:22, marginBottom:3
+    fontWeight:'300', fontFamily:'Nunito-Light',marginLeft:22, marginBottom:3
   },
   viewPicker:{
     width:'90%', flex:1.5, borderRadius:5, borderColor:'#505050', borderWidth:1, backgroundColor:'white', alignSelf:'center'

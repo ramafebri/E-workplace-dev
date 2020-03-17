@@ -238,16 +238,16 @@ const styles = StyleSheet.create({
     color:'#505050', fontFamily:'Nunito-Light', fontSize:14
   },
   textLogOut: {
-    color:'white', textAlign:'center', fontSize:20, fontFamily:'Nunito-SemiBold', fontWeight:'600', lineHeight:25
+    color:'white', textAlign:'center', fontSize:20, fontFamily:'Nunito-SemiBold', fontWeight:'600',
   },
   Button: {
     backgroundColor:'#1A446D', marginTop:20, height:50, justifyContent:'center'
   },
   text1:{
-    textAlign:'center', fontSize:15, fontFamily:'Nunito-Light', fontWeight:'300', lineHeight:16, color:'#505050', marginTop:20
+    textAlign:'center', fontSize:15, fontFamily:'Nunito-Light', fontWeight:'300', color:'#505050', marginTop:20
   },
   text2:{
-    textAlign:'center', fontSize:20, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:27, color:'#505050', marginTop:5
+    textAlign:'center', fontSize:20, fontFamily:'Nunito-Bold', fontWeight:'600', color:'#505050', marginTop:5
   },
   text3:{
     textAlign:'center', fontSize:15, fontFamily:'Nunito-Light', fontWeight:'300',  color:'#505050',
@@ -256,13 +256,13 @@ const styles = StyleSheet.create({
     fontSize: 16, fontFamily:'Nunito-Bold', fontWeight:'600',  color:'#505050',
   },
   text5:{
-    fontSize: 38, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:46, color:'#505050', marginTop:'5%'
+    fontSize: 38, fontFamily:'Nunito-Bold', fontWeight:'600', color:'#505050', marginTop:'5%'
   },
   text6:{
-    fontSize:12, color: '#505050', justifyContent:'center', paddingLeft:'5%', paddingTop:'15%', fontFamily:'Nunito-Light', fontWeight:'300', lineHeight:16,
+    fontSize:12, color: '#505050', justifyContent:'center', paddingLeft:'5%', paddingTop:'15%', fontFamily:'Nunito-Light', fontWeight:'300',
   },
   text7:{
-    paddingLeft:'5%', paddingTop:'35%', fontSize:12, color: '#505050',fontFamily:'Nunito', fontWeight:'300', lineHeight:16,
+    paddingLeft:'5%', paddingTop:'35%', fontSize:12, color: '#505050',fontFamily:'Nunito', fontWeight:'300',
   },
   text8:{
     fontFamily:'Nunito-SemiBold', fontSize:20, fontWeight:'600', color:'#505050', marginLeft:15
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     fontFamily:'Nunito-Light', fontSize:16, fontWeight:'600', color:'#505050', textAlignVertical:'center'
   },
   textMonth:{
-    marginLeft:15, marginTop:10, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', lineHeight:19, color:'#265685'
+    marginLeft:15, marginTop:10, fontSize:18, fontFamily:'Nunito-Bold', fontWeight:'600', color:'#265685'
   },
   textVD:{
     textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'600'

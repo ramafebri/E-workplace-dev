@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
     color: '#505050',
     fontFamily:'Nunito-Light',
     fontWeight:'300',
-    lineHeight:19,
     marginBottom:7
   },
   text1:{
@@ -249,7 +248,6 @@ const styles = StyleSheet.create({
     color: '#EA5656',
     fontFamily:'Nunito',
     fontWeight:'300',
-    lineHeight:19,
   },
   viewBorder:{
     borderWidth: 1, borderRadius:5, width:'100%', flexDirection:'row', alignItems:'center'
