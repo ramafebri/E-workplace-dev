@@ -5,6 +5,9 @@ import UnderDevelopment from '../../image/UnderDevelopment.svg'
 export default class TaskDone extends Component {
   constructor(props){
     super(props);
+    this.state = {
+      backPressed: 0,
+    }
     this.onBack = this.onBack.bind(this);
   }
 
@@ -16,9 +19,16 @@ export default class TaskDone extends Component {
   }  
 
   onBack = () => {
+    this.setState({
+      backPressed : this.state.backPressed + 1
+    })
+
+    if(this.state.backPressed % 2 === 1){
       this.props.navigation.goBack();
       return true;
+    }
   };
+
     render() {
         return (
             <View style={styles.container}>

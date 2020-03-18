@@ -31,6 +31,7 @@ class WorkClient extends Component {
         headDivision : '',
         loadingPhoto: false,
         refreshing:false,
+        backPressed: 0,
       }
     this.findCoordinates = this.findCoordinates.bind(this);
     this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
@@ -49,9 +50,15 @@ class WorkClient extends Component {
   }
 
   onBack = () => {
-    this.props.navigation.goBack();
-    return true;
- };
+    this.setState({
+      backPressed : this.state.backPressed + 1
+    })
+
+    if(this.state.backPressed % 2 === 1){
+      this.props.navigation.goBack();
+      return true;
+    }
+  };
 
  loadData = async () => {     
   const username = await AsyncStorage.getItem("username");  

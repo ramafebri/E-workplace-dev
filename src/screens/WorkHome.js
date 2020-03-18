@@ -32,6 +32,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
             projectName: '',
             loadingPhoto: false,
             refreshing: false,
+            backPressed: 0,
           }
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
@@ -50,9 +51,15 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
     }
 
     onBack = () => {
-      this.props.navigation.goBack();
-      return true;
-   };
+      this.setState({
+        backPressed : this.state.backPressed + 1
+      })
+  
+      if(this.state.backPressed % 2 === 1){
+        this.props.navigation.goBack();
+        return true;
+      }
+    };
 
    loadData = async () => {   
     const username = await AsyncStorage.getItem("username");  

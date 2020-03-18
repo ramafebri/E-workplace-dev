@@ -28,6 +28,7 @@ class Sick extends Component {
             clockInstatus: false,
             statusCheckInn: 'You have clocked in!',
             refreshing: false,
+            backPressed: 0,
           }
         this.findCoordinates = this.findCoordinates.bind(this);
         this.submitAll = this.submitAll.bind(this);
@@ -44,9 +45,15 @@ class Sick extends Component {
       }
 
       onBack = () => {
-        this.props.navigation.goBack();
-        return true;
-     };
+        this.setState({
+          backPressed : this.state.backPressed + 1
+        })
+    
+        if(this.state.backPressed % 2 === 1){
+          this.props.navigation.goBack();
+          return true;
+        }
+      };
 
      loadData = async () => {     
       const username = await AsyncStorage.getItem("username");  

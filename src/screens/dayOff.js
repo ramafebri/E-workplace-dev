@@ -25,7 +25,8 @@ export default class DayOff extends Component {
             reason:'',
             substitute:'',
             show1: false,
-            show2: false          
+            show2: false,
+            backPressed: 0,          
         }
         this.showDatepicker1 = this.showDatepicker1.bind(this)
         this.showDatepicker2 = this.showDatepicker2.bind(this)
@@ -40,10 +41,16 @@ export default class DayOff extends Component {
         BackHandler.removeEventListener('hardwareBackPress', this.onBack);
       }
 
-    onBack = () => {
-      this.props.navigation.goBack();
-      return true;
-   };
+      onBack = () => {
+        this.setState({
+          backPressed : this.state.backPressed + 1
+        })
+    
+        if(this.state.backPressed % 2 === 1){
+          this.props.navigation.goBack();
+          return true;
+        }
+      };
 
    loadData = async () => {     
     const username = await AsyncStorage.getItem('username');  

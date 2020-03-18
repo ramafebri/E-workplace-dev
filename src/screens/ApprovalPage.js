@@ -15,7 +15,8 @@ class ApprovalPage extends Component {
           monthYear : moment().format('Do MMM YYYY'),
           loadings : true,
           refreshing: false,
-          people:[]
+          people:[],
+          backPressed: 0,
         }
         this.loadData = this.loadData.bind(this);
         this.onBack = this.onBack.bind(this);
@@ -30,9 +31,15 @@ class ApprovalPage extends Component {
     }
 
     onBack = () => {
-      this.props.navigation.goBack();
-      return true;
-   };
+      this.setState({
+        backPressed : this.state.backPressed + 1
+      })
+  
+      if(this.state.backPressed % 2 === 1){
+        this.props.navigation.goBack();
+        return true;
+      }
+    };
 
     loadData = async () => {   
       const headers = {

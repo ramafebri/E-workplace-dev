@@ -6,6 +6,9 @@ import Add from '../../image/add.svg'
 export default class Meetings extends Component {
     constructor(props){
         super(props);
+        this.state = {
+          backPressed: 0,
+        }
         this.onBack = this.onBack.bind(this);
       }
 
@@ -17,9 +20,15 @@ export default class Meetings extends Component {
       }  
 
     onBack = () => {
+      this.setState({
+        backPressed : this.state.backPressed + 1
+      })
+
+      if(this.state.backPressed % 2 === 1){
         this.props.navigation.goBack();
         return true;
-     };
+      }
+    };
 
     addMeetings=()=>{
         alert("Under Development!");
