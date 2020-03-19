@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
   },
   textbtnSubmit:{
-    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-Light' 
+    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
   },
   inputText:{
     paddingLeft:10, paddingRight:10,textAlignVertical: 'top', borderWidth: 1, borderRadius:5, borderColor:'#505050',width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito-Regular', fontWeight:'600'

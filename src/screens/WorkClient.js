@@ -319,7 +319,7 @@ class WorkClient extends Component {
                 </TextInput>
 
               <TouchableOpacity onPress={this.submitAll} style={styles.buttonSubmit}>
-                  <Text style={styles.textbtnSubmit} >CLOCK IN</Text>
+                  <Text style={styles.textbtnSubmit} >Clock In</Text>
               </TouchableOpacity>
               </View>  
             </ScrollView>
@@ -372,7 +372,7 @@ buttonSubmit:{
   backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
 },
 textbtnSubmit:{
-  color:'white', fontSize: 18, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-Light' 
+  color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
 }
 });
 
