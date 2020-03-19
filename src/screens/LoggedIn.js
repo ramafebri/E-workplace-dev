@@ -63,9 +63,9 @@ class LoggedIn extends Component {
         })
       },1000)
       this.requestLocationPermission();
-      this.checkClockInDouble()
       this.checkClockInStatus();
       this.loadData();
+      this.checkClockInDouble();
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
@@ -114,6 +114,10 @@ class LoggedIn extends Component {
         if(time > 6 && time < 13){
         this.deleteStatusClockIn();
         }
+        const value = await AsyncStorage.getItem('clockin_state2');
+        if(value === 'clockin'){
+            this.props.addClockin(false, ' ', this.state.idUser, this.state.status)
+        }   
     }
 
     async onRefresh (){
@@ -283,6 +287,7 @@ class LoggedIn extends Component {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
+        deviceStorage.saveItem("clockinTime", new Date().getHours());
         deviceStorage.saveItem("state", '1');
         deviceStorage.saveItem("clockin_state", "clockin");
         deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
@@ -304,6 +309,11 @@ class LoggedIn extends Component {
   const value = await AsyncStorage.getItem('id_user');
   const id = parseInt(value);
 
+  const clockintime = await AsyncStorage.getItem('clockinTime');
+  const clockouttime = new Date().getHours();
+
+  const workDuration = clockouttime - clockintime;
+  if(workDuration >= 9){
     axios({
       method: 'GET',
       url: Url_Clockin + '/' + id,
@@ -339,7 +349,7 @@ class LoggedIn extends Component {
       }).then(data => {
         console.log('Success: Clock out')
         this.setState({
-          statusCheckInn: 'You have not clocked in!',
+          statusCheckInn: '',
           clockInstatus: false,
           textButton: 'Clock In'
         });
@@ -365,6 +375,19 @@ class LoggedIn extends Component {
     }).catch((errorr) => {
       console.log('Error: Get data user before clock out')      
     });
+   }
+
+   else{
+    Alert.alert(
+      "You can't clockout!", "You haven't worked for 8 hours",
+      [
+        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+      ],
+      { cancelable: false },
+    );
+    this.props.addLoad(false)
+    return true;
+   }
   }
 
  onBack = () => {

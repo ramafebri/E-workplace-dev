@@ -111,11 +111,11 @@ class Profile extends Component {
       };
       ImagePicker.showImagePicker(options, response => {
         if (response.uri) {
-          console.log(response.path)
-          deviceStorage.saveItem("photoprofile", response.path);
+          console.log(response.uri)
+          deviceStorage.saveItem("photoprofile", response.uri);
           this.setState({ 
             loadingPhoto: true,
-            photoUri: response.path
+            photoUri: response.uri
           })         
         }
       }) 
@@ -178,7 +178,7 @@ class Profile extends Component {
                      </View>                 
                     </Card>
                     <Card containerStyle={styles.dcard}> 
-                     <Text style={styles.text4}>Overwork</Text>
+                     <Text style={styles.text4}>Overtime</Text>
                      <View style={{flexDirection:'row'}}>
                        <Text style={styles.text5}>--</Text>
                        <Text style={styles.text7}>Hours</Text>
@@ -187,7 +187,7 @@ class Profile extends Component {
                     </Card>
                     <Card containerStyle={styles.dcard}>
                       <TouchableOpacity onPress={this.movetoOverworkForm}>                   
-                        <Text style={styles.text4}>Overwork</Text>
+                        <Text style={styles.text4}>Overtime</Text>
                         <Text style={styles.text4}>Form</Text>
                         <FontAwesome5 name='file-alt' size={20} color='#505050' style={{alignSelf:'flex-end', marginTop:'15%'}}/>
                       </TouchableOpacity>                

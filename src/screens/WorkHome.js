@@ -159,7 +159,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           this.props.addLoad(false)
           return true;
         }
-        else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === ''){
+        else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.message === ''){
           alert('All form must be filled!');
         }
         else if(location === null || location === ''){
@@ -173,7 +173,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           this.props.addLoad(false)
           return true; 
         }
-        else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
+        else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false && this.state.message !== ''){
           const clockintime = new Date();
           axios({
             method: 'POST',
@@ -262,7 +262,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
                         </React.Fragment>
                   )}       
                 </View>
-                <Text style={styles.textbelowPIC}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
+                <Text style={styles.textbelowPIC}>The picture should capture your face in it. The data from this form will be sent to your head division for their approval</Text>
                 <TouchableOpacity onPress={this.handleChoosePhoto} style={styles.buttonPhoto}>
                     <Text style={styles.textPhoto}>Take Picture</Text>
                 </TouchableOpacity>
@@ -299,13 +299,12 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
                 </TextInput>
 
                 <Text style={styles.textSM}>
-                    Notes
+                    Notes *
                 </Text>
                 <TextInput
                     multiline={true}
                     numberOfLines={4}
                     maxLength={200}
-                    placeholder="any message..." 
                     style={styles.textInput}
                     onChangeText={text => this.setState({message: text})}
                     value={this.state.message}>
@@ -366,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
   },
   textbtnSubmit:{
-    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
+    color:'white', fontSize: 20, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-Light' 
   },
   inputText:{
     paddingLeft:10, paddingRight:10,textAlignVertical: 'top', borderWidth: 1, borderRadius:5, borderColor:'#505050',width:'90%', height:'10%', marginLeft:20, backgroundColor:'white', fontSize:18, fontFamily:'Nunito-Regular', fontWeight:'600'

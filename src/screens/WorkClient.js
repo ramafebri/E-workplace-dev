@@ -262,7 +262,7 @@ class WorkClient extends Component {
                         </React.Fragment>
                   )}       
                 </View>
-                <Text style={styles.textbelowPIC}>The picture should have your face in it. This data will be forwarded to your Scrum Master to be approved first</Text>
+                <Text style={styles.textbelowPIC}>The picture should capture your face in it. The data from this form will be sent to your head division for their approval</Text>
                 <TouchableOpacity onPress={this.handleChoosePhoto} style={styles.buttonPhoto}>
                     <Text style={styles.textPhoto}>Take Picture</Text>
                 </TouchableOpacity>
@@ -372,7 +372,7 @@ buttonSubmit:{
   backgroundColor:'#26BF64', marginTop:30, alignItems:'center', width:'90%', height:'10%', alignSelf:'center', borderRadius:5
 },
 textbtnSubmit:{
-  color:'white', fontSize: 18, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-SemiBold' 
+  color:'white', fontSize: 18, fontWeight:'600', textAlign:'center',textAlignVertical: "center", flex:1, fontFamily:'Nunito-Light' 
 }
 });
 

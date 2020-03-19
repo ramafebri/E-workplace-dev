@@ -80,7 +80,7 @@ class Sick extends Component {
           this.props.addLoad(false)
           return true;
         }
-        else if(this.state.headDivision === '' || this.state.projectName === ''){
+        else if(this.state.headDivision === '' || this.state.projectName === '' || this.state.message === ''){
           alert('All form must be filled!');
         }
         else if(location === null || location === ''){
@@ -94,7 +94,7 @@ class Sick extends Component {
           this.props.addLoad(false)
           return true; 
         }
-        else if(this.state.headDivision !== '' && this.state.projectName !== '' && this.props.clockin_status === false){
+        else if(this.state.headDivision !== '' && this.state.projectName !== '' && this.props.clockin_status === false && this.state.message !== ''){
           axios({
             method: 'POST',
             url: Url_Clockin,
@@ -210,11 +210,11 @@ class Sick extends Component {
 
                 <Text
                   style={styles.textSM}>
-                    Notes
+                    Notes *
                 </Text>
                 <TextInput
                     multiline={true}
-                    placeholder="kamu sakit apa..."
+                    placeholder="tell us about your health issue"
                     maxLength={200} 
                     style={styles.textInput}
                     onChangeText={text => this.setState({message: text})}
