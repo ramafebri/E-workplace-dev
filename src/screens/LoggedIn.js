@@ -219,7 +219,7 @@ class LoggedIn extends Component {
             (1 - c((this.state.longitude - MoonlayLong) * p))/2;
   
     const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
-    console.log('User location radius : '+location_radius+' from office')
+    console.log('User location radius : '+location_radius+' m from office')
 
     const value = await AsyncStorage.getItem('clockin_state2');
     if(value === 'clockin'){
@@ -415,7 +415,7 @@ class LoggedIn extends Component {
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
                   <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:3}}/>
                 </View>
-                <View style={{width:450, height:'100%'}}>
+                <View style={{width:450, height:20, justifyContent:'center'}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
                 </View> 
                 </View>
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     flexDirection:'row', alignItems:'center', alignContent:'center',marginTop:10
   },
   textLocation:{
-    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:16, textAlignVertical:'center', color:'#505050'
+    fontFamily:'Nunito-Light', fontWeight:'300', fontSize:18, textAlignVertical:'center', color:'#505050'
   },
   textHour:{
     color:'#265685', fontFamily:'Nunito-Regular', fontSize:38, fontWeight:'600', textAlign:'center',

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, RefreshControl, Image } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loading from '../components/Loading';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import ImagePicker from 'react-native-image-picker'
 import deviceStorage from '../services/deviceStorage';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
@@ -21,13 +22,24 @@ class Profile extends Component {
     this.state = {
         username: '',
         name:'Name',
+        photoUri: null,
+        loadingPhoto: false,
         monthYear : moment().format('MMMM YYYY'),
         refreshing : false,
         history:[],
       }
+
+      AsyncStorage.getItem('photoprofile').then(response => {
+        this.setState({
+          loadingPhoto: true,
+          photoUri: response
+        });
+      });
+
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
       this.loadData = this.loadData.bind(this);
+      this.ChoosePhotoProfile = this.ChoosePhotoProfile.bind(this);
       this.movetoClockinHistory = this.movetoClockinHistory.bind(this);
       this.movetoOverworkForm = this.movetoOverworkForm.bind(this);
   }
@@ -39,16 +51,14 @@ class Profile extends Component {
 
   async loadData(){
     const username = await AsyncStorage.getItem('username');
-    const name = await AsyncStorage.getItem('name');
+    const name = await AsyncStorage.getItem('name');  
     const month = moment().format('MM');
     const year = new Date().getFullYear();
 
-    if(name !== null){
-      this.setState({
-        username : username,
-        name : name
-      })
-    }
+    this.setState({
+      username : username,
+      name : name,
+    })
 
     const headers = {
       'accept': 'application/json',
@@ -69,35 +79,59 @@ class Profile extends Component {
          console.log('Error: Get clock in data')       
          this.props.addLoad(false)
       });
-  }
+    }
 
- async LogOut(){
-  const value = await AsyncStorage.getItem('state');
-  if(value === '1'){
-    alert('You must clock out before log out!')
-  }
-  else if(value === '0'){
-    this.deleteJWT();
-    this.props.delete();
-    await AsyncStorage.removeItem('clockin_state');
-    await AsyncStorage.removeItem('clockin_state2')
-    this.props.navigation.dispatch(
-      CommonActions.navigate({
-        name: 'Login',
-      })
-    );
-  }
- }
+    async LogOut(){
+      const value = await AsyncStorage.getItem('state');
+      if(value === '1'){
+        alert('You must clock out before log out!')
+      }
+      else if(value === '0'){
+        this.deleteJWT();
+        this.props.delete();
+        await AsyncStorage.removeItem('clockin_state');
+        await AsyncStorage.removeItem('clockin_state2')
+        this.props.navigation.dispatch(
+          CommonActions.navigate({
+            name: 'Login',
+          })
+        );
+      }
+    }
 
- movetoClockinHistory(){
-   this.props.navigation.navigate('ClockinHistory')
- }
+    ChoosePhotoProfile(){
+      var options = {
+        title: 'Select Image',
+        maxWidth: 1000,
+        maxHeight: 1000,
+        quality: 1,
+        storageOptions: {
+          skipBackup: true,
+        },
+      };
+      ImagePicker.showImagePicker(options, response => {
+        if (response.uri) {
+          console.log(response.path)
+          deviceStorage.saveItem("photoprofile", response.path);
+          this.setState({ 
+            loadingPhoto: true,
+            photoUri: response.path
+          })         
+        }
+      }) 
+    }
 
- movetoOverworkForm(){
-  this.props.navigation.navigate('OverworkForm')
- }
+    movetoClockinHistory(){
+      this.props.navigation.navigate('ClockinHistory')
+    }
+
+    movetoOverworkForm(){
+      this.props.navigation.navigate('OverworkForm')
+    }
 
   render() {
+    const { loadingPhoto } = this.state
+    //alert(this.state.photoUri)
           return(
             <SafeAreaView style={styles.container}>
               <ScrollView
@@ -112,7 +146,15 @@ class Profile extends Component {
                       <View style={{flex:3, paddingLeft:30}}>
                         <View style={styles.viewPhoto}>
                           <View style={{display:'flex'}}>
-                            <Person width={70} height={70}/>
+                            <View style={{display: loadingPhoto === false ? 'flex' : 'none'}}>
+                              <Person width={70} height={70}/>
+                            </View>
+                            <View style={{display: loadingPhoto === true ? 'flex' : 'none'}}>
+                              <Image
+                                source={{ uri: this.state.photoUri }}
+                                style={styles.image}
+                              />  
+                            </View>
                           </View>
                         </View>
                         <Text style={styles.text1}>Since 2018</Text>
@@ -120,11 +162,11 @@ class Profile extends Component {
                         <Text style={styles.text3}>Developer</Text>
                       </View>
                       <View>
-                        <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}} onPress={() => alert('Under Development!')}>
+                        <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}} onPress={this.ChoosePhotoProfile}>
                           <ProfileEdit width={25} height={25}/>
                         </TouchableOpacity> 
                       </View>
-                    </View>     
+                     </View>     
                     </Card>
                   </View>
                   <View style={{ flexDirection:'row'}}>
@@ -233,6 +275,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,  
     height:250  
+  },
+  image:{
+    width: 100, height: 100, borderRadius:100/2
   },
   textHistory:{
     color:'#505050', fontFamily:'Nunito-Light', fontSize:14

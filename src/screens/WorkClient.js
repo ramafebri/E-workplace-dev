@@ -74,12 +74,12 @@ class WorkClient extends Component {
   handleChoosePhoto = () => {
     var options = {
       title: 'Select Image',
+      maxWidth: 1000,
+      maxHeight: 1000,
+      quality: 1,
       storageOptions: {
         skipBackup: true,
         path: 'images',
-        maxWidth: 1000,
-        maxHeight: 1000,
-        quality: 1
       },
     };
     ImagePicker.showImagePicker(options, response => {
