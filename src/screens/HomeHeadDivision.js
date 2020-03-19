@@ -89,13 +89,13 @@ class HomeHeadDivision extends Component {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('We get your location');
+          console.log('Location permission accept');
           this.findCoordinates();
         } else {
-          console.log('Camera permission denied');
+          console.log('Location permission denied');
         }
       } catch (err) {
-        console.warn(err);
+        console.warn('Error: Get Location Permission');
       }
     }
 
@@ -152,7 +152,7 @@ class HomeHeadDivision extends Component {
           url: Url_GetDataUser,
           headers: headers,
         }).then((response) => { 
-          console.log(response)    
+          console.log('Success: Load data username and name')    
           this.setState({
             username: response.data.data.username,
             fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
@@ -164,10 +164,7 @@ class HomeHeadDivision extends Component {
           this.props.addName(this.state.username, this.state.fullname)
           this.props.addLoad(false)
         }).catch((errorr) => {
-          console.log(errorr)       
-            this.setState({
-              error: 'Error retrieving data',
-            });
+          console.log('Error: Load data username and name')       
             this.props.addLoad(false)
           });
       };
@@ -182,7 +179,7 @@ class HomeHeadDivision extends Component {
              url: Url_GetDataApproval,
              headers: headers,
            }).then((response) => { 
-             console.log(response)    
+             console.log('Success: Load approval data')    
              this.setState({
                dataApproval: response.data
              });
@@ -197,7 +194,7 @@ class HomeHeadDivision extends Component {
               });
              }      
            }).catch((errorr) => {
-             console.log(errorr)       
+             console.log('Error: Load approval data')       
            });       
       }
 
@@ -211,7 +208,7 @@ class HomeHeadDivision extends Component {
           Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
-                console.log(json);
+                console.log('Success: Get user location');
                 var addressComponent = json.results[1].address_components[0].long_name;
                 this.setState({
                   Location: addressComponent
@@ -220,7 +217,7 @@ class HomeHeadDivision extends Component {
                 this.props.addLoc(this.state.Location)
                 console.log(addressComponent);          
             })
-          .catch(error => console.warn(error));
+          .catch(error => console.warn('Error: Get user location'));
         },
         error => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
@@ -254,7 +251,7 @@ class HomeHeadDivision extends Component {
           (1 - c((this.state.longitude - MoonlayLong) * p))/2;
     
   const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
-  console.log(location_radius)
+  console.log('User location radius : '+location_radius+' from office')
 
   const value = await AsyncStorage.getItem('clockin_state2');
   if(value === 'clockin'){
@@ -302,7 +299,7 @@ class HomeHeadDivision extends Component {
         ApprovalByAdmin : 'Pending'
       }
     }).then((response) => {
-      console.log(response)
+      console.log('Success: Clock in at office')
       this.setState({
         statusCheckInn: ' ',
         idUser: response.data.Id,
@@ -321,7 +318,7 @@ class HomeHeadDivision extends Component {
       deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
     })
     .catch((errorr) => {
-      console.log(errorr)
+      console.log('Error: Clock in at office')
       this.props.addLoad(false)
       ToastAndroid.showWithGravity(
         'Clock in fail',
@@ -344,7 +341,8 @@ class HomeHeadDivision extends Component {
         'accept': 'application/json',
         'Authorization': 'Bearer ' + this.props.tokenJWT 
       },
-    }).then((response) => { 
+    }).then((response) => {
+      console.log('Success: Get data user before clock out') 
       axios({
         method: 'put',
         url: Url_Clockin + '/' + id,
@@ -369,6 +367,7 @@ class HomeHeadDivision extends Component {
           ClientName: response.data.ClientName,
         }
       }).then(data => {
+        console.log('Success: Clock out')
         this.setState({
           statusCheckInn: 'You have not clocked in!',
           clockInstatus: false,
@@ -386,7 +385,7 @@ class HomeHeadDivision extends Component {
         );
       }).catch(err => {
           this.props.addLoad(false)
-          console.log(err);
+          console.log('Error: Clock out');
           ToastAndroid.showWithGravity(
             'Clock out fail',
             ToastAndroid.SHORT,
@@ -394,10 +393,7 @@ class HomeHeadDivision extends Component {
           );
       });
     }).catch((errorr) => {
-    console.log(errorr)       
-      this.setState({
-        error: 'Error retrieving data',
-      });
+      console.log('Error: Get data user before clock out')       
     });
   }
 
@@ -406,7 +402,7 @@ class HomeHeadDivision extends Component {
       'Exit from the app?','',
       [
         { text: "Yes", onPress: () => BackHandler.exitApp() },
-        { text: "No", onPress: () => console.log('NO Pressed'), style: "cancel" },
+        { text: "No", onPress: () => console.log('NO'), style: "cancel" },
       ],
       { cancelable: false },
     );
@@ -711,7 +707,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
     nameUser: state.DataReducer.username,

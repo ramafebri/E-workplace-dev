@@ -60,13 +60,13 @@ class Profile extends Component {
          url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&NotState=Sick%20Leave&SortByDate=1',
          headers: headers,
        }).then((response) => { 
-         console.log(response)    
+         console.log('Success: Get clock in data')    
          this.setState({
             history: response.data.slice(0,6)
          });
          this.props.addLoad(false)
        }).catch((errorr) => {
-         console.log(errorr)       
+         console.log('Error: Get clock in data')       
          this.props.addLoad(false)
       });
   }
@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     loading : state.DataReducer.loading,
     tokenJWT: state.JwtReducer.jwt,

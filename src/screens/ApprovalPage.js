@@ -52,15 +52,14 @@ class ApprovalPage extends Component {
           url: Url_GetDataApproval,
           headers: headers,
         }).then((response) => { 
-          console.log(response)   
+          console.log('Success: Get approval data')   
           this.setState({
             people: response.data,
             loadings: false
           });
         }).catch((errorr) => {
-          console.log(errorr)       
+          console.log('Error: Get approval data')       
             this.setState({
-              error: 'Error retrieving data',
               loadings: false
             });
         });

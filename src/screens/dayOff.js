@@ -69,7 +69,7 @@ export default class DayOff extends Component {
           Geocoder.init('AIzaSyA5wKOId22uPu5jTKhTh0LpF3R5MRpmjyw');
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
-              console.log(json);
+              console.log('Success: Get user location');
               var addressComponent = json.results[1].address_components[0].long_name;
                 this.setState({
                   Location: addressComponent
@@ -78,7 +78,7 @@ export default class DayOff extends Component {
                 console.log(addressComponent);
                 this.props.addLoc(this.state.Location)     
             })
-          .catch(error => console.warn(error));
+          .catch(error => console.warn('Error: Get user location'));
         },
         error => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }

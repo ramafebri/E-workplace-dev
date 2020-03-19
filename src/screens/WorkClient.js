@@ -84,13 +84,12 @@ class WorkClient extends Component {
     };
     ImagePicker.showImagePicker(options, response => {
       if (response.uri) {
-        //console.log(response)
+        console.log(response.uri)
         const name = response.fileName;
         const type = response.type;
         this.setState({ 
           loadingPhoto: true 
         })
-          console.log(response.size)
           var url = Url_UploadPhoto;
           const Header = {
             // 'Content-Type': 'multipart/form-data',
@@ -104,13 +103,14 @@ class WorkClient extends Component {
           })
           axios.post(url, formData ,Header)
             .then(data => {
+              console.log('Success: Upload photo')
               this.setState({
                 urlphoto : data.data,
                 photo: response,
               })
-              console.log("ulrnya : " + this.state.urlphoto)
+              console.log("Photo url: " + this.state.urlphoto)
               }).catch(err => {
-                  console.log(err)
+                  console.log('Error: Upload photo')
                   ToastAndroid.showWithGravity(
                     'Upload Photo Failed',
                     ToastAndroid.SHORT,
@@ -128,7 +128,7 @@ class WorkClient extends Component {
         Geocoder.init(ApiMaps);
         Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(json => {
-           // console.log(json);
+            console.log('Success: Get user location');
             var addressComponent = json.results[1].address_components[0].long_name;
               this.setState({
                 Location: addressComponent
@@ -136,7 +136,7 @@ class WorkClient extends Component {
               deviceStorage.saveItem("location", this.state.Location);
               console.log(addressComponent);    
           })
-        .catch(error => console.warn(error));
+        .catch(error => console.warn('Error: Get user location'));
       },
       error => Alert.alert(error.message),
       { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
@@ -196,7 +196,7 @@ class WorkClient extends Component {
           HeadDivision: this.state.headDivision
         }
       }).then((response) => {
-        console.log(response)
+        console.log('Success: Clock in at client office')
         this.setState({
           statusCheckIn: ' ',
           clockInstatus: true,
@@ -223,7 +223,7 @@ class WorkClient extends Component {
         )
       })
       .catch((errorr) => {
-        console.log(errorr)
+        console.log('Error: Clock in at client office')
         ToastAndroid.showWithGravity(
           'Clock in fail!',
           ToastAndroid.SHORT,
@@ -377,7 +377,6 @@ textbtnSubmit:{
 });
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
     clockin_status : state.DataReducer.clockIn,

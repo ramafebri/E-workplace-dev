@@ -78,7 +78,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           Geocoder.init(ApiMaps);
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
-                //console.log(json);
+                console.log('Success: Get user location');
                 var addressComponent = json.results[1].address_components[0].long_name;
                 this.setState({
                   Location: addressComponent
@@ -86,7 +86,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
                 deviceStorage.saveItem("location", this.state.Location);
                 console.log(addressComponent);         
             })
-          .catch(error => console.warn(error));        
+          .catch(error => console.warn('Error: Get user location'));        
         },
         error => Alert.alert(error.message),
         { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }
@@ -106,7 +106,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
         };
         ImagePicker.showImagePicker(options, response => {
           if (response.uri) {
-            //console.log(response)
+            console.log(response.uri)
             const name = response.fileName;
             const type = response.type;
             this.setState({ 
@@ -126,13 +126,14 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
               })
                 axios.post(url, formData ,Header)
                 .then(data => {
+                  console.log('Success: Upload photo')
                   this.setState({
                     urlphoto : data.data,
                     photo: response,
                   })
-                  console.log("ulrnya : " + this.state.urlphoto)
+                  console.log("Photo url: " + this.state.urlphoto)
                   }).catch(err => {
-                      console.log(err)
+                      console.log('Error: Upload photo')
                       ToastAndroid.showWithGravity(
                         'Upload Photo Failed',
                         ToastAndroid.SHORT,
@@ -195,7 +196,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
               HeadDivision : this.state.headDivision
             }
           }).then((response) => {
-            console.log(response)
+            console.log('Success: Clock in work from home')
             this.setState({
               statusCheckIn: ' ',
               idUser: response.data.Id,
@@ -222,7 +223,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
             )
           })
           .catch((errorr) => {
-            console.log(errorr)
+            console.log('Error: Clock in work from home')
             ToastAndroid.showWithGravity(
               'Clock in fail!',
               ToastAndroid.SHORT,
@@ -373,7 +374,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     clockin_status : state.DataReducer.clockIn,
     tokenJWT: state.JwtReducer.jwt,

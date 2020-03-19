@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet} from 'react-native';
+import { View } from 'react-native';
 import { Button } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../screens/Login';
@@ -102,11 +102,4 @@ function MyStack() {
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-padRight:{
-  paddingRight: 10,
-  marginRight: 10
-}
-})
 export default (MyStack)

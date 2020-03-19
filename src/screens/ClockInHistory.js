@@ -61,12 +61,12 @@ class ClockInHistory extends Component {
              url: Url_Clockin+'?Username='+this.state.username+'&CheckIn='+year+'-'+month+'&NotState=Sick%20Leave&SortByDate=1',
              headers: headers,
            }).then((response) => { 
-             console.log(response)    
+             console.log('Success: Get clock in data')    
              this.setState({
                 history: response.data
              });
            }).catch((errorr) => {
-             console.log(errorr)       
+             console.log('Error: Get clock in data')       
           });
       }
 
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt,
   }

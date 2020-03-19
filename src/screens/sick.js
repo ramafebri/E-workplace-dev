@@ -115,7 +115,7 @@ class Sick extends Component {
               Note: this.state.message
             }
           }).then((response) => {
-            console.log(response)
+            console.log('Success: Submit sick data')
             this.setState({
               idUser: response.data.Id,
             });
@@ -135,7 +135,7 @@ class Sick extends Component {
             );
           })
           .catch((errorr) => {
-            console.log(errorr)
+            console.log('Error: Submit sick data')
             ToastAndroid.showWithGravity(
               'Submit fail!',
               ToastAndroid.SHORT,
@@ -151,7 +151,7 @@ class Sick extends Component {
             Geocoder.init(ApiMaps);
             Geocoder.from(position.coords.latitude, position.coords.longitude)
               .then(json => {
-                  console.log(json);
+                  console.log('Success: Get user location');
                   var addressComponent = json.results[1].address_components[0].long_name;
                   this.setState({
                     Location: addressComponent
@@ -159,7 +159,7 @@ class Sick extends Component {
                   deviceStorage.saveItem("location", this.state.Location);
                   console.log(addressComponent);       
               })
-            .catch(error => console.warn(error));
+            .catch(error => console.warn('Error: Get user location'));
           },
           error => Alert.alert(error.message),
           { enableHighAccuracy: true, timeout: 50000, maximumAge: 1000 }

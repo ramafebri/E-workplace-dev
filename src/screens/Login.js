@@ -128,7 +128,7 @@ if((username != null && username != "" ) && ( password != null && password != ""
       'Exit from the app?','',
       [
         { text: "Yes", onPress: () => BackHandler.exitApp() },
-        { text: "No", onPress: () => console.log('NO Pressed'), style: "cancel" },
+        { text: "No", onPress: () => console.log('NO'), style: "cancel" },
       ],
       { cancelable: false },
     );
@@ -273,7 +273,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToPropsData = (state) => {
-  //console.log(state);
   return {
     tokenJWT: state.JwtReducer.jwt
   }

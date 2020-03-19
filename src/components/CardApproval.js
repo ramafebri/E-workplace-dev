@@ -56,13 +56,13 @@ class CardApproval extends Component {
           url: Url_Clockin + '/' + this.props.person.Id,
           headers: headers,
         }).then((response) => { 
-          console.log(response)    
+          console.log('Success: Get detail user data')    
           this.setState({
             detail:response.data,
             visible: true
           });
         }).catch((errorr) => {
-          alert(errorr)       
+          console.log('Error: Get detail user data')       
         });       
     };
 
@@ -93,7 +93,7 @@ class CardApproval extends Component {
             ClientName: this.props.person.ClientName,
           }
         }).then((response) => { 
-          console.log(response)    
+          console.log('Success: Decline')    
           this.setState({
             visible: false
           });
@@ -104,7 +104,7 @@ class CardApproval extends Component {
             ToastAndroid.BOTTOM,
           );
         }).catch((errorr) => {
-          alert(errorr)
+          console.log('Error: Decline')
           this.setState({
             visible: false
           });
@@ -142,7 +142,7 @@ class CardApproval extends Component {
             ClientName: this.props.person.ClientName,
           }
         }).then((response) => { 
-          console.log(response)    
+          console.log('Success: Approve')    
           this.setState({
             visible: false
           });
@@ -153,7 +153,7 @@ class CardApproval extends Component {
             ToastAndroid.BOTTOM,
           );
         }).catch((errorr) => {
-          alert(errorr)
+          console.log('Error: Approve')
           this.setState({
             visible: false
           });
