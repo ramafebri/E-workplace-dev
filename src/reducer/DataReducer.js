@@ -7,6 +7,7 @@ const initialState = {
     statusCheckIn: ' ',
     workStatus: 'Work at Office',
     loading : false,
+    announcement:'',
   }
   
   const dataReducer = (state = initialState, action) => {
@@ -22,6 +23,11 @@ const initialState = {
           ...state,
           locations : action.dataLoc
         };
+      case 'ADD_ANNOUNCEMENT':
+        return {
+          ...state,
+          announcement : action.announcement
+        };  
       case 'ADD_LOADING':
         return {
           ...state,

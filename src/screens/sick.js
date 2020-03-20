@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { CommonActions } from '@react-navigation/native';
 import {ApiMaps} from '../config/apiKey'
 import axios from 'axios';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
 import {Url_Clockin} from '../config/URL'
@@ -69,6 +70,8 @@ class Sick extends Component {
       async submitAll(){
         const value = await AsyncStorage.getItem('clockin_state2');
         const location = await AsyncStorage.getItem('location');
+        const sickValue = await AsyncStorage.getItem('sick_submit');
+
         if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
             'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -82,6 +85,17 @@ class Sick extends Component {
         }
         else if(this.state.headDivision === '' || this.state.projectName === '' || this.state.message === ''){
           alert('All form must be filled!');
+        }
+        else if(sickValue === '1'){
+          Alert.alert(
+            "You can't clock in!",'You have submitted sick form today',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true;
         }
         else if(location === null || location === ''){
           Alert.alert(
@@ -119,6 +133,8 @@ class Sick extends Component {
             this.setState({
               idUser: response.data.Id,
             });
+            deviceStorage.saveItem("sick_submit", "1");
+            deviceStorage.saveItem("sick_submit_day", moment().format('dddd'));
             this.props.addLoad(true)
             this.props.navigation.dispatch(
               CommonActions.reset({

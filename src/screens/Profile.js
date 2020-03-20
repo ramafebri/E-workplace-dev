@@ -106,7 +106,7 @@ class Profile extends Component {
         maxHeight: 1000,
         quality: 1,
         storageOptions: {
-          skipBackup: true,
+          skipBackup: false,
         },
       };
       ImagePicker.showImagePicker(options, response => {

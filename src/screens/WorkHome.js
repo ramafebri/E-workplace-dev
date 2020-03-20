@@ -100,7 +100,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           maxHeight: 1000,
           quality: 1,
           storageOptions: {
-            skipBackup: true,
+            skipBackup: false,
             path: 'images',
           },
         };
@@ -146,8 +146,25 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
       }
 
       async submitAll(){
+        if(this.props.announcement !== ''){
+          Alert.alert(
+            "You can't clock in!",this.props.announcement,
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          return true;
+        }
+        else{
         const value = await AsyncStorage.getItem('clockin_state2');
         const location = await AsyncStorage.getItem('location');
+        const sickValue = await AsyncStorage.getItem('sick_submit');
+
+        //Get Hour
+        const hour = new Date().getHours();
+        console.log('Time right now: '+hour)
+        
         if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
             'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -159,8 +176,30 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           this.props.addLoad(false)
           return true;
         }
+        else if(hour > 11 || hour <= 6){
+          Alert.alert(
+            "You can't clock in!",'Clock in time only available at 7 AM - 12 PM',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true;
+        }
         else if(this.state.headDivision === '' || this.state.urlphoto === '' || this.state.projectName === '' || this.state.message === ''){
           alert('All form must be filled!');
+        }
+        else if(sickValue === '1'){
+          Alert.alert(
+            "You can't clock in!",'You have submitted sick form today',
+            [
+              { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+            ],
+            { cancelable: false },
+          );
+          this.props.addLoad(false)
+          return true;
         }
         else if(location === null || location === ''){
           Alert.alert(
@@ -173,7 +212,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           this.props.addLoad(false)
           return true; 
         }
-        else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false && this.state.message !== ''){
+        else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== '' && this.props.clockin_status === false && this.state.message !== '' && hour < 12 && hour > 6){
           const clockintime = new Date();
           axios({
             method: 'POST',
@@ -204,6 +243,8 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
             });
             deviceStorage.saveItem("clockin_state", "clockin");
             deviceStorage.saveItem("state", '1');
+            deviceStorage.saveItem("clockinHour", new Date().getHours().toString());
+            deviceStorage.saveItem("clockinMinute", new Date().getMinutes().toString());
             deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
 
             this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn, this.state.idUser, this.state.status)
@@ -231,6 +272,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
             );
         });     
       }
+     }
     }
     
     handleChangeMessage = event => {
@@ -376,6 +418,7 @@ const mapStateToPropsData = (state) => {
   return {
     clockin_status : state.DataReducer.clockIn,
     tokenJWT: state.JwtReducer.jwt,
+    announcement :  state.DataReducer.announcement
   }
 }
 const mapDispatchToPropsData = (dispatch) => {

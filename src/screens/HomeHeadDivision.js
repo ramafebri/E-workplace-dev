@@ -8,7 +8,7 @@ import axios from 'axios';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { connect } from 'react-redux';
-import { addNama, addLocation, addStatusClockin, addLoading } from '../actions/DataActions';
+import { addNama, addLocation, addStatusClockin, addLoading, addAnnouncement } from '../actions/DataActions';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {ApiMaps} from '../config/apiKey'
 import { Card } from 'react-native-elements'
@@ -38,6 +38,7 @@ class HomeHeadDivision extends Component {
         dataApproval:[],
         latitude : null,
         longitude : null,
+        announcement:'',
       }
       this.clockIn = this.clockIn.bind(this);
       this.clockOut = this.clockOut.bind(this);
@@ -47,6 +48,7 @@ class HomeHeadDivision extends Component {
       this.findCoordinates = this.findCoordinates.bind(this);
       this.checkClockInStatus = this.checkClockInStatus.bind(this);
       this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
+      this.checkSickSubmit = this.checkSickSubmit.bind(this);
       this.checkClockInDouble = this.checkClockInDouble.bind(this);
       this.movetoApprovalPage = this.movetoApprovalPage.bind(this);
       this.movetoWAC = this.movetoWAC.bind(this);
@@ -68,6 +70,7 @@ class HomeHeadDivision extends Component {
       },1000)
       this.requestLocationPermission();
       this.checkClockInStatus();
+      this.checkSickSubmit();
       this.loadDataApproval();
       this.loadData();
       this.checkClockInDouble();
@@ -116,13 +119,35 @@ class HomeHeadDivision extends Component {
 
     async checkClockInDouble(){
       var time = new Date().getHours();
-        if(time > 6 && time < 13){
-        this.deleteStatusClockIn();
+      var clockoutDay = await AsyncStorage.getItem('clockoutDay');
+      var dayNow = moment().format('dddd');
+      if(clockoutDay !== null){
+        if(dayNow !== clockoutDay){
+          if(time > 6 && time < 12){
+            this.deleteStatusClockIn();
+          }else{
+            this.setState({
+              announcement: 'Clock in time only available at 7 AM - 12 PM'
+            })
+            this.props.addAnnouncement(this.state.announcement)
+          }
         }
+      }
       const value = await AsyncStorage.getItem('clockin_state2');
       if(value === 'clockin'){
           this.props.addClockin(false, ' ', this.state.idUser, this.state.status)
       }  
+    }
+
+    async checkSickSubmit(){
+      var sick_submit_day = await AsyncStorage.getItem('sick_submit_day');
+      var dayNow = moment().format('dddd');
+      if(sick_submit_day !== null){
+        if(dayNow !== sick_submit_day){
+          await AsyncStorage.removeItem('sick_submit');
+          await AsyncStorage.removeItem('sick_submit_day');
+        }
+      }
     }
 
     async onRefresh (){
@@ -135,11 +160,12 @@ class HomeHeadDivision extends Component {
         monthYear : moment().format('MMM Do YYYY'),
       })
 
-      this.checkClockInDouble();
       this.checkClockInStatus();
       this.findCoordinates();
+      this.checkSickSubmit();
       this.loadData();
       this.loadDataApproval();
+      this.checkClockInDouble();
       this.setState({
         refreshing : false
       })
@@ -246,7 +272,17 @@ class HomeHeadDivision extends Component {
 
  async clockIn(){
   this.props.addLoad(true)
-  
+  if(this.state.announcement !== ''){
+    Alert.alert(
+      "You can't clock in!",this.state.announcement,
+      [
+        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+      ],
+      { cancelable: false },
+    );
+    this.props.addLoad(false)
+    return true;
+  }else{  
   //Check Location Radius
   var p = 0.017453292519943295;    // Math.PI / 180
   var c = Math.cos;
@@ -257,7 +293,13 @@ class HomeHeadDivision extends Component {
   const location_radius = 12742 * Math.asin(Math.sqrt(a)) * 1000;
   console.log('User location radius : '+location_radius+' m from office')
 
+  //Get Hour
+  const hour = new Date().getHours();
+  console.log('Time right now: '+hour)
+
   const value = await AsyncStorage.getItem('clockin_state2');
+  const sickValue = await AsyncStorage.getItem('sick_submit');
+
   if(value === 'clockin'){
     Alert.alert(
       'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
@@ -268,6 +310,28 @@ class HomeHeadDivision extends Component {
     );
     this.props.addLoad(false)
     return true;   
+  }
+  else if(hour > 11 || hour <= 6){
+    Alert.alert(
+      "You can't clock in!",'Clock in time only available at 7 AM - 12 PM',
+      [
+        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+      ],
+      { cancelable: false },
+    );
+    this.props.addLoad(false)
+    return true;
+  }
+  else if(sickValue === '1'){
+    Alert.alert(
+      "You can't clock in!",'You have submitted sick form today',
+      [
+        { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+      ],
+      { cancelable: false },
+    );
+    this.props.addLoad(false)
+    return true;
   }
   else if(this.state.latitude === null || this.state.longitude === null){
     Alert.alert(
@@ -284,7 +348,7 @@ class HomeHeadDivision extends Component {
     alert('You are far from the office right now, go closer!')
     this.props.addLoad(false)
   } 
-  else if(location_radius <= 80 && value !== 'clockin'){
+  else if(location_radius <= 80 && value !== 'clockin' && hour < 12 && hour > 6){
     const clockintime = new Date();
     axios({
       method: 'POST',
@@ -317,7 +381,8 @@ class HomeHeadDivision extends Component {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
       );
-      deviceStorage.saveItem("clockinTime", new Date().getHours().toString());
+      deviceStorage.saveItem("clockinHour", new Date().getHours().toString());
+      deviceStorage.saveItem("clockinMinute", new Date().getMinutes().toString());
       deviceStorage.saveItem("state", '1');
       deviceStorage.saveItem("clockin_state", "clockin");
       deviceStorage.saveItem("id_user", JSON.stringify(this.state.idUser));
@@ -331,7 +396,8 @@ class HomeHeadDivision extends Component {
         ToastAndroid.BOTTOM,
       );
    });
-  } 
+  }
+ } 
 }
 
  async clockOut(){
@@ -339,12 +405,19 @@ class HomeHeadDivision extends Component {
   const value = await AsyncStorage.getItem('id_user');
   const id = parseInt(value);
 
-  const time = await AsyncStorage.getItem('clockinTime');
-  const clockintime = parseInt(time);
-  const clockouttime = new Date().getHours();
+  const hour = await AsyncStorage.getItem('clockinHour');
+  const clockinHour = parseInt(hour) * 60;
+  const minute = await AsyncStorage.getItem('clockinMinute');
+  const clockinMinute = parseInt(minute);
+  const clockinTime = clockinHour + clockinMinute;
 
-  const workDuration = clockouttime - clockintime;
-  if(workDuration >= 9){
+  const clockoutHour = new Date().getHours() * 60;
+  const clockoutMinute = new Date().getMinutes();
+  const clockoutTime = clockoutHour + clockoutMinute;
+
+  const workDuration = clockoutTime - clockinTime;
+  console.log('Your work duration: '+workDuration+' minutes')
+  if(workDuration >= 540){
     axios({
       method: 'GET',
       url: Url_Clockin + '/' + id,
@@ -387,6 +460,7 @@ class HomeHeadDivision extends Component {
         this.props.addLoad(false)
         this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
         deviceStorage.saveItem("state", '0');
+        deviceStorage.saveItem("clockoutDay", moment().format('dddd'));
         deviceStorage.saveItem("clockin_state2", "clockin");
         deviceStorage.deleteClockInStatus();
         ToastAndroid.showWithGravity(
@@ -410,15 +484,81 @@ class HomeHeadDivision extends Component {
 
   else{
    Alert.alert(
-     "You can't clockout!", "You haven't worked for 8 hours",
+     "Sure you want to clock out?", "You haven't worked for 8 hours, your clock in time at "+hour+':'+minute+' AM',
      [
-       { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
+       { text: "Yes", onPress: () => 
+       axios({
+        method: 'GET',
+        url: Url_Clockin + '/' + id,
+        headers: { 
+          'accept': 'application/json',
+          'Authorization': 'Bearer ' + this.props.tokenJWT 
+        },
+      }).then((response) => {
+        console.log('Success: Get data user before clock out') 
+        axios({
+          method: 'put',
+          url: Url_Clockin + '/' + id,
+          headers: { 
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + this.props.tokenJWT 
+          },
+          data : {
+            Name: response.data.Name,
+            Username: response.data.Username,
+            CheckIn: response.data.CheckIn,
+            State: response.data.State,
+            Location: response.data.Location,
+            CheckOut: new Date(),
+            Approval: response.data.Approval,
+            Photo: response.data.Photo,
+            Note: response.data.Note,
+            ProjectName: response.data.ProjectName,
+            HeadDivision: response.data.HeadDivision,
+            ApprovalByAdmin: response.data.ApprovalByAdmin,
+            CompanyName: response.data.CompanyName,
+            ClientName: response.data.ClientName,
+          }
+        }).then(data => {
+          console.log('Success: Clock out')
+          this.setState({
+            statusCheckInn: '',
+            clockInstatus: false,
+            textButton: 'Clock In'
+          });
+          this.props.addLoad(false)
+          this.props.addClockin(this.state.clockInstatus, this.state.statusCheckInn)
+          deviceStorage.saveItem("state", '0');
+          deviceStorage.saveItem("clockoutDay", moment().format('dddd'));
+          deviceStorage.saveItem("clockin_state2", "clockin");
+          deviceStorage.deleteClockInStatus();
+          ToastAndroid.showWithGravity(
+            'Clock out success',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+          );
+        }).catch(err => {
+            this.props.addLoad(false)
+            console.log('Error: Clock out');
+            ToastAndroid.showWithGravity(
+              'Clock out fail',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
+        });
+      }).catch((errorr) => {
+        console.log('Error: Get data user before clock out')       
+      }),   
+       style: "cancel"},
+
+       { text: "No", onPress: () => this.props.addLoad(false)     
+        , style: "cancel" }
      ],
      { cancelable: false },
    );
-   this.props.addLoad(false)
-   return true;
-  }
+
+    return true;
+   }
   }
 
  onBack = () => {
@@ -748,6 +888,7 @@ const mapDispatchToPropsData = (dispatch) => {
     addName: (username, fullname) => dispatch(addNama(username, fullname)),
     addLoc: (Location) => dispatch(addLocation(Location)),
     addLoad : (Loading) => dispatch(addLoading(Loading)),
+    addAnnouncement : (announcement) => dispatch(addAnnouncement(announcement)),
     addClockin : (clockInstatus, statusCheckInn, idUser, status) => dispatch(addStatusClockin(clockInstatus, statusCheckInn, idUser, status))
   }
 }

@@ -20,6 +20,13 @@ export const addNama = (username, name) => (
     }
   );
 
+  export const addAnnouncement = (announcement) => (
+    {
+      type: 'ADD_ANNOUNCEMENT',
+      announcement: announcement
+    }
+  );
+
   export const addStatusClockin = (clockin, status, idUser, workStatus) => (
     {
       type: 'ADD_CLOCKIN',
