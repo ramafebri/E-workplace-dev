@@ -88,7 +88,7 @@ class Sick extends Component {
         }
         else if(sickValue === '1'){
           Alert.alert(
-            "You can't clock in!",'You have submitted sick form today',
+            "You can't submit!",'You have submitted sick form today. Your next submit will be start tomorrow at 07.00 AM',
             [
               { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
             ],

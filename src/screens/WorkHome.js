@@ -192,7 +192,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
         }
         else if(sickValue === '1'){
           Alert.alert(
-            "You can't clock in!",'You have submitted sick form today',
+            "You can't clock in!",'You have submitted sick form today. Your next clock in will be start tomorrow at 07.00 AM',
             [
               { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
             ],
