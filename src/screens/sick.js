@@ -74,7 +74,7 @@ class Sick extends Component {
 
         if(this.props.clockin_status === true || value === 'clockin'){
           Alert.alert(
-            'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+            "You can't submit!",'You have clocked in today, your next submit will be start tomorrow at 07.00 AM',
             [
               { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
             ],

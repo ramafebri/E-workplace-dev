@@ -270,7 +270,7 @@ class LoggedIn extends Component {
 
     if(value === 'clockin'){
       Alert.alert(
-        'You have clock in today!','Your next clock in will be start tomorrow at 07.00 AM',
+        'You have clocked in today!','Your next clock in will be start tomorrow at 07.00 AM',
         [
           { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
         ],
