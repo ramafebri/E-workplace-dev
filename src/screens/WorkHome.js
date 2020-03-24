@@ -33,6 +33,7 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
             loadingPhoto: false,
             refreshing: false,
             backPressed: 0,
+            listHD:[]
           }
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
@@ -70,6 +71,23 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
       fullname : name,
       Location : location
     })
+    axios({
+      method: 'GET',
+      url: 'https://eworkmoonlay-user-dev.azurewebsites.net/v1/accounts?page=1&size=25&order=%7B%7D&filter=%7B%7D',
+      headers: {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + this.props.tokenJWT
+      },
+    }).then((response) => {
+      console.log('Success: Get list Head Division')
+      this.setState({
+        listHD: response.data.data
+      });
+    })
+    .catch((errorr) => {
+      console.log('Error: Get list Head Division')
+      console.log(errorr)
+    });
     };
 
     async loadLocation(){
@@ -324,9 +342,11 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
                     onValueChange={(itemValue, itemIndex) =>
                       this.setState({headDivision: itemValue})
                     }>
-                    <Picker.Item label="" value="" />
-                    <Picker.Item label="Java" value="java" />
-                    <Picker.Item label="JavaScript" value="js" />
+                    <Picker.Item label='' value=''/>
+                    {this.state.listHD.map((u,i) => {
+                      return (<Picker.Item key={i} label={u.profile.firstname+' '+u.profile.lastname} value={u.username}/>);
+                      })
+                    }
                   </Picker>
                 </View>
 

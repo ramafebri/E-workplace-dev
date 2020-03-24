@@ -100,25 +100,26 @@ class Profile extends Component {
     }
 
     ChoosePhotoProfile(){
-      var options = {
-        title: 'Select Image',
-        maxWidth: 1000,
-        maxHeight: 1000,
-        quality: 1,
-        storageOptions: {
-          skipBackup: false,
-        },
-      };
-      ImagePicker.showImagePicker(options, response => {
-        if (response.uri) {
-          console.log(response.uri)
-          deviceStorage.saveItem("photoprofile", response.uri);
-          this.setState({ 
-            loadingPhoto: true,
-            photoUri: response.uri
-          })         
-        }
-      }) 
+      alert('Under Development!')
+      // var options = {
+      //   title: 'Select Image',
+      //   maxWidth: 1000,
+      //   maxHeight: 1000,
+      //   quality: 1,
+      //   storageOptions: {
+      //     skipBackup: false,
+      //   },
+      // };
+      // ImagePicker.showImagePicker(options, response => {
+      //   if (response.uri) {
+      //     console.log(response.uri)
+      //     deviceStorage.saveItem("photoprofile", response.uri);
+      //     this.setState({ 
+      //       loadingPhoto: true,
+      //       photoUri: response.uri
+      //     })         
+      //   }
+      // }) 
     }
 
     movetoClockinHistory(){
@@ -146,15 +147,15 @@ class Profile extends Component {
                       <View style={{flex:3, paddingLeft:30}}>
                         <View style={styles.viewPhoto}>
                           <View style={{display:'flex'}}>
-                            <View style={{display: loadingPhoto === false ? 'flex' : 'none'}}>
+                            <View>
                               <Person width={70} height={70}/>
                             </View>
-                            <View style={{display: loadingPhoto === true ? 'flex' : 'none'}}>
+                            {/* <View style={{display: loadingPhoto === true ? 'flex' : 'none'}}>
                               <Image
                                 source={{ uri: this.state.photoUri }}
                                 style={styles.image}
                               />  
-                            </View>
+                            </View> */}
                           </View>
                         </View>
                         <Text style={styles.text1}>Since 2018</Text>

@@ -30,6 +30,7 @@ class Sick extends Component {
             statusCheckInn: 'You have clocked in!',
             refreshing: false,
             backPressed: 0,
+            listHD: [],
           }
         this.findCoordinates = this.findCoordinates.bind(this);
         this.submitAll = this.submitAll.bind(this);
@@ -60,11 +61,28 @@ class Sick extends Component {
       const username = await AsyncStorage.getItem("username");  
       const name = await AsyncStorage.getItem("name");
       const location = await AsyncStorage.getItem("location");
-      this.setState({
-        username : username,
-        fullname : name,
-        Location : location
-      })
+        this.setState({
+          username : username,
+          fullname : name,
+          Location : location
+        })
+        axios({
+          method: 'GET',
+          url: 'https://eworkmoonlay-user-dev.azurewebsites.net/v1/accounts?page=1&size=25&order=%7B%7D&filter=%7B%7D',
+          headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + this.props.tokenJWT
+          },
+        }).then((response) => {
+          console.log('Success: Get list Head Division')
+          this.setState({
+            listHD: response.data.data
+          });
+        })
+        .catch((errorr) => {
+          console.log('Error: Get list Head Division')
+          console.log(errorr)
+        });
       };
 
       async submitAll(){
@@ -130,6 +148,7 @@ class Sick extends Component {
             }
           }).then((response) => {
             console.log('Success: Submit sick data')
+            console.log(this.state.headDivision)
             this.setState({
               idUser: response.data.Id,
             });
@@ -205,11 +224,15 @@ class Sick extends Component {
                     selectedValue={this.state.headDivision}
                     style={styles.picker}
                     onValueChange={(itemValue, itemIndex) =>
-                      this.setState({headDivision: itemValue})
+                      this.setState({
+                        headDivision: itemValue
+                      })
                     }>
-                    <Picker.Item label="" value="" />
-                    <Picker.Item label="Java" value="java" />
-                    <Picker.Item label="JavaScript" value="js" />
+                    <Picker.Item label='' value=''/>
+                    {this.state.listHD.map((u,i) => {
+                      return (<Picker.Item key={i} label={u.profile.firstname+' '+u.profile.lastname} value={u.username}/>);
+                      })
+                    }
                   </Picker>
                 </View>
 
