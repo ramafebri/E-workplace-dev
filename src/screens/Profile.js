@@ -90,7 +90,12 @@ class Profile extends Component {
         this.deleteJWT();
         this.props.delete();
         await AsyncStorage.removeItem('clockin_state');
-        await AsyncStorage.removeItem('clockin_state2')
+        await AsyncStorage.removeItem('clockin_state2');
+        await AsyncStorage.removeItem('user_permission');
+        await AsyncStorage.removeItem('username');
+        await AsyncStorage.removeItem('name');
+        await AsyncStorage.removeItem('firstname');
+
         this.props.navigation.dispatch(
           CommonActions.navigate({
             name: 'Login',
