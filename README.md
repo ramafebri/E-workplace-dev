@@ -69,7 +69,10 @@ npx react-native run-android
     "react-navigation-stack": "^2.1.0",
     "react-redux": "^7.1.3",
     "redux": "^4.0.5"
-### Latest releases
+### Dependencies Link
+https://reactnavigation.org/docs/getting-started/
+https://github.com/react-native-community/async-storage
+
 ### API references
 
 ## Build and Test
