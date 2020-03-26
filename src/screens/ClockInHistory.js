@@ -18,8 +18,8 @@ class ClockInHistory extends Component {
             history:[],
             backPressed: 0,
           }
-          this.loadData = this.loadData.bind(this);
           this.onBack = this.onBack.bind(this);
+          this.loadData = this.loadData.bind(this);
       }
     
       async componentDidMount(){

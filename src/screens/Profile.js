@@ -39,9 +39,9 @@ class Profile extends Component {
       this.deleteJWT = deviceStorage.deleteJWT.bind(this);
       this.LogOut = this.LogOut.bind(this);
       this.loadData = this.loadData.bind(this);
-      this.ChoosePhotoProfile = this.ChoosePhotoProfile.bind(this);
       this.movetoClockinHistory = this.movetoClockinHistory.bind(this);
       this.movetoOverworkForm = this.movetoOverworkForm.bind(this);
+      this.ChoosePhotoProfile = this.ChoosePhotoProfile.bind(this);
   }
 
   async componentDidMount(){

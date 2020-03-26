@@ -15,7 +15,7 @@ import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
 import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
-import {Url_GetDataUser, Url_Clockin, Url_GetDataApproval} from '../config/URL'
+import { Url_Clockin, Url_GetDataApproval} from '../config/URL'
 
 //Home Page For Head Division
 class HomeHeadDivision extends Component {
@@ -40,24 +40,16 @@ class HomeHeadDivision extends Component {
         longitude : null,
         announcement:'',
       }
-      this.clockIn = this.clockIn.bind(this);
-      this.clockOut = this.clockOut.bind(this);
       this.onBack = this.onBack.bind(this);
-      this.onRefresh = this.onRefresh.bind(this);
       this.loadData = this.loadData.bind(this);
       this.findCoordinates = this.findCoordinates.bind(this);
-      this.checkClockInStatus = this.checkClockInStatus.bind(this);
-      this.deleteStatusClockIn = this.deleteStatusClockIn.bind(this);
-      this.checkSickSubmit = this.checkSickSubmit.bind(this);
-      this.checkClockInDouble = this.checkClockInDouble.bind(this);
       this.movetoApprovalPage = this.movetoApprovalPage.bind(this);
+      this.movetoMeetingsPage = this.movetoMeetingsPage.bind(this);
+      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this);
       this.movetoWAC = this.movetoWAC.bind(this);
       this.movetoWFH = this.movetoWFH.bind(this);
-      this.movetoMeetingsPage = this.movetoMeetingsPage.bind(this);
-      this.movetoTaskDonePage = this.movetoTaskDonePage.bind(this)
+      this.onRefresh = this.onRefresh.bind(this);
       this.ButtonCheck = this.ButtonCheck.bind(this);
-      this.loadDataApproval = this.loadDataApproval.bind(this);
-      this.requestLocationPermission = this.requestLocationPermission.bind(this);
     }
 
     async componentDidMount() {
@@ -172,32 +164,16 @@ class HomeHeadDivision extends Component {
     }
 
     loadData = async () => {     
-      const headers = {
-        'accept': 'application/json',
-        'Authorization': 'Bearer ' + this.props.tokenJWT 
-      };
-
-      axios({
-          method: 'GET',
-          url: Url_GetDataUser,
-          headers: headers,
-        }).then((response) => { 
-          console.log('Success: Load data username and name')    
+      const username = await AsyncStorage.getItem('username');
+      const name = await AsyncStorage.getItem('name');
+      const firstname = await AsyncStorage.getItem('firstname');
           this.setState({
-            username: response.data.data.username,
-            fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
-            firstname: response.data.data.profile.firstname
+            username: username,
+            fullname: name,
+            firstname: firstname
           });
-          deviceStorage.saveItem("username", this.state.username);
-          deviceStorage.saveItem("name", this.state.fullname);
-
-          this.props.addName(this.state.username, this.state.fullname)
-          this.props.addLoad(false)
-        }).catch((errorr) => {
-          console.log('Error: Load data username and name')       
-            this.props.addLoad(false)
-          });
-      };
+      this.props.addLoad(false)
+    };
 
       async loadDataApproval(){
         const headers = {

@@ -3,10 +3,10 @@ import { Text, View, StyleSheet,TouchableOpacity, TextInput, ActivityIndicator, 
 import axios from 'axios';
 import deviceStorage from '../services/deviceStorage';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {Url_Login} from '../config/URL'
+import {Url_Login, Url_GetDataUser} from '../config/URL'
 import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
-import { addLoading } from '../actions/DataActions';
+import { addLoading, addNama } from '../actions/DataActions';
 import Logo from '../../image/eworkplace2.svg'
 
 class Login extends Component {
@@ -14,6 +14,8 @@ class Login extends Component {
     super(props);
     this.state = {
       username: '',
+      fullname:'',
+      firstname:'',
       jwtt : '',
       password: '',
       error: '',
@@ -23,11 +25,11 @@ class Login extends Component {
       icon:'eye-slash',
       secureText: true,
     };
-    this.loginUser = this.loginUser.bind(this);
     this.handleChangeUsername = this.handleChangeUsername.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
-    this.iconPress = this.iconPress.bind(this)
     this.onBack = this.onBack.bind(this);
+    this.iconPress = this.iconPress.bind(this);
+    this.loginUser = this.loginUser.bind(this);
 }
 componentDidMount(){
   BackHandler.addEventListener('hardwareBackPress', this.onBack);
@@ -78,8 +80,8 @@ if((username != null && username != "" ) && ( password != null && password != ""
           username:'',
           password:''
         })
-        this.props.add(this.state.jwtt)
-        this.props.navigation.push('HomeHD');
+        this.props.add(this.state.jwtt);
+        this.checkPermission();      
        })
       .catch((errorr) => {
         console.log(errorr)
@@ -91,7 +93,47 @@ if((username != null && username != "" ) && ( password != null && password != ""
       });
   }
 }
+  async checkPermission(){
+    console.log('tes')
+    const headers = {
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + this.state.jwtt
+    };
+    axios({
+      method: 'GET',
+      url: Url_GetDataUser,
+      headers: headers,
+    }).then((response) => { 
+      console.log('Success: Load data user') 
+      const permission = response.data.data.permission.app;
 
+      this.setState({
+        username: response.data.data.username,
+        fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
+        firstname: response.data.data.profile.firstname,
+        loading: false
+      });
+
+      deviceStorage.saveItem("username", this.state.username);
+      deviceStorage.saveItem("firstname", this.state.firstname);
+      deviceStorage.saveItem("name", this.state.fullname);
+      deviceStorage.saveItem("user_permission", JSON.stringify(permission));
+
+      this.props.addName(this.state.username, this.state.fullname)
+
+      if(permission === 0){
+        this.props.navigation.push('HomeHD');
+      }
+      else if(permission === 1){
+        this.props.navigation.push('Home');
+      }
+    }).catch((errorr) => {
+      console.log('Error: Load data user')
+        this.setState({
+          loading: false
+        })
+    });
+  }
   handleChangeUsername = event => {
     if(event !== ''){
         this.setState({messageErrUsername : '' });
@@ -281,6 +323,7 @@ const mapStateToPropsData = (state) => {
 const mapDispatchToPropsJWT = (dispatch) => {
   return {
     add: (jwtt) => dispatch(addJWT(jwtt)),
+    addName: (username, fullname) => dispatch(addNama(username, fullname)),
     addLoad : (Loading) => dispatch(addLoading(Loading)),
   }
 }

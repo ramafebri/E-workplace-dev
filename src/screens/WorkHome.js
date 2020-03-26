@@ -37,10 +37,9 @@ import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
           }
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this);
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
-        this.submitAll = this.submitAll.bind(this);
         this.onBack = this.onBack.bind(this);
         this.loadData = this.loadData.bind(this);
-        this.loadLocation = this.loadLocation.bind(this)
+        this.submitAll = this.submitAll.bind(this);
     }
 
     componentDidMount(){

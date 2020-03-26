@@ -22,8 +22,8 @@ class CardApproval extends Component {
         
         this.onDetails = this.onDetails.bind(this);
         this.onBack = this.onBack.bind(this);
-        this.buttonApprove = this.buttonApprove.bind(this)
-        this.buttonDecline = this.buttonDecline.bind(this)
+        this.buttonApprove = this.buttonApprove.bind(this);
+        this.buttonDecline = this.buttonDecline.bind(this);
     }
 
     componentDidMount(){   

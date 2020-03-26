@@ -33,9 +33,9 @@ class Sick extends Component {
             listHD: [],
           }
         this.findCoordinates = this.findCoordinates.bind(this);
-        this.submitAll = this.submitAll.bind(this);
         this.onBack = this.onBack.bind(this);
-        this.loadData = this.loadData.bind(this)
+        this.loadData = this.loadData.bind(this);
+        this.submitAll = this.submitAll.bind(this);
       }
   
       componentDidMount(){

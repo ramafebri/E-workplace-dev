@@ -8,7 +8,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
 import { addLoading } from '../actions/DataActions';
-import Logo from '../../image/eworkplace.svg'
+import Logo from '../../image/eworkplace.svg';
+import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 
 class SplashScreens extends Component {    
@@ -18,32 +19,25 @@ class SplashScreens extends Component {
 
       loadJWT = async () => {
         const userToken = await AsyncStorage.getItem('id_token');
+        console.log(userToken)
+        const user_permission = await AsyncStorage.getItem('user_permission');
+        const permission = parseInt(user_permission);
+
         this.props.add(userToken)
         this.props.addLoad(true)
 
-        // this.props.navigation.push(userToken ? 'Home' : 'Home');
-        // this.props.navigation.dispatch( userToken ?
-        //   CommonActions.navigate({
-        //     name: 'HomeHD',
-        //   })
-        //   :
-        //   CommonActions.navigate({
-        //     name: 'Login',
-        //   })
-        // );
-        // this.props.navigation.reset( userToken ?
-        //   {
-        //     index: 0,
-        //     routes: [{ name: 'HomeHD' }],
-        //   }
-        //   :
-        //   {
-        //     index: 0,
-        //     routes: [{ name: 'Login' }],
-        //   }
-        //   );
-         this.props.navigation.push(userToken ? 'HomeHD' : 'Login');
-      };
+        if(userToken !== null && userToken !== ""){
+          if(permission === 0){
+            this.props.navigation.push('HomeHD');
+          }
+          else if(permission === 1){
+            this.props.navigation.push('Home');
+          }
+        }
+        else{
+          this.props.navigation.push('Login');
+        }
+    };
     
     render() {
         return (
