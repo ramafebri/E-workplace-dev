@@ -70,8 +70,24 @@ npx react-native run-android
     "react-redux": "^7.1.3",
     "redux": "^4.0.5"
 ### Dependencies Link
-https://reactnavigation.org/docs/getting-started/
-https://github.com/react-native-community/async-storage
+https://reactnavigation.org/docs/getting-started/ <br/>
+https://reactnavigation.org/docs/bottom-tab-navigator  <br/>
+https://reactnavigation.org/docs/stack-navigator <br/>
+https://github.com/react-native-community/async-storage <br/>
+
+https://github.com/react-native-community/datetimepicker#readme <br/>
+https://github.com/axios/axios <br/>
+https://momentjs.com/ <br/>
+https://github.com/marlove/react-native-geocoding#readme <br/>
+
+https://github.com/Agontuk/react-native-geolocation-service <br/>
+https://github.com/react-native-community/react-native-image-picker <br/>
+https://github.com/react-native-community/react-native-svg  <br/>
+https://github.com/FortAwesome/react-native-fontawesome <br/>
+
+https://github.com/oblador/react-native-vector-icons <br/>
+https://react-redux.js.org/introduction/quick-start <br/>
+https://redux.js.org/introduction/getting-started/ <br/>
 
 ### API references
 
