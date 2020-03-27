@@ -22,7 +22,7 @@ export default class CustomAlertComponent extends React.Component {
                     </View>
                   <Image style={{width: 100, height: 100, borderRadius:100/2}} source={{uri:this.props.details.Photo}}/>                  
                 </View>
-                <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.Name} <Text style={styles.text2}>needs you approval</Text></Text>
+                <Text style={[styles.text1, {paddingTop:10}]}>{this.props.details.Name} <Text style={styles.text2}>needs your approval</Text></Text>
                 <Text style={styles.text1}>Working on : <Text style={styles.text2}>{this.props.details.ProjectName}</Text></Text>
                 <View style={{display: this.props.details.State === 'Work at client office' ? 'flex':'none'}}>
                   <Text style={styles.text1}>Client : <Text style={styles.text2}>{this.props.details.ClientName}</Text></Text>
