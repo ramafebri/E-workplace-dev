@@ -7,10 +7,8 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import { connect } from 'react-redux';
 import { addJWT } from '../actions/JwtActions';
-import { addLoading } from '../actions/DataActions';
+import { addLoading, addNama } from '../actions/DataActions';
 import Logo from '../../image/eworkplace.svg';
-import axios from 'axios';
-import { CommonActions } from '@react-navigation/native';
 
 class SplashScreens extends Component {    
       componentDidMount() {
@@ -23,14 +21,18 @@ class SplashScreens extends Component {
         const user_permission = await AsyncStorage.getItem('user_permission');
         const permission = parseInt(user_permission);
 
+        const username = await AsyncStorage.getItem('username');
+        const name = await AsyncStorage.getItem('name');
+
         this.props.add(userToken)
+        this.props.addName(username, name)
         this.props.addLoad(true)
 
         if(userToken !== null && userToken !== ""){
-          if(permission === 0){
+          if(permission === 1){
             this.props.navigation.push('HomeHD');
           }
-          else if(permission === 1){
+          else if(permission === 2){
             this.props.navigation.push('Home');
           }
         }
@@ -74,6 +76,7 @@ const mapStateToPropsData = (state) => {
 const mapDispatchToPropsData = (dispatch) => {
   return {
     addLoad : (Loading) => dispatch(addLoading(Loading)),
+    addName: (username, fullname) => dispatch(addNama(username, fullname)),
     add: (userToken) => dispatch(addJWT(userToken))
   }
 }

@@ -76,7 +76,6 @@ if((username != null && username != "" ) && ( password != null && password != ""
         deviceStorage.saveItem("state", '0');
         this.setState({
           jwtt: response.data.data,
-          loading: false,
           username:'',
           password:''
         })
@@ -94,7 +93,6 @@ if((username != null && username != "" ) && ( password != null && password != ""
   }
 }
   async checkPermission(){
-    console.log('tes')
     const headers = {
       'accept': 'application/json',
       'Authorization': 'Bearer ' + this.state.jwtt
@@ -108,32 +106,33 @@ if((username != null && username != "" ) && ( password != null && password != ""
       const permission = response.data.data.permission.app;
 
       this.setState({
-        username: response.data.data.username,
         fullname: response.data.data.profile.firstname + ' ' + response.data.data.profile.lastname,
         firstname: response.data.data.profile.firstname,
         loading: false
       });
 
-      deviceStorage.saveItem("username", this.state.username);
+      deviceStorage.saveItem("username", response.data.data.username);
       deviceStorage.saveItem("firstname", this.state.firstname);
       deviceStorage.saveItem("name", this.state.fullname);
       deviceStorage.saveItem("user_permission", JSON.stringify(permission));
 
-      this.props.addName(this.state.username, this.state.fullname)
+      this.props.addName(response.data.data.username, this.state.fullname)
 
-      if(permission === 0){
+      if(permission === 1){
         this.props.navigation.push('HomeHD');
       }
-      else if(permission === 1){
+      else if(permission === 2){
         this.props.navigation.push('Home');
       }
     }).catch((errorr) => {
       console.log('Error: Load data user')
+      this.props.addLoad(true);
         this.setState({
           loading: false
         })
     });
   }
+
   handleChangeUsername = event => {
     if(event !== ''){
         this.setState({messageErrUsername : '' });

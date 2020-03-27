@@ -11,7 +11,7 @@ import axios from 'axios';
 import Camera from '../../image/camera.svg'
 import { connect } from 'react-redux';
 import { addStatusClockin, addLoading } from '../actions/DataActions';
-import {Url_Clockin, Url_UploadPhoto} from '../config/URL'
+import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
 
 //Work at Client Office
 class WorkClient extends Component {
@@ -65,6 +65,8 @@ class WorkClient extends Component {
   const username = await AsyncStorage.getItem("username");  
   const name = await AsyncStorage.getItem("name");
   const location = await AsyncStorage.getItem("location");
+  const division = await AsyncStorage.getItem("division");
+  
     this.setState({
       username : username,
       fullname : name,
@@ -73,7 +75,7 @@ class WorkClient extends Component {
 
     axios({
       method: 'GET',
-      url: 'https://eworkmoonlay-user-dev.azurewebsites.net/v1/accounts?page=1&size=25&order=%7B%7D&filter=%7B%7D',
+      url: Url_GetListHD + division,
       headers: {
         'accept': 'application/json',
         'Authorization': 'Bearer ' + this.props.tokenJWT

@@ -15,7 +15,7 @@ import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
 import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
-import { Url_Clockin, Url_GetDataApproval} from '../config/URL'
+import { Url_Clockin, Url_GetDataApproval, Url_GetDivision, Url_GetID} from '../config/URL'
 
 //Home Page For Head Division
 class HomeHeadDivision extends Component {
@@ -66,6 +66,7 @@ class HomeHeadDivision extends Component {
       this.loadDataApproval();
       this.loadData();
       this.checkClockInDouble();
+      this.loadDataDivision();
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
@@ -158,6 +159,7 @@ class HomeHeadDivision extends Component {
       this.loadData();
       this.loadDataApproval();
       this.checkClockInDouble();
+      this.loadDataDivision();
       this.setState({
         refreshing : false
       })
@@ -175,6 +177,45 @@ class HomeHeadDivision extends Component {
       this.props.addLoad(false)
     };
 
+    async loadDataDivision(){
+      const division = await AsyncStorage.getItem('division');
+
+      if(division === null){
+        const headers = {
+          'accept': 'application/json',
+          'Authorization': 'Bearer '+ this.props.tokenJWT
+        };
+        
+        axios({
+          method: 'GET',
+          url: Url_GetID + this.props.nameUser,
+          headers: headers,
+        }).then((response) => { 
+          console.log('Success: Load user id')
+  
+          axios({
+            method: 'GET',
+            url: Url_GetDivision + response.data.data[0]._id,
+            headers: headers,
+          }).then((response) => { 
+            console.log('Success: Load user division')
+            deviceStorage.saveItem("division", 'Enablement');
+            deviceStorage.saveItem('job_title', response.data.data.roles[0].name);
+            
+            this.props.addLoad(false)
+          }).catch((errorr) => {
+            console.log('Error: Load user division');
+            this.props.addLoad(false)
+          });        
+        }).catch((errorr) => {
+          console.log('Error: Load user id')
+          console.log(errorr)
+          this.props.addLoad(false)
+        });
+      }
+      this.props.addLoad(false)
+    }
+
       async loadDataApproval(){
         const headers = {
           'accept': 'application/json',
@@ -182,7 +223,7 @@ class HomeHeadDivision extends Component {
          };  
          axios({
              method: 'GET',
-             url: Url_GetDataApproval,
+             url: Url_GetDataApproval + this.props.nameUser,
              headers: headers,
            }).then((response) => { 
              console.log('Success: Load approval data')    

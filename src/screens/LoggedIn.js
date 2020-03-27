@@ -15,7 +15,7 @@ import {MoonlayLat, MoonlayLong} from '../config/MoonlayLocation'
 import { Card } from 'react-native-elements'
 import WFH from '../../image/wfh.svg'
 import Buildings from '../../image/buildings.svg'
-import {Url_Clockin} from '../config/URL'
+import {Url_Clockin, Url_GetDivision, Url_GetID} from '../config/URL'
 
 //Home Page For Non Head Division Employee
 class LoggedIn extends Component {
@@ -62,6 +62,7 @@ class LoggedIn extends Component {
       this.checkSickSubmit();
       this.loadData();
       this.checkClockInDouble();
+      this.loadDataDivision();
       this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.onBack);
     }
 
@@ -153,6 +154,7 @@ class LoggedIn extends Component {
       this.checkSickSubmit();
       this.loadData();
       this.checkClockInDouble();
+      this.loadDataDivision();
       this.setState({
         refreshing : false
       })
@@ -162,13 +164,51 @@ class LoggedIn extends Component {
       const username = await AsyncStorage.getItem('username');
       const name = await AsyncStorage.getItem('name');
       const firstname = await AsyncStorage.getItem('firstname');
-          this.setState({
+        this.setState({
             username: username,
             fullname: name,
             firstname: firstname
-          });
-      this.props.addLoad(false)
+        });
     };
+
+    async loadDataDivision(){
+      const division = await AsyncStorage.getItem('division');
+
+      if(division === null){
+        const headers = {
+          'accept': 'application/json',
+          'Authorization': 'Bearer '+ this.props.tokenJWT
+        };
+        
+        axios({
+          method: 'GET',
+          url: Url_GetID + this.props.nameUser,
+          headers: headers,
+        }).then((response) => { 
+          console.log('Success: Load user id')
+  
+          axios({
+            method: 'GET',
+            url: Url_GetDivision + response.data.data[0]._id,
+            headers: headers,
+          }).then((response) => { 
+            console.log('Success: Load user division')
+            deviceStorage.saveItem("division", response.data.data.roles[0].permissions[0].jobTitle.Division.Name);
+            deviceStorage.saveItem('job_title', response.data.data.roles[0].name);
+            
+            this.props.addLoad(false)
+          }).catch((errorr) => {
+            console.log('Error: Load user division');
+            this.props.addLoad(false)
+          });        
+        }).catch((errorr) => {
+          console.log('Error: Load user id')
+          console.log(errorr)
+          this.props.addLoad(false)
+        });
+      }
+      this.props.addLoad(false)
+    }
 
     findCoordinates = async () => {
       Geolocation.getCurrentPosition(

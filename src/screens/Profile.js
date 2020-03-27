@@ -27,6 +27,7 @@ class Profile extends Component {
         monthYear : moment().format('MMMM YYYY'),
         refreshing : false,
         history:[],
+        jobTitle:'',
       }
 
       AsyncStorage.getItem('photoprofile').then(response => {
@@ -51,13 +52,15 @@ class Profile extends Component {
 
   async loadData(){
     const username = await AsyncStorage.getItem('username');
-    const name = await AsyncStorage.getItem('name');  
+    const name = await AsyncStorage.getItem('name');
+    const jobTitle = await AsyncStorage.getItem('job_title');    
     const month = moment().format('MM');
     const year = new Date().getFullYear();
 
     this.setState({
       username : username,
       name : name,
+      jobTitle : jobTitle
     })
 
     const headers = {
@@ -92,9 +95,21 @@ class Profile extends Component {
         await AsyncStorage.removeItem('clockin_state');
         await AsyncStorage.removeItem('clockin_state2');
         await AsyncStorage.removeItem('user_permission');
+
         await AsyncStorage.removeItem('username');
         await AsyncStorage.removeItem('name');
         await AsyncStorage.removeItem('firstname');
+
+        await AsyncStorage.removeItem('division');
+        await AsyncStorage.removeItem('job_title');
+        await AsyncStorage.removeItem('location');
+
+        await AsyncStorage.removeItem('clockinHour');
+        await AsyncStorage.removeItem('clockinMinute');
+        await AsyncStorage.removeItem('id_user');
+
+        await AsyncStorage.removeItem('sick_submit');
+        await AsyncStorage.removeItem('sick_submit_day');
 
         this.props.navigation.dispatch(
           CommonActions.navigate({
@@ -163,9 +178,8 @@ class Profile extends Component {
                             </View> */}
                           </View>
                         </View>
-                        <Text style={styles.text1}>Since 2018</Text>
                         <Text style={styles.text2}>{this.state.name}</Text>
-                        <Text style={styles.text3}>Developer</Text>
+                        <Text style={styles.text3}>{this.state.jobTitle}</Text>
                       </View>
                       <View>
                         <TouchableOpacity style={{alignSelf:'flex-end', width:40, height:30, alignItems:'flex-end'}} onPress={this.ChoosePhotoProfile}>

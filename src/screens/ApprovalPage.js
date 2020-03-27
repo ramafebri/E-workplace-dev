@@ -49,7 +49,7 @@ class ApprovalPage extends Component {
 
       axios({
           method: 'GET',
-          url: Url_GetDataApproval,
+          url: Url_GetDataApproval + this.props.nameUser,
           headers: headers,
         }).then((response) => { 
           console.log('Success: Get approval data')   
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
 const mapStateToPropsData = (state) => {
   return {
     tokenJWT: state.JwtReducer.jwt,
+    nameUser: state.DataReducer.username,
   }
 }
 const mapDispatchToPropsData = (dispatch) => {
