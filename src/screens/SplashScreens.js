@@ -17,7 +17,6 @@ class SplashScreens extends Component {
 
       loadJWT = async () => {
         const userToken = await AsyncStorage.getItem('id_token');
-        console.log(userToken)
         const user_permission = await AsyncStorage.getItem('user_permission');
         const permission = parseInt(user_permission);
 

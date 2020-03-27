@@ -174,7 +174,6 @@ class HomeHeadDivision extends Component {
             fullname: name,
             firstname: firstname
           });
-      this.props.addLoad(false)
     };
 
     async loadDataDivision(){

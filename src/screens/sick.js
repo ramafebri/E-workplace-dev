@@ -22,6 +22,7 @@ class Sick extends Component {
             username:'',
             photo: null,
             Location:'',
+            permission: null,
             message:'',
             status: 'Sick Leave',
             headDivision: '',
@@ -62,11 +63,14 @@ class Sick extends Component {
       const name = await AsyncStorage.getItem("name");
       const location = await AsyncStorage.getItem("location");
       const division = await AsyncStorage.getItem("division");
+      const user_permission = await AsyncStorage.getItem('user_permission');
+      const permission = parseInt(user_permission);
 
         this.setState({
           username : username,
           fullname : name,
-          Location : location
+          Location : location,
+          permission : permission
         })
         axios({
           method: 'GET',
@@ -157,14 +161,26 @@ class Sick extends Component {
             deviceStorage.saveItem("sick_submit", "1");
             deviceStorage.saveItem("sick_submit_day", moment().format('dddd'));
             this.props.addLoad(true)
-            this.props.navigation.dispatch(
-              CommonActions.reset({
-                index: 1,
-                routes: [
-                  { name: 'Home' },
-                ],
-              })
-            )
+            if(this.state.permission === 1){
+              this.props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 1,
+                  routes: [
+                    { name: 'HomeHD' },
+                  ],
+                })
+              )
+            }
+            else if(this.state.permission === 2){
+              this.props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 1,
+                  routes: [
+                    { name: 'Home' },
+                  ],
+                })
+              )
+            }
             ToastAndroid.showWithGravity(
               'Submit success!',
               ToastAndroid.SHORT,

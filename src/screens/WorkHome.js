@@ -22,6 +22,7 @@ import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
             fullname :'',
             username:'',
             Location: '',
+            permission: null,
             photo: null,
             urlphoto:'',
             clockInstatus: false,
@@ -66,11 +67,14 @@ import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
     const name = await AsyncStorage.getItem("name");
     const location = await AsyncStorage.getItem("location");
     const division = await AsyncStorage.getItem("division");
+    const user_permission = await AsyncStorage.getItem('user_permission');
+    const permission = parseInt(user_permission);
 
     this.setState({
       username : username,
       fullname : name,
-      Location : location
+      Location : location,
+      permission : permission
     })
 
     axios({
@@ -274,14 +278,26 @@ import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
               ToastAndroid.SHORT,
               ToastAndroid.BOTTOM,
             );
-            this.props.navigation.dispatch(
-              CommonActions.reset({
-                index: 1,
-                routes: [
-                  { name: 'Home' },
-                ],
-              })
-            )
+            if(this.state.permission === 1){
+              this.props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 1,
+                  routes: [
+                    { name: 'HomeHD' },
+                  ],
+                })
+              )
+            }
+            else if(this.state.permission === 2){
+              this.props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 1,
+                  routes: [
+                    { name: 'Home' },
+                  ],
+                })
+              )
+            }
           })
           .catch((errorr) => {
             console.log('Error: Clock in work from home')
