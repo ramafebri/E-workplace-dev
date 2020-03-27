@@ -216,7 +216,8 @@ class Profile extends Component {
                   <View style={{ width:'100%', alignSelf:'center'}}>
                     <Text style={styles.text8}>History</Text>
                     <Text style={styles.textMonth}>{this.state.monthYear}</Text>
-                    <Card containerStyle={styles.cardHistory} >
+                  </View>
+                  <View style={styles.cardHistory} >
                       {this.state.history.map((u, i) => {
                         const clockinTime = moment(u.CheckIn).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
                         const clockoutTime = moment(u.CheckOut).add(7, 'hours').format('YYYY-MM-DD hh:mm:ss A');
@@ -241,11 +242,10 @@ class Profile extends Component {
                         })
                       }
                       <Text style={[styles.textStatus,{display: this.state.history.length === 0 ? 'flex':'none'}]}>No History</Text>
-                    </Card>
+                  </View>
                     <TouchableOpacity style={{width:'40%', alignSelf:'center'}} onPress={this.movetoClockinHistory}>
                        <Text style={styles.textVD}>View More History</Text>
                     </TouchableOpacity>
-                  </View>
                   <TouchableOpacity style={styles.Button} onPress={this.LogOut}>
                       <Text style={styles.textLogOut}>Log Out</Text>
                   </TouchableOpacity>
@@ -282,19 +282,20 @@ const styles = StyleSheet.create({
   },
   cardHistory: {
     padding: 0,
-    borderRadius:7,
+    borderRadius: 1,
     width:'93%',
     alignSelf:'center',
     marginTop:10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,  
-    height:250  
+    shadowOpacity: 0.18,
+    shadowRadius: 1.00,
+    
+    elevation: 0.5, 
+    height:250, 
   },
   image:{
     width: 100, height: 100, borderRadius:100/2
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     textAlign:'center', textAlignVertical:'center', fontFamily:'Nunito-Regular', fontSize:16, color:'#4A90E2', fontWeight:'600'
   },
   history:{
-    height:40, borderBottomColor:'#505050', borderBottomWidth:0.5, justifyContent:'center', flexDirection:'row'
+    height:40, borderBottomColor:'#505050', borderBottomWidth:0.5, justifyContent:'center', flexDirection:'row', width:'100%'
 },
  textStatus:{
   fontFamily:'Nunito-SemiBold', fontSize:20, textAlign:'center', textAlignVertical:'center', marginTop:100, color:'#505050'
