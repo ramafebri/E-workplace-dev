@@ -538,6 +538,7 @@ class LoggedIn extends Component {
       ],
       { cancelable: false },
     );
+     this.props.addLoad(false) 
      return true;
    }
   }
