@@ -1,10 +1,8 @@
 # E-workplace-dev
 ## Introduction
-![Image of Eworkpalce](/image/ss1.png)
-![Image of Eworkpalce](/image/ss2.png)
-![Image of Eworkpalce](/image/ss3.png)
-![Image of Eworkpalce](/image/ss4.png)
-![Image of Eworkpalce](/image/ss5.png)
+![Image of Eworkpalce](/image/ss1.png)     ![Image of Eworkpalce](/image/ss2.png)
+![Image of Eworkpalce](/image/ss3.png)     ![Image of Eworkpalce](/image/ss4.png)
+![Image of Eworkpalce](/image/ss5.png) <br/>
 E workpalce is a mobile application that is made for employee of moonlay technologies. The features contained in this application are: <br/>
 1. Login and logout <br/>
 2. Clock in at office <br/>
