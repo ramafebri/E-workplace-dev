@@ -1,6 +1,6 @@
 # E-workplace-dev
 ## Introduction
-![Image of Yaktocat](https://www.dropbox.com/l/scl/AADN-9pC-cdgSAC4oCziRyN59OfltHrR-hA) <br/>
+![Image of Yaktocat](/image/line.png) <br/>
 E workpalce is a mobile application that is made for employee of moonlay technologies. The features contained in this application are: <br/>
 1. Login and logout <br/>
 2. Clock in at office <br/>
