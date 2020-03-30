@@ -1,6 +1,7 @@
 # E-workplace-dev
 ## Introduction
-![Image of Eworkpalce](/image/ss1.png)&nbsp;&nbsp;![Image of Eworkpalce](/image/ss2.png)
+![Image of Eworkpalce](/image/ss1.png)
+>>>![Image of Eworkpalce](/image/ss2.png)
 ![Image of Eworkpalce](/image/ss3.png)&nbsp;&nbsp;![Image of Eworkpalce](/image/ss4.png)
 ![Image of Eworkpalce](/image/ss5.png) <br/>
 E workpalce is a mobile application that is made for employee of moonlay technologies. The features contained in this application are: <br/>
