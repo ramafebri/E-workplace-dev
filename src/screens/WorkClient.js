@@ -103,7 +103,7 @@ class WorkClient extends Component {
       maxHeight: 1000,
       quality: 1,
       storageOptions: {
-        skipBackup: false,
+        skipBackup: true,
         path: 'images',
       },
     };

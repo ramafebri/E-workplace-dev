@@ -124,7 +124,7 @@ import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
           maxHeight: 1000,
           quality: 1,
           storageOptions: {
-            skipBackup: false,
+            skipBackup: true,
             path: 'images',
           },
         };
