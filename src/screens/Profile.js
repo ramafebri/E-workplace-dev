@@ -92,8 +92,6 @@ class Profile extends Component {
       else if(value === '0'){
         this.deleteJWT();
         this.props.delete();
-        await AsyncStorage.removeItem('clockin_state');
-        await AsyncStorage.removeItem('clockin_state2');
         await AsyncStorage.removeItem('user_permission');
 
         await AsyncStorage.removeItem('username');
@@ -107,9 +105,6 @@ class Profile extends Component {
         await AsyncStorage.removeItem('clockinHour');
         await AsyncStorage.removeItem('clockinMinute');
         await AsyncStorage.removeItem('id_user');
-
-        await AsyncStorage.removeItem('sick_submit');
-        await AsyncStorage.removeItem('sick_submit_day');
 
         this.props.navigation.dispatch(
           CommonActions.navigate({

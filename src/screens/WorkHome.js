@@ -40,6 +40,7 @@ import {Url_Clockin, Url_UploadPhoto, Url_GetListHD} from '../config/URL'
         this.handleChangeMessage = this.handleChangeMessage.bind(this);
         this.onBack = this.onBack.bind(this);
         this.loadData = this.loadData.bind(this);
+        this.loadLocation = this.loadLocation.bind(this);
         this.submitAll = this.submitAll.bind(this);
     }
 
