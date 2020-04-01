@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.18,
     shadowRadius: 1.00,
-    
+    backgroundColor:'#FFFFFF',
     elevation: 0.5, 
     height:250, 
   },
