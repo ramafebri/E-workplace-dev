@@ -139,7 +139,7 @@ class LoggedIn extends Component {
       }
 
       const value = await AsyncStorage.getItem('sick_submit');
-      if(value === 1){
+      if(value === '1'){
         this.props.addClockin(false, ' ', this.state.idUser, 'Sick Leave')
       }
     }

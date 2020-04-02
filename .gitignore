@@ -41,7 +41,8 @@ buck-out/
 *.keystore
 !debug.keystore
 
-
+#APK
+android/app/release/
 
 # fastlane
 #
