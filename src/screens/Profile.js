@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Ref
 import AsyncStorage from '@react-native-community/async-storage';
 import Loading from '../components/Loading';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import ImagePicker from 'react-native-image-picker'
 import deviceStorage from '../services/deviceStorage';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
@@ -116,25 +115,6 @@ class Profile extends Component {
 
     ChoosePhotoProfile(){
       alert('Under Development!')
-      // var options = {
-      //   title: 'Select Image',
-      //   maxWidth: 1000,
-      //   maxHeight: 1000,
-      //   quality: 1,
-      //   storageOptions: {
-      //     skipBackup: false,
-      //   },
-      // };
-      // ImagePicker.showImagePicker(options, response => {
-      //   if (response.uri) {
-      //     console.log(response.uri)
-      //     deviceStorage.saveItem("photoprofile", response.uri);
-      //     this.setState({ 
-      //       loadingPhoto: true,
-      //       photoUri: response.uri
-      //     })         
-      //   }
-      // }) 
     }
 
     movetoClockinHistory(){
@@ -146,8 +126,6 @@ class Profile extends Component {
     }
 
   render() {
-    const { loadingPhoto } = this.state
-    //alert(this.state.photoUri)
           return(
             <SafeAreaView style={styles.container}>
               <ScrollView
@@ -165,12 +143,6 @@ class Profile extends Component {
                             <View>
                               <Person width={70} height={70}/>
                             </View>
-                            {/* <View style={{display: loadingPhoto === true ? 'flex' : 'none'}}>
-                              <Image
-                                source={{ uri: this.state.photoUri }}
-                                style={styles.image}
-                              />  
-                            </View> */}
                           </View>
                         </View>
                         <Text style={styles.text2}>{this.state.name}</Text>

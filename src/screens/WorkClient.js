@@ -154,10 +154,23 @@ class WorkClient extends Component {
         Geocoder.from(position.coords.latitude, position.coords.longitude)
           .then(json => {
             console.log('Success: Get user location');
-            var addressComponent = json.results[1].address_components[0].long_name;
-              this.setState({
-                Location: addressComponent
-              })
+            var array = [];
+            var addressComponent = json.results[0].formatted_address;
+
+            for( var i = 0; i < addressComponent.length; i++){
+              if(addressComponent[i] !== ','){
+                  array.push(addressComponent[i]);
+              }
+              else{
+                break;
+              }
+            }
+
+            var fixAddress = array.join('').toString();
+
+            this.setState({
+              Location: fixAddress
+            })
               deviceStorage.saveItem("location", this.state.Location);
               console.log(addressComponent);    
           })
@@ -199,9 +212,9 @@ class WorkClient extends Component {
       this.props.addLoad(false)
       return true;
     }
-    else if(hour > 11 || hour <= 6){
+    else if(hour <= 6){
       Alert.alert(
-        "You can't clock in!",'Clock in time only available at 7 AM - 12 PM',
+        "You can't clock in!",'Clock in time only available at 7 AM - 24 PM',
         [
           { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
         ],
@@ -236,7 +249,7 @@ class WorkClient extends Component {
       return true; 
     }
     else if(this.state.headDivision !== '' && this.state.urlphoto !== '' && this.state.projectName !== ''
-    && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === false && hour < 12 && hour > 6){
+    && this.state.client !== '' && this.state.clientCompany !== '' && this.props.clockin_status === false && hour > 6){
       const clockintime = new Date();
       axios({
         method: 'POST',

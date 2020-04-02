@@ -154,12 +154,13 @@ class Sick extends Component {
             }
           }).then((response) => {
             console.log('Success: Submit sick data')
-            console.log(this.state.headDivision)
+            this.props.addClockin(false, ' ', this.state.idUser, this.state.status);
             this.setState({
               idUser: response.data.Id,
             });
             deviceStorage.saveItem("sick_submit", "1");
             deviceStorage.saveItem("sick_submit_day", moment().format('dddd'));
+
             this.props.addLoad(true)
             if(this.state.permission === 1){
               this.props.navigation.dispatch(
@@ -205,9 +206,22 @@ class Sick extends Component {
             Geocoder.from(position.coords.latitude, position.coords.longitude)
               .then(json => {
                   console.log('Success: Get user location');
-                  var addressComponent = json.results[1].address_components[0].long_name;
+                  var array = [];
+                  var addressComponent = json.results[0].formatted_address;
+  
+                  for( var i = 0; i < addressComponent.length; i++){
+                    if(addressComponent[i] !== ','){
+                        array.push(addressComponent[i]);
+                    }
+                    else{
+                      break;
+                    }
+                  }
+  
+                  var fixAddress = array.join('').toString();
+  
                   this.setState({
-                    Location: addressComponent
+                    Location: fixAddress
                   })
                   deviceStorage.saveItem("location", this.state.Location);
                   console.log(addressComponent);       

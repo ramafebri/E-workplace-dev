@@ -112,11 +112,11 @@ class LoggedIn extends Component {
       var dayNow = moment().format('dddd');
       if(clockoutDay !== null){
         if(dayNow !== clockoutDay){
-          if(time > 6 && time < 12){
+          if(time > 6 && time < 24){
             this.deleteStatusClockIn();
           }else{
             this.setState({
-              announcement: 'Clock in time only available at 7 AM - 12 PM'
+              announcement: 'Clock in time only available at 7 AM - 24 PM'
             })
             this.props.addAnnouncement(this.state.announcement)
           }
@@ -137,6 +137,11 @@ class LoggedIn extends Component {
           await AsyncStorage.removeItem('sick_submit_day');
         }
       }
+
+      const value = await AsyncStorage.getItem('sick_submit');
+      if(value === 1){
+        this.props.addClockin(false, ' ', this.state.idUser, 'Sick Leave')
+      }
     }
 
     async onRefresh (){
@@ -148,9 +153,8 @@ class LoggedIn extends Component {
         day : moment().format('dddd'),
         monthYear : moment().format('MMM Do YYYY'),
       })
-
-      this.checkClockInStatus();
       this.findCoordinates();
+      this.checkClockInStatus();
       this.checkSickSubmit();
       this.loadData();
       this.checkClockInDouble();
@@ -221,9 +225,22 @@ class LoggedIn extends Component {
           Geocoder.from(position.coords.latitude, position.coords.longitude)
             .then(json => {
                 console.log('Success: Get user location');
-                var addressComponent = json.results[1].address_components[0].long_name;
+                var array = [];
+                var addressComponent = json.results[0].formatted_address;
+
+                for( var i = 0; i < addressComponent.length; i++){
+                  if(addressComponent[i] !== ','){
+                      array.push(addressComponent[i]);
+                  }
+                  else{
+                    break;
+                  }
+                }
+
+                var fixAddress = array.join('').toString();
+
                 this.setState({
-                  Location: addressComponent
+                  Location: fixAddress
                 })
                 deviceStorage.saveItem("location", this.state.Location);
                 console.log(addressComponent);
@@ -293,9 +310,9 @@ class LoggedIn extends Component {
       this.props.addLoad(false)
       return true;   
     }
-    else if(hour > 11 || hour <= 6){
+    else if(hour <= 6){
       Alert.alert(
-        "You can't clock in!",'Clock in time only available at 7 AM - 12 PM',
+        "You can't clock in!",'Clock in time only available at 7 AM - 24 PM',
         [
           { text: "OK", onPress: () => console.log('OK'), style: "cancel"},
         ],
@@ -331,7 +348,7 @@ class LoggedIn extends Component {
       alert('You are far from the office right now, go closer!')
       this.props.addLoad(false)
     }
-    else if(location_radius <= 80 && value !== 'clockin' && hour < 12 && hour > 6){
+    else if(location_radius <= 80 && value !== 'clockin' && hour > 6){
       const clockintime = new Date();
       axios({
         method: 'POST',
@@ -591,7 +608,7 @@ class LoggedIn extends Component {
                 <View style={{width:20, height:'100%', alignItems:'center'}}>
                   <FontAwesome5 name='map-marker-alt' size={16} color='#E74C3C' style={{marginTop:3}}/>
                 </View>
-                <View style={{width:450, height:20, justifyContent:'center'}}>
+                <View style={{width:'100%', height:20, justifyContent:'center'}}>
                   <Text style={styles.textLocation}>{this.state.Location}</Text>
                 </View> 
                 </View>
